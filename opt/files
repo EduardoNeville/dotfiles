@@ -1,11 +1,4 @@
 # /opt/files
 configs/.zprofile .zprofile
 configs/.zshrc .zshrc
-configstore .config/configstore
-github-copilot .config/github-copilot
-neofetch .config/neofetch
-nvim .config/nvim
-gh .config/gh
-jgit .config/jgit
-nnn .config/nnn
-wezterm .config/wezterm
+configs/.config .config
