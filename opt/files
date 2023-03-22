@@ -1,4 +1,4 @@
 # /opt/files
 configs/.zprofile .zprofile
 configs/.zshrc .zshrc
-configs/.config .config
+.config .config
