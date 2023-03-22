@@ -1,0 +1,12 @@
+Plugin Manager -> really understand it 
+Check out all vim plugins to see which ones we want
+mason
+configure indent properly with context indent highlightend with treesitter
+adding telescope -> finish fixing it
+lsp configure
+
+vimrc delete?!
+vim plugins?
+
+nnn fix the nuke shit to open files properly 
+
