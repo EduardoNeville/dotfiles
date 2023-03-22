@@ -61,9 +61,7 @@ link_dotfiles() {
         # create an array of line items
         file=(${links[$index]})
         # Create symbolic link
-        mkdir -p "${HOME}/.config/${file[1]%/*}"
-       
-	ln -fs "${DIR}/${file[0]}" "${HOME}/.config/${file[1]}"
+	ln -fs "${DIR}/${file[0]}" "${HOME}/${file[1]}"
      done
      # set separater back to carriage return & new line break
      IFS=$'\r\n'
@@ -74,6 +72,7 @@ link_dotfiles() {
    [[ $? ]] && _success "All files have been copied"
   fi
 }
+
 # /install
 install_homebrew() {
  _process "→ Installing Homebrew"
@@ -159,16 +158,16 @@ install_node() {
 
 install_rust(){
 	_process "zsh post installing highlighting plugin"
-	c/bin/bash -c "$(-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh)"
+	-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 }
 
 install() {
   download_dotfiles
   link_dotfiles
-  install_homebrew
-  install_formulae
-  install_oh_my_zsh
-  install_node
+  #install_homebrew
+  #install_formulae
+  #install_oh_my_zsh
+  #install_node
   install_rust
 }
 
