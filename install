@@ -164,10 +164,10 @@ install_rust(){
 install() {
   download_dotfiles
   link_dotfiles
-  #install_homebrew
-  #install_formulae
-  #install_oh_my_zsh
-  #install_node
+  install_homebrew
+  install_formulae
+  install_oh_my_zsh
+  install_node
   install_rust
 }
 
