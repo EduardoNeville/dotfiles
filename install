@@ -1,6 +1,6 @@
 # /install
 #!/usr/bin/env bash
-LOG="${HOME}/Library/Logs/dotfiles.log
+LOG="${HOME}/Library/Logs/dotfiles.log"
 GITHUB_USER=EduardoNeville
 GITHUB_REPO=dotfiles
 DIR="/usr/local/opt/${GITHUB_REPO}"
