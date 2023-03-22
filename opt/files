@@ -1,5 +1,5 @@
 # /opt/files
 configs/.zprofile .zprofile
 configs/.zshrc .zshrc
-configs/.config  
+configs/.config .config 
 
