@@ -1,9 +1,0 @@
-[filesystem "Homebrew|19|/dev/disk1s1"]
-	timestampResolution = 32000 nanoseconds
-	minRacyThreshold = 0 nanoseconds
-[filesystem "AdoptOpenJDK|11.0.4|/dev/disk1s5s1"]
-	timestampResolution = 5000 nanoseconds
-	minRacyThreshold = 0 nanoseconds
-[filesystem "Homebrew|19.0.2|/dev/disk1s1"]
-	timestampResolution = 4000 nanoseconds
-	minRacyThreshold = 0 nanoseconds
