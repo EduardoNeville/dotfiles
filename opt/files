@@ -1,6 +1,6 @@
 # /opt/files
 configs/.zprofile .zprofile
 configs/.zshrc .zshrc
-configs/.config ~/ 
-configs/.oh-my-zsh .oh-my-zsh
+configs/.config  
+configs/.oh-my-zsh 
 
