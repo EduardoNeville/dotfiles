@@ -27,7 +27,7 @@ local config = {
         -- Default colours
         color_scheme = "Catppuccin Macchiato",
 	color_scheme_dirs = { os.getenv("HOME") .. "/.config/wezterm/colors/" },
-        
+
 }
 
 return config
