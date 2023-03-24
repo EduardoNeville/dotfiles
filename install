@@ -60,6 +60,8 @@ link_dotfiles() {
         IFS=$' '
         # create an array of line items
         file=(${links[$index]})
+	# Remove previos file
+	rm -rf "${HOME}/${file[1]}"
         # Create symbolic link
 	ln -fs "${DIR}/${file[0]}" "${HOME}/${file[1]}"
      done
@@ -157,18 +159,26 @@ install_node() {
 }
 
 install_rust(){
-	_process "zsh post installing highlighting plugin"
-	-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+	_process "installing rust"
+	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+}
+
+install_packer(){
+        _process "installing packer"
+        git clone --depth 1 https://github.com/wbthomason/packer.nvim\
+         ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+
 }
 
 install() {
   download_dotfiles
   link_dotfiles
-  install_homebrew
-  install_formulae
-  install_oh_my_zsh
-  install_node
-  install_rust
+ #install_homebrew
+ #install_formulae
+ #install_oh_my_zsh
+ #install_node
+ #install_rust
+ #install_packer
 }
 
 install

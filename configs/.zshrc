@@ -133,7 +133,9 @@ bindkey -v
 alias ga='git add .'
 alias gc='git commit'
 alias gac='git add . && git commit'
-alias gp='git push'
+alias gps='git push'
+alias gpl='git pull'
+alias gf='git fetch'
 alias gco='git checkout'
 
 
