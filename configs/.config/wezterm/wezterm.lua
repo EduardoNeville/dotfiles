@@ -6,6 +6,9 @@ local wezterm = require("wezterm")
 local config = {
 	-- font = wezterm.font("Cica"),
 	-- font_size = 10.0,
+        --
+        -- Fira Code fonts
+        -- https://github.com/tonsky/FiraCode
 	font = wezterm.font 'Fira Code',
 	font_size = 15,
 	-- cell_width = 1.1,
