@@ -141,13 +141,12 @@ alias gps='git push'
 alias gpl='git pull'
 alias gf='git fetch'
 alias gco='git checkout'
-alias g-h="echo ' 
-        ga -> git add . 
-        gc -> git commit
-        gac -> git add . && git commit 
-        gps -> git push
-        gpl -> git pull
-        gf -> git fetch
+alias g-h="echo 'ga -> git add . \n 
+        gc -> git commit \n
+        gac -> git add . && git commit \n 
+        gps -> git push \n
+        gpl -> git pull \n
+        gf -> git fetch \n
         gco -> git checkout'"
 
 
