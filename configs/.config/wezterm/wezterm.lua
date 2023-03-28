@@ -9,8 +9,9 @@ local config = {
         --
         -- Fira Code fonts
         -- https://github.com/tonsky/FiraCode
-	font = wezterm.font 'Fira Code',
-	font_size = 15,
+	font = wezterm.font('Fira Code', {weight="Regular", stretch='Normal', style=Normal}),
+        font = wezterm.font_with_fallback {'Fira Code'},
+        font_size = 15,
 	-- cell_width = 1.1,
 	-- line_height = 1.1,
 	-- font_rules = {
