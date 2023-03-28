@@ -141,7 +141,7 @@ alias gps='git push'
 alias gpl='git pull'
 alias gf='git fetch'
 alias gco='git checkout'
-alias gh="echo 'ga -> git add . \n 
+alias ghelp="echo 'ga -> git add . \n 
 gc -> git commit \n
 gac -> git add . && git commit \n 
 gps -> git push \n
