@@ -13,8 +13,9 @@ export NNN_FCOLORS="$BLK$CHR$DIR$EXE$REG$HARDLINK$SYMLINK$MISSING$ORPHAN$FIFO$SO
 
 export NNN_PATH="$PATH:/Users/eduardoneville82/.config/nnn/plugins/"
 
-export NNN_OPENER= nuke 
-export NNN_PLUG='o:fzopen, c: fzcd'
+export NNN_OPENE=nuke 
+export NNN_PLUG='o:fzopen;f:fzcd'
+export NNN_USE_EDITOR=l
 
 
 

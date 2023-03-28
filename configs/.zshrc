@@ -116,16 +116,32 @@ source $ZSH/oh-my-zsh.sh
 if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init -)"
 fi
+bindkey -v
 
 export CLICOLOR=1
 alias ls="exa --tree --icons -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
 alias lsa="exa --tree --icons -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
+
 # --- Aliases
 alias nnn='nnn -c'
 eval $(thefuck --alias)
+
+# --------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------
+#
+# fzf shortcuts
+#
+# --------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------
+
 alias fp="fzf --preview 'bat --style=numbers --color=always --line-range :500 {}'"
 
-bindkey -v
+# !!!!!!!!!!!!!!!!!!!!!!!! DO NOT REPLICATE FOR ALL DEVICES THIS ONLY WORKS ON MY MAC 
+#lib_mus =! -path ~/Library/* ! -path ~/Music/?*
+#-not -path "./directory/*"
+#!-path ~/.node-gyp/* not -path "~/Music/*"
+alias fcd='cd $(find . !-path ~/.node-gyp/* !-path ~/Music/* !-path ~/Documents/* !-path ~/Animation/* -type d -print | fexa)'
+alias fcdd='cd $(find ~ !-path ~/.node-gyp/* !-path ~/Music/* !-path ~/Documents/* !-path ~/Animation/* -type d -print | fzf)'
 
 # --------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------
