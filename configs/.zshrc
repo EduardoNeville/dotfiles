@@ -118,8 +118,12 @@ if command -v pyenv 1>/dev/null 2>&1; then
 fi
 
 export CLICOLOR=1
-alias ls=ls -G >> ~/.zshrc
+alias ls="exa --tree --icons -l -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
+alias lsa="exa --tree --icons -a -l -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
+# --- Aliases
 alias nnn='nnn -c'
+eval $(thefuck --alias)
+alias fp="fzf --preview 'bat --style=numbers --color=always --line-range :500 {}'"
 
 bindkey -v
 
