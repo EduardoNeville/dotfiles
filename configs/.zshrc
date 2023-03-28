@@ -118,7 +118,7 @@ if command -v pyenv 1>/dev/null 2>&1; then
 fi
 
 export CLICOLOR=1
-alias ls="exa --tree --icons -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
+alias ls="exa --tree --icons '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
 alias lsa="exa --tree --icons -a -l -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
 # --- Aliases
 alias nnn='nnn -c'
