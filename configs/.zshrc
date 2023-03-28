@@ -141,5 +141,14 @@ alias gps='git push'
 alias gpl='git pull'
 alias gf='git fetch'
 alias gco='git checkout'
+alias g-h='git aliases: 
+        ga -> git add . 
+        gc -> git commit
+        gac -> git add . && git commit 
+        gps -> git push
+        gpl -> git pull
+        gf -> git fetch
+        gco -> git checkout'
+
 
 
