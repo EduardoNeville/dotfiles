@@ -117,12 +117,36 @@ if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init -)"
 fi
 bindkey -v
-
 export CLICOLOR=1
-alias ls="exa --tree --icons -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
-alias lsa="exa --tree --icons -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
 
-# --- Aliases
+
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+# 
+# SHORTCUTS
+#
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+# --------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------
+#
+# ls shortcuts
+#
+# --------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------
+
+alias ls="exa --icons -a"
+alias lst="exa --tree --icons -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
+alias lsta="exa --tree --icons -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
+
+alias lshelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%% 
+ls COMMANDS 
+%%%%%%%%%%%%%%%%%%%%%%%%%% \n 
+ls -> exa all files \n 
+lst -> exa with tree \n 
+lsta -> exa all files with tree'\n"
+
 alias nnn='nnn -c'
 eval $(thefuck --alias)
 
@@ -135,6 +159,7 @@ eval $(thefuck --alias)
 # --------------------------------------------------------------------------------
 
 alias fp="fzf --preview 'bat --style=numbers --color=always --line-range :500 {}'"
+alias fexa="fzf --preview 'exa --tree --icons'"
 
 # !!!!!!!!!!!!!!!!!!!!!!!! DO NOT REPLICATE FOR ALL DEVICES THIS ONLY WORKS ON MY MAC 
 #lib_mus =! -path ~/Library/* ! -path ~/Music/?*
@@ -142,6 +167,14 @@ alias fp="fzf --preview 'bat --style=numbers --color=always --line-range :500 {}
 #!-path ~/.node-gyp/* not -path "~/Music/*"
 alias fcd='cd $(find . !-path ~/.node-gyp/* !-path ~/Music/* !-path ~/Documents/* !-path ~/Animation/* -type d -print | fexa)'
 alias fcdd='cd $(find ~ !-path ~/.node-gyp/* !-path ~/Music/* !-path ~/Documents/* !-path ~/Animation/* -type d -print | fzf)'
+alias fzfhelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%% 
+fzf COMMANDS 
+%%%%%%%%%%%%%%%%%%%%%%%%%% \n 
+fp -> fzf preview with bat \n 
+fexa -> fzf preview with exa tree \n 
+fcd -> cd from current to chosen dir with exa preview \n 
+fcdd -> cd from ~ to chosen dir'\n" 
+
 
 # --------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------
@@ -157,13 +190,24 @@ alias gps='git push'
 alias gpl='git pull'
 alias gf='git fetch'
 alias gco='git checkout'
-alias ghelp="echo 'ga -> git add . \n 
+alias ghelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%% 
+github COMMANDS 
+%%%%%%%%%%%%%%%%%%%%%%%%%% 
+ga -> git add . \n 
 gc -> git commit \n
 gac -> git add . && git commit \n 
 gps -> git push \n
 gpl -> git pull \n
 gf -> git fetch \n
-gco -> git checkout'"
+gco -> git checkout\n'"
 
 
+# --------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------
+#
+# Help 
+#
+# --------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------
+alias sclist='ghelp;fzfhelp;lshelp' 
 
