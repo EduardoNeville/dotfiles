@@ -10,7 +10,7 @@ return require('packer').startup(function(use)
         -- Packer can manage itself
         use 'wbthomason/packer.nvim'
         -- Copilot
-        use 'github/copilot.vim'
+        -- setup up in pack by cloning the repo
 
         -- Set up your configuration
         use 'lukas-reineke/indent-blankline.nvim' -- Indentations
@@ -47,7 +47,7 @@ return require('packer').startup(function(use)
             run = function() vim.fn["mkdp#util#install"]() end,
         })
 
-        use({ "iamcco/markdown-preview.nvim", run = "cd app && npm install", setup = function() vim.g.mkdp_filetypes = { "markdown" } end, ft = { "markdown" }, })
+        --use({ "iamcco/markdown-preview.nvim", run = "cd app && npm install", setup = function() vim.g.mkdp_filetypes = { "markdown" } end, ft = { "markdown" }, })
 
         use({
             "kylechui/nvim-surround",
@@ -57,6 +57,23 @@ return require('packer').startup(function(use)
                     -- Configuration here, or leave empty to use defaults
                 })
             end
+        })
+
+        use 'MunifTanjim/nui.nvim'
+        use 'nvim-lua/plenary.nvim'
+
+        use({
+          "jackMort/ChatGPT.nvim",
+            config = function()
+              require("chatgpt").setup({
+                -- optional configuration
+              })
+            end,
+            requires = {
+              "MunifTanjim/nui.nvim",
+              "nvim-lua/plenary.nvim",
+              "nvim-telescope/telescope.nvim"
+            }
         })
 end)
 

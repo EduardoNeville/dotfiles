@@ -12,6 +12,9 @@ typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
+# ChatGPT OPENAI_API_KEY
+export OPENAI_API_KEY='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'
+
 source "$HOME/.cargo/env"
 
 
@@ -158,7 +161,7 @@ eval $(thefuck --alias)
 # --------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------
 
-alias fp="fzf --preview 'bat --style=numbers --color=always --line-range :500 {}'"
+alias fp="fzf -- --preview 'bat --style=numbers --color=always --line-range :500 {}'"
 alias fexa="fzf --preview 'exa --tree --icons'"
 
 # !!!!!!!!!!!!!!!!!!!!!!!! DO NOT REPLICATE FOR ALL DEVICES THIS ONLY WORKS ON MY MAC 
@@ -172,7 +175,7 @@ fzf COMMANDS
 %%%%%%%%%%%%%%%%%%%%%%%%%% \n 
 fp -> fzf preview with bat \n 
 fexa -> fzf preview with exa tree \n 
-fcd -> cd from current to chosen dir with exa preview \n 
+fcd -> cd from current dir using the fexa cmd \n 
 fcdd -> cd from ~ to chosen dir'\n" 
 
 
