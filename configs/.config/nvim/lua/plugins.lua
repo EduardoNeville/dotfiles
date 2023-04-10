@@ -22,8 +22,18 @@ return require('packer').startup(function(use)
         use 'tpope/vim-fugitive' -- Git
 
         -- Colour Schemes 
+        
         use 'folke/tokyonight.nvim'
         vim.cmd("colorscheme tokyonight-storm")
+        --use({ 'rose-pine/neovim', as = 'rose-pine' })
+        --vim.cmd('colorscheme rose-pine')
+
+        -- Syntax
+
+        use {
+                'nmac427/guess-indent.nvim',
+                config = function() require('guess-indent').setup {} end,
+        }
         -- Syntax highlighting
         use {
         'nvim-treesitter/nvim-treesitter',
@@ -75,6 +85,24 @@ return require('packer').startup(function(use)
               "nvim-telescope/telescope.nvim"
             }
         })
+
+        -- Noice.nvim 
+--        use({
+--                "folke/noice.nvim",
+--                config = function()
+--                        require("noice").setup({
+--                        -- add any options here
+--                  })end,
+--                requires = {
+--                        -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+--                        "MunifTanjim/nui.nvim",
+--                        -- OPTIONAL:
+--                        --   `nvim-notify` is only needed, if you want to use the notification view.
+--                        --   If not available, we use `mini` as the fallback
+--                        "rcarriga/nvim-notify",
+--                }
+--        })
+
 end)
 
 
