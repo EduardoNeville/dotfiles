@@ -13,7 +13,7 @@ typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 export ZSH="$HOME/.oh-my-zsh"
 
 # ChatGPT OPENAI_API_KEY
-export OPENAI_API_KEY='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'
+export OPENAI_API_KEY='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'
 
 source "$HOME/.cargo/env"
 
@@ -130,6 +130,22 @@ export CLICOLOR=1
 #
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+#
+
+
+
+# --------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------
+#
+#  cd shortcuts
+#
+# --------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------
+alias .1="cd .."
+alias .2="cd ../.."
+alias .3="cd ../../.."
+
+
 
 # --------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------
@@ -139,16 +155,16 @@ export CLICOLOR=1
 # --------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------
 
-alias ls="exa --icons -a"
-alias lst="exa --tree --icons -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
-alias lsta="exa --tree --icons -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
+alias ls="exa --icons --tree --level=2 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
+alias ls3="exa --icons --tree --level=3 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
+alias ls4="exa --icons --tree --level=4 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
 
 alias lshelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%% 
 ls COMMANDS 
 %%%%%%%%%%%%%%%%%%%%%%%%%% \n 
-ls -> exa all files \n 
-lst -> exa with tree \n 
-lsta -> exa all files with tree'\n"
+ls  -> exa all files in a tree of depth 2 sorted by size \n 
+ls3 -> exa all files in a tree of depth 3 sorted by size \n 
+ls4 -> exa all files in a tree of depth 4 sorted by size \n" 
 
 alias nnn='nnn -c'
 eval $(thefuck --alias)
@@ -160,16 +176,27 @@ eval $(thefuck --alias)
 #
 # --------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------
+_fzf_comprun() {
+  local command=$1
+  shift
 
-alias fp="fzf -- --preview 'bat --style=numbers --color=always --line-range :500 {}'"
-alias fexa="fzf --preview 'exa --tree --icons'"
+  case "$command" in
+    cd)           fzf "$@" --preview '--tree --icons --level=2 --sort='size' -a  | head -200' ;;
+    *)            fzf "$@" ;;
+  esac
+}
+
+alias fp="fzf --preview 'bat --style=numbers --color=always --line-range :500 {}'"
+alias fexa="fzf --preview 'exa --tree --icons --level=2 --sort='size' -a '"
 
 # !!!!!!!!!!!!!!!!!!!!!!!! DO NOT REPLICATE FOR ALL DEVICES THIS ONLY WORKS ON MY MAC 
 #lib_mus =! -path ~/Library/* ! -path ~/Music/?*
 #-not -path "./directory/*"
 #!-path ~/.node-gyp/* not -path "~/Music/*"
-alias fcd='cd $(find . !-path ~/.node-gyp/* !-path ~/Music/* !-path ~/Documents/* !-path ~/Animation/* -type d -print | fexa)'
-alias fcdd='cd $(find ~ !-path ~/.node-gyp/* !-path ~/Music/* !-path ~/Documents/* !-path ~/Animation/* -type d -print | fzf)'
+#!-path ~/.node-gyp/* !-path ~/Music/* !-path ~/Documents/* !-path ~/Animation/*
+alias fcd='cd $(find . -type d -print | fexa)'
+alias fcdd='cd $(find ~  -type d -print | fexa)'
+
 alias fzfhelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%% 
 fzf COMMANDS 
 %%%%%%%%%%%%%%%%%%%%%%%%%% \n 

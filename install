@@ -34,6 +34,20 @@ download_dotfiles() {
   cd "${DIR}"
 }
 
+
+# Check if program exists 
+function program_exists() {
+    local ret='0'
+    command -v $1 >/dev/null 2>&1 || { local ret='1'; }
+
+    # fail on non-zero return value.
+    if [ "$ret" -ne 0 ]; then
+        return 1
+    fi
+
+    return 0
+}
+
 # /install
 link_dotfiles() {
  # symlink files to the HOME directory.
@@ -117,9 +131,12 @@ install_formulae() {
     for index in ${!formulae[*]}
     do
       # Test whether a Homebrew formula is already installed
-      if ! brew list ${formulae[$index]} &> /dev/null; then
-        brew install ${formulae[$index]}
-      fi
+      echo "→ Checking status of ${formulae[$index]}"
+      program_exists "${formulae[$index]}" || brew install "${formulae[$index]}"
+      #if ! brew list ${formulae[$index]} &> /dev/null; then
+      #  echo "→ Installing ${formulae[$index]}"
+      #  brew install ${formulae[$index]}
+      #fi
     done
 
     # Reset IFS back

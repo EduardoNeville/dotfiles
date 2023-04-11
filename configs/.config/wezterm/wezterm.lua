@@ -1,4 +1,6 @@
 local wezterm = require("wezterm")
+local colors = require('lua/rose-pine-moon').colors()
+local window_frame = require('lua/rose-pine-moon').window_frame()
 
 ---------------------------------------------------------------
 --- Config
@@ -29,8 +31,10 @@ local config = {
 	use_ime = true,
 
         -- Default colours
-        color_scheme = "Catppuccin Macchiato",
-	color_scheme_dirs = { os.getenv("HOME") .. "/.config/wezterm/colors/" },
+        --color_scheme = "Catppuccin Macchiato",
+	--color_scheme_dirs = { os.getenv("HOME") .. "/.config/wezterm/colors/" },
+	colors = colors,
+	--window_frame = window_frame,
 
 }
 

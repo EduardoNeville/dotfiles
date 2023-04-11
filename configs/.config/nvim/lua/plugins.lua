@@ -9,6 +9,7 @@ vim.cmd [[packadd packer.nvim]]
 return require('packer').startup(function(use)
         -- Packer can manage itself
         use 'wbthomason/packer.nvim'
+        
         -- Copilot
         -- setup up in pack by cloning the repo
 
@@ -23,10 +24,10 @@ return require('packer').startup(function(use)
 
         -- Colour Schemes 
         
-        use 'folke/tokyonight.nvim'
-        vim.cmd("colorscheme tokyonight-storm")
-        --use({ 'rose-pine/neovim', as = 'rose-pine' })
-        --vim.cmd('colorscheme rose-pine')
+        --use 'folke/tokyonight.nvim'
+        --vim.cmd("colorscheme tokyonight-storm")
+        use 'rose-pine/neovim'
+        vim.cmd("colorscheme rose-pine-moon")
 
         -- Syntax
 
