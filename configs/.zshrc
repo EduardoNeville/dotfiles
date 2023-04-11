@@ -219,6 +219,8 @@ alias gac='git add . && git commit'
 alias gps='git push'
 alias gpl='git pull'
 alias gf='git fetch'
+alias gstat='git status'
+alias gstsh='git stash'
 alias gco='git checkout'
 alias ghelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%% 
 github COMMANDS 
@@ -229,6 +231,8 @@ gac -> git add . && git commit \n
 gps -> git push \n
 gpl -> git pull \n
 gf -> git fetch \n
+gstat -> git status \n
+gstsh -> git stash \n
 gco -> git checkout\n'"
 
 
