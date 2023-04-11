@@ -176,34 +176,32 @@ eval $(thefuck --alias)
 #
 # --------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------
+
 _fzf_comprun() {
   local command=$1
   shift
 
   case "$command" in
-    cd)           fzf "$@" --preview '--tree --icons --level=2 --sort='size' -a  | head -200' ;;
+    cd)           cd "$(find . -type d -print 2>/dev/null | fzf --height=40% --preview 'exa --icons --tree --level=2 --sort=size --reverse -a -I ".git|__pycache__|.mypy_cache|.ipynb_checkpoints" {}')" ;;
     *)            fzf "$@" ;;
   esac
 }
 
 alias fp="fzf --preview 'bat --style=numbers --color=always --line-range :500 {}'"
-alias fexa="fzf --preview 'exa --tree --icons --level=2 --sort='size' -a '"
 
 # !!!!!!!!!!!!!!!!!!!!!!!! DO NOT REPLICATE FOR ALL DEVICES THIS ONLY WORKS ON MY MAC 
 #lib_mus =! -path ~/Library/* ! -path ~/Music/?*
 #-not -path "./directory/*"
 #!-path ~/.node-gyp/* not -path "~/Music/*"
 #!-path ~/.node-gyp/* !-path ~/Music/* !-path ~/Documents/* !-path ~/Animation/*
-alias fcd='cd $(find . -type d -print | fexa)'
-alias fcdd='cd $(find ~  -type d -print | fexa)'
+
+alias fcd="_fzf_comprun cd"
 
 alias fzfhelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%% 
 fzf COMMANDS 
 %%%%%%%%%%%%%%%%%%%%%%%%%% \n 
 fp -> fzf preview with bat \n 
-fexa -> fzf preview with exa tree \n 
-fcd -> cd from current dir using the fexa cmd \n 
-fcdd -> cd from ~ to chosen dir'\n" 
+fcd -> cd from current dir using the fexa cmd \n" 
 
 
 # --------------------------------------------------------------------------------
