@@ -15,6 +15,8 @@ set_keymaps ('i', '{', '{}<Esc>ha', { noremap = true, silent = true })
 set_keymaps ('i', '(', '()<Esc>ha', { noremap = true, silent = true })
 -- Map [ to insert [] and move the cursor inside the brackets in insert mode
 set_keymaps ('i', '[', '[]<Esc>ha', { noremap = true, silent = true })
+-- Map " to insert "" and move the cursor inside the brackets in insert mode
+set_keymaps ('i', '"', '""<Esc>ha', { noremap = true, silent = true })
 
 -- Telescope keymaps
 --local builtin = require('telescope.builtin')
@@ -29,5 +31,12 @@ vim.g.copilot_no_tab_map = true
 vim.api.nvim_set_keymap("i", "<C-J>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
 
 
+-- Selecting multiple non-contiguos lines
 
+-- Map the shortcut key to start selecting blocks of code
+vim.api.nvim_set_keymap('v', '<leader>a', [[:<C-u>let @a=""]]..'\n', {silent=true})
+vim.api.nvim_set_keymap('x', '<leader>a', [[:<C-u>let @a=""]]..'\n', {silent=true})
+
+-- Map the shortcut key to move to the next block of code
+vim.api.nvim_set_keymap('n', '<leader>a', '/<\\_^I\\+><cr>n:call setpos(".", getpos("\'[")+1)<cr>', {silent=true})
 
