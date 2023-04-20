@@ -13,7 +13,7 @@ typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 export ZSH="$HOME/.oh-my-zsh"
 
 # ChatGPT OPENAI_API_KEY
-file_content=$(cat /usr/local/opt/dotfiles/openAI_key.txt)
+file_content=$(cat ~/openAI_key.txt)
 export OPENAI_API_KEY="$file_content"
 
 source "$HOME/.cargo/env"
