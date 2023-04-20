@@ -1,2 +1,3 @@
 configs/.config/nvim/pack/github/
 configs/.config/github-copilot/
+/openAI_key.txt

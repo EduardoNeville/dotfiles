@@ -24,10 +24,11 @@ return require('packer').startup(function(use)
 
         -- Colour Schemes 
         
-        --use 'folke/tokyonight.nvim'
-        --vim.cmd("colorscheme tokyonight-storm")
-        use 'rose-pine/neovim'
-        vim.cmd("colorscheme rose-pine-moon")
+        use 'folke/tokyonight.nvim'
+        vim.cmd("colorscheme tokyonight-storm")
+        
+        --use 'rose-pine/neovim'
+        --vim.cmd("colorscheme rose-pine-moon")
 
         -- Syntax
 
