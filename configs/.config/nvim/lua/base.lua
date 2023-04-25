@@ -3,6 +3,7 @@ vim.cmd('autocmd!')
 vim.scriptencoding = 'utf-8'
 vim.opt.encoding = 'utf-8'
 -- vim.opt.fileencofing = 'utf-8'
+-- vim.opt.background_opacity = 0.92
 
 vim.wo.number = true
 
@@ -32,3 +33,12 @@ vim.opt.guicursor = 'n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50,a:blinkwait700
 
 
 vim.opt.clipboard:append {'unnamedplus'}
+
+------------
+-- Nvim Tree
+--
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+vim.opt.termguicolors = true
+
+
