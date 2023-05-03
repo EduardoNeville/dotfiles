@@ -1,5 +1,8 @@
 local set_keymaps =  vim.api.nvim_set_keymap
 
+-- Map leader to space
+vim.g.mapleader = ' '
+
 -- Map K to move the current line up in normal mode
 vim.api.nvim_set_keymap('n', 'K', ":m .-2<CR>==", { noremap = true, silent = true })
 -- Map J to move the current line down in normal mode
@@ -30,9 +33,12 @@ vim.g.copilot_no_tab_map = true
 -- Maps copilot accept to Control + J
 vim.api.nvim_set_keymap("i", "<C-J>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
 
+--------
 -- Nvim Tree
-vim.api.nvim_set_keymap('n', '<Tab>', ':NvimTreeToggle<CR>', {noremap=true})
-vim.api.nvim_buf_set_keymap(0, 'n', '<Tab>', ':NvimTreeToggle', {noremap=true})
+--------
+-- Toggle NvimTree buffer with Tab while in a file
+vim.api.nvim_set_keymap('n', '<Tab>', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
+
 
 
 -- Selecting multiple non-contiguos lines
@@ -43,7 +49,5 @@ vim.api.nvim_set_keymap('x', '<leader>a', [[:<C-u>let @a=""]]..'\n', {silent=tru
 
 -- Map the shortcut key to move to the next block of code
 vim.api.nvim_set_keymap('n', '<leader>a', '/<\\_^I\\+><cr>n:call setpos(".", getpos("\'[")+1)<cr>', {silent=true})
-
-
 
 

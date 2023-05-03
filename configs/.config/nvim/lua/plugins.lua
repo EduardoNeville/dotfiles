@@ -1,14 +1,25 @@
-local status, packer = pcall(require, 'packer')
-if (not status) then
-        print("Packer is not installed")
-        return
+local ensure_packer = function()
+  local fn = vim.fn
+  local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
+  if fn.empty(fn.glob(install_path)) > 0 then
+    fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
+    vim.cmd [[packadd packer.nvim]]
+    return true
+  end
+  return false
 end
 
 vim.cmd [[packadd packer.nvim]]
 
+
 return require('packer').startup(function(use)
         -- Packer can manage itself
         use 'wbthomason/packer.nvim'
+
+        use ({'williamboman/mason.nvim'})
+        use ('williamboman/mason-lspconfig.nvim')
+        use ('neovim/nvim-lspconfig') -- LSP
+        --use ("hrsh7th/cmp-nvim-lsp")
         
         -- Copilot
         -- setup up in pack by cloning the repo
@@ -26,8 +37,28 @@ return require('packer').startup(function(use)
                 require("nvim-tree").setup {}
                 end
         }
-
-
+        use({
+                "utilyre/barbecue.nvim",
+                tag = "*",
+                requires = {
+                  "SmiteshP/nvim-navic",
+                  "nvim-tree/nvim-web-devicons", -- optional dependency
+                },
+                --after = "nvim-web-devicons", -- keep this if you're using NvChad
+                config = function()
+                  require("barbecue").setup()
+                end,
+        })
+        use {
+            "SmiteshP/nvim-navbuddy",
+            requires = {
+                "neovim/nvim-lspconfig",
+                "SmiteshP/nvim-navic",
+                "MunifTanjim/nui.nvim",
+                "numToStr/Comment.nvim",        -- Optional
+                "nvim-telescope/telescope.nvim" -- Optional
+            }
+        }
 
         --use 'tpope/vim-fugitive' -- Git
 
@@ -47,10 +78,9 @@ return require('packer').startup(function(use)
         }
         -- Syntax highlighting
         use {
-        'nvim-treesitter/nvim-treesitter',
-        run = ':TSUpdate'
+        'nvim-treesitter/nvim-treesitter'
         }
-        use 'Shougo/deoplete.nvim' -- Autocomplete
+        --use 'Shougo/deoplete.nvim' -- Autocomplete
 
         -- Fuzzy Finder
         use {
@@ -96,6 +126,14 @@ return require('packer').startup(function(use)
               "nvim-telescope/telescope.nvim"
             }
         })
+
+        -- Scala metals LSP
+        use({'scalameta/nvim-metals', 
+                requires = { "nvim-lua/plenary.nvim" }
+        })
+
+        use 'luk400/vim-jukit'
+
 
         -- Noice.nvim 
 --        use({

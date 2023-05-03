@@ -36,9 +36,8 @@ vim.opt.clipboard:append {'unnamedplus'}
 
 ------------
 -- Nvim Tree
---
+------------
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.opt.termguicolors = true
-
 
