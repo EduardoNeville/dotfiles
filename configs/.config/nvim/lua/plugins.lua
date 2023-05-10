@@ -126,13 +126,17 @@ return require('packer').startup(function(use)
               "nvim-telescope/telescope.nvim"
             }
         })
-
+        
+        --
+        --LSP
+        --
         -- Scala metals LSP
         use({'scalameta/nvim-metals', 
                 requires = { "nvim-lua/plenary.nvim" }
         })
 
-        use 'luk400/vim-jukit'
+
+        --use 'luk400/vim-jukit'
 
 
         -- Noice.nvim 

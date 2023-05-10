@@ -7,6 +7,17 @@ local on_attach = function(client, bufnr)
     vim.api.nvim_buf_set_option(bufnr, ...)
   end
 
+-- Import the lspconfig module
+local lspconfig = require('lspconfig')
+-- Configure the Pyright language server
+lspconfig.pyright.setup{
+  on_attach = on_attach
+}
+-- Configure the Clangd language server
+lspconfig.clangd.setup{
+  on_attach = on_attach
+}
+
   buf_set_option("omnifunc", "v:lua.vim.lsp.omnifunc")
 
   local opts = { noremap = true, silent = true }
@@ -21,6 +32,7 @@ local on_attach = function(client, bufnr)
   buf_set_keymap("n", "]d", "vim.diagnostic.goto_next", opts) --> Show prev diagnostic
 
 end
+
 
 local nvim_metals_group = vim.api.nvim_create_augroup("nvim-metals", { clear = true })
   vim.api.nvim_create_autocmd("FileType", {

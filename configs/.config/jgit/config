@@ -1,3 +1,6 @@
 [filesystem "Homebrew|19.0.2|/dev/disk1s1"]
 	timestampResolution = 17000 nanoseconds
 	minRacyThreshold = 0 nanoseconds
+[filesystem "Homebrew|20|/dev/disk1s1"]
+	timestampResolution = 2000 nanoseconds
+	minRacyThreshold = 0 nanoseconds
