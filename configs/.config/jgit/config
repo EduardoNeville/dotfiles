@@ -4,3 +4,6 @@
 [filesystem "Homebrew|20|/dev/disk1s1"]
 	timestampResolution = 2000 nanoseconds
 	minRacyThreshold = 0 nanoseconds
+[filesystem "Oracle Corporation|19.0.1|/dev/disk1s1"]
+	timestampResolution = 4000 nanoseconds
+	minRacyThreshold = 0 nanoseconds

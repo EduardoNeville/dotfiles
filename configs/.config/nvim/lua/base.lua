@@ -17,6 +17,9 @@ vim.opt.expandtab = true
 vim.opt.scrolloff = 10
 vim.opt.shell = 'zsh'
 
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+
 -- My commands
 vim.opt.number = true
 vim.opt.cursorline = true
