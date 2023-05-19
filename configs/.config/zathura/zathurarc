@@ -1,48 +1,58 @@
+set window-title-basename "true"
+set selection-clipboard "clipboard"
 
-# copy selection to system clipboard
-set selection-clipboard clipboard
+set font "Fira Code 15"
 
-#stop at page boundries
-#set scroll-page-aware "true"
-#set smooth-scroll "true"
-#set scroll-full-overlap 0.01
-#set scroll-step 100
+# Dracula color theme for Zathura
+# Swaps Foreground for Background to get a light version if the user prefers
 
-#  fill the window size
-set fit-page true
+#
+# Dracula color theme
+#
 
-#setup dark theme
-set default-bg "#000000"
-set default-fg "#F7F7F6"
+set notification-error-bg       "#ff5555" # Red
+set notification-error-fg       "#f8f8f2" # Foreground
+set notification-warning-bg     "#ffb86c" # Orange
+set notification-warning-fg     "#44475a" # Selection
+set notification-bg             "#282a36" # Background
+set notification-fg             "#f8f8f2" # Foreground
 
-set statusbar-fg "#B0B0B0"
-set statusbar-bg "#202020"
+set completion-bg               "#282a36" # Background
+set completion-fg               "#6272a4" # Comment
+set completion-group-bg         "#282a36" # Background
+set completion-group-fg         "#6272a4" # Comment
+set completion-highlight-bg     "#44475a" # Selection
+set completion-highlight-fg     "#f8f8f2" # Foreground
 
-set inputbar-bg "#151515"
-set inputbar-fg "#FFFFFF"
+set index-bg                    "#282a36" # Background
+set index-fg                    "#f8f8f2" # Foreground
+set index-active-bg             "#44475a" # Current Line
+set index-active-fg             "#f8f8f2" # Foreground
 
-set notification-error-bg "#AC4142"
-set notification-error-fg "#151515"
+set inputbar-bg                 "#282a36" # Background
+set inputbar-fg                 "#f8f8f2" # Foreground
+set statusbar-bg                "#282a36" # Background
+set statusbar-fg                "#f8f8f2" # Foreground
 
-set notification-warning-bg "#AC4142"
-set notification-warning-fg "#151515"
+set highlight-color             "#ffb86c" # Orange
+set highlight-active-color      "#ff79c6" # Pink
 
-set highlight-color "#F4BF75"
-set highlight-active-color "#6A9FB5"
+set default-bg                  "#282a36" # Background
+set default-fg                  "#f8f8f2" # Foreground
 
-set completion-highlight-fg "#151515"
-set completion-highlight-bg "#90A959"
+set render-loading              true
+set render-loading-fg           "#282a36" # Background
+set render-loading-bg           "#f8f8f2" # Foreground
 
-set completion-bg "#303030"
-set completion-fg "#E0E0E0"
+#
+# Recolor mode settings
+#
 
-set notification-bg "#90A959"
-set notification-fg "#151515"
+set recolor-lightcolor          "#282a36" # Background
+set recolor-darkcolor           "#f8f8f2" # Foreground
 
-set recolor "true"
-set recolor-lightcolor "#000000"
-set recolor-darkcolor "#E0E0E0"
-set recolor-reverse-video "true"
-set recolor-keephue "true"
-
-set render-loading "false"
+#
+# Startup options
+#
+set adjust-open width
+set recolor true
