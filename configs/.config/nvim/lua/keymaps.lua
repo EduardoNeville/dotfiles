@@ -32,6 +32,8 @@ set_keymaps ('i', '"', '""<Esc>ha', { noremap = true, silent = true })
 vim.g.copilot_no_tab_map = true
 -- Maps copilot accept to Control + J
 vim.api.nvim_set_keymap("i", "<C-J>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
+-- Maps copilot next to Control + K
+vim.api.nvim_set_keymap("i", "<C-K>", 'copilot#Next()', { silent = true, expr = true })
 
 --------
 -- Nvim Tree
@@ -50,4 +52,25 @@ vim.api.nvim_set_keymap('x', '<leader>a', [[:<C-u>let @a=""]]..'\n', {silent=tru
 -- Map the shortcut key to move to the next block of code
 vim.api.nvim_set_keymap('n', '<leader>a', '/<\\_^I\\+><cr>n:call setpos(".", getpos("\'[")+1)<cr>', {silent=true})
 
+
+-- Basic Diagnostics/LSP jumping around
+-- See `:help vim.diagnostic.*` for documentation on any of the below functions
+vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float)
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
+vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist)
+
+-- Server specific LSP keymaps
+-- Called by the `on_attach` in the lspconfig setup
+local server_maps = function(bufopts)
+  vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
+  vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
+  vim.keymap.set("n", "<leader>gd", vim.lsp.buf.hover, bufopts)
+  vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, bufopts)
+  vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
+  vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, bufopts)
+  vim.keymap.set("n", "<leader>fo", function()
+    vim.lsp.buf.format({ async = true })
+  end, bufopts)
+end
 

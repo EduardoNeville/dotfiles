@@ -16,9 +16,14 @@ return require('packer').startup(function(use)
         -- Packer can manage itself
         use 'wbthomason/packer.nvim'
 
+
+        -- LSP configs
+        use ('neovim/nvim-lspconfig') -- LSP
         use ({'williamboman/mason.nvim'})
         use ('williamboman/mason-lspconfig.nvim')
-        use ('neovim/nvim-lspconfig') -- LSP
+        use({ "jose-elias-alvarez/null-ls.nvim" })
+        use({ "jay-babu/mason-null-ls.nvim" })
+        use({ "ms-jpq/coq_nvim", branch = "coq" })
         --use ("hrsh7th/cmp-nvim-lsp")
         
         -- Copilot
