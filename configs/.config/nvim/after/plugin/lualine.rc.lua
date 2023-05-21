@@ -1,6 +1,21 @@
 local status, lualine = pcall(require, "lualine")
 if (not status) then return end
 
+local function get_line_count()
+    local file = io.open(vim.fn.expand('%'), 'r')
+    if not file then
+        return ''
+    end
+
+    local line_count = 0
+    for _ in file:lines() do
+        line_count = line_count + 1
+    end
+    line_count = "󰼭 " .. line_count
+    file:close()
+    return line_count
+end
+
 lualine.setup {
   options = {
     icons_enabled = true,
@@ -24,7 +39,7 @@ lualine.setup {
       'filetype'
     },
     lualine_y = { 'progress' },
-    lualine_z = { 'location' }
+    lualine_z = { 'location', get_line_count }
   },
   inactive_sections = {
     lualine_a = {},
