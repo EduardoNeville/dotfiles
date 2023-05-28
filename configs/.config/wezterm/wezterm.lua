@@ -15,7 +15,7 @@ local config = {
 	color_scheme = "Tokyo Night Storm",	
 	color_scheme_dirs = { os.getenv("HOME") .. "/.config/wezterm/colors/" },
 	
-	window_background_opacity = 0.92,
+	window_background_opacity = 0.85,
 	window_decorations = "RESIZE",
 	scrollback_lines = 5000,
 

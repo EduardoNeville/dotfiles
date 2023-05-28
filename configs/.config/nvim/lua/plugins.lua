@@ -29,7 +29,12 @@ return require('packer').startup(function(use)
         -- Copilot
         -- setup up in pack by cloning the repo
 
-        -- Set up your configuration
+        -------------------------------------
+        -------------------------------------
+        -- UI 
+        -------------------------------------
+        -------------------------------------
+        
         use 'lukas-reineke/indent-blankline.nvim' -- Indentations
         use 'kyazdani42/nvim-web-devicons' -- File icons
         use { -- Status Line
@@ -64,19 +69,19 @@ return require('packer').startup(function(use)
                 "nvim-telescope/telescope.nvim" -- Optional
             }
         }
+        use "xiyaowong/transparent.nvim"
+        use 'nvim-treesitter/nvim-treesitter-context'
 
         --use 'tpope/vim-fugitive' -- Git
 
         -- Colour Schemes 
-        
         use 'folke/tokyonight.nvim'
         vim.cmd("colorscheme tokyonight-storm")
-        
+        use "EdenEast/nightfox.nvim" 
         --use 'rose-pine/neovim'
         --vim.cmd("colorscheme rose-pine-moon")
 
         -- Syntax
-
         use {
                 'nmac427/guess-indent.nvim',
                 config = function() require('guess-indent').setup {} end,
@@ -85,7 +90,6 @@ return require('packer').startup(function(use)
         use {
         'nvim-treesitter/nvim-treesitter'
         }
-
         use {
             'cameron-wags/rainbow_csv.nvim',
             config = function()
@@ -106,6 +110,12 @@ return require('packer').startup(function(use)
                 'rfc_semicolon'
             }
         }
+        -- Markdown Preview
+        -- install without yarn or npm
+        use({
+                "iamcco/markdown-preview.nvim",
+                run = function() vim.fn["mkdp#util#install"]() end,
+        })
 
         --use 'Shougo/deoplete.nvim' -- Autocomplete
 
@@ -118,12 +128,6 @@ return require('packer').startup(function(use)
         use 'BurntSushi/ripgrep'
 
 
-        -- Markdown Preview
-        -- install without yarn or npm
-        use({
-            "iamcco/markdown-preview.nvim",
-            run = function() vim.fn["mkdp#util#install"]() end,
-        })
 
         --use({ "iamcco/markdown-preview.nvim", run = "cd app && npm install", setup = function() vim.g.mkdp_filetypes = { "markdown" } end, ft = { "markdown" }, })
 
@@ -161,9 +165,22 @@ return require('packer').startup(function(use)
         use({'scalameta/nvim-metals', 
                 requires = { "nvim-lua/plenary.nvim" }
         })
+        use 'nanotee/sqls.nvim'
 
 
         --use 'luk400/vim-jukit'
+
+
+        --- 
+        -- Debugging
+        ---
+        use "folke/neodev.nvim"
+        use 'mfussenegger/nvim-dap'
+        use { "rcarriga/nvim-dap-ui", requires = {"mfussenegger/nvim-dap"} }
+        use {
+          'sakhnik/nvim-gdb',
+          run = './install.sh'
+        }
 
 
         -- Noice.nvim 

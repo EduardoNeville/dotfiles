@@ -1,3 +1,6 @@
+-- Requirements
+local navbuddy = require("nvim-navbuddy")
+
 -- -----------------------------------------------------------------------------------------------
 -- LSP stuff
 -- -----------------------------------------------------------------------------------------------
@@ -8,6 +11,10 @@ local lsp_servers = {
   tsserver = {},
   html = {},
   lua_ls = {},
+  sqlls = {},
+  metals = {},
+  vhdl_ls = {}
+  --rome = {},
   --ruff_lsp = {},
   --eslint = {},
   --jsonls = {},
@@ -17,6 +24,7 @@ local lsp_servers = {
   --sumneko_lua = { Lua = { diagnostics = { globals = { "vim" } } } },
   --yamlls = {},
 }
+
 
 -- Setup Mason and auto-install some LSPs
 -- Mason handles the actual installations,
@@ -67,6 +75,13 @@ for lsp, settings in pairs(lsp_servers) do
     on_attach = function(_, buffer)
       server_maps({ buffer = buffer })
     end,
+    on_attach = function(client, bufnr)
+        navbuddy.attach(client, bufnr)
+    end,
     settings = settings,
   }))
 end
+
+-- -----------------------------------------------------------------------------------------------
+
+

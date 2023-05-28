@@ -6,6 +6,7 @@ vim.opt.encoding = 'utf-8'
 -- vim.opt.background_opacity = 0.92
 
 vim.wo.number = true
+--vim.wo.relativenumber = true
 
 vim.opt.title = true
 vim.opt.autoindent = true
