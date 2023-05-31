@@ -1,3 +1,4 @@
+local vim = vim 
 local set_keymaps =  vim.api.nvim_set_keymap
 
 -- Map leader to space vim.g.mapleader = ' ' 

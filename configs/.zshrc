@@ -78,7 +78,6 @@ source "$HOME/.cargo/env"
    export EDITOR='nvim'
  fi
 
-
 bindkey -v
 export CLICOLOR=1
 
@@ -97,7 +96,7 @@ zstyle ':completion:*:descriptions' format '[%d]'
 # set list-colors to enable filename colorizing
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 # preview directory's content with exa when completing cd
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath' # remember to use single quote here!!!
 # switch group using `,` and `.`
 zstyle ':fzf-tab:*' switch-group ',' '.'
 # fzf-bindings
@@ -259,3 +258,4 @@ alias whatsapp='cd ~/.config/WhatsGo/ && go run .'
 # --------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------
 alias sclist='ghelp;fzfhelp;lshelp' 
+export PATH=$PATH:/Users/eduardoneville82/.spicetify

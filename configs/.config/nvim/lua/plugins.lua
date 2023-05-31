@@ -1,3 +1,5 @@
+local vim = vim 
+
 local ensure_packer = function()
   local fn = vim.fn
   local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
@@ -76,7 +78,7 @@ return require('packer').startup(function(use)
 
         -- Colour Schemes 
         use 'folke/tokyonight.nvim'
-        vim.cmd("colorscheme tokyonight-storm")
+        --vim.cmd("colorscheme tokyonight-storm")
         use "EdenEast/nightfox.nvim" 
         --use 'rose-pine/neovim'
         --vim.cmd("colorscheme rose-pine-moon")

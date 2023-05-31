@@ -1,3 +1,5 @@
+local vim = vim 
+
 -- Requirements
 local navbuddy = require("nvim-navbuddy")
 

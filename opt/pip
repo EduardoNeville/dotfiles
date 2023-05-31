@@ -2,3 +2,4 @@ http.server
 numpy
 scipy
 pandas
+cookiecutter
