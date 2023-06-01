@@ -1,191 +1,207 @@
-local vim = vim 
+local vim = vim
 
 local ensure_packer = function()
-  local fn = vim.fn
-  local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
-  if fn.empty(fn.glob(install_path)) > 0 then
-    fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
-    vim.cmd [[packadd packer.nvim]]
-    return true
-  end
-  return false
+    local fn = vim.fn
+    local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
+        if fn.empty(fn.glob(install_path)) > 0 then
+            fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
+            vim.cmd [[packadd packer.nvim]]
+            return true
+        end
+    return false
 end
 
 vim.cmd [[packadd packer.nvim]]
 
-
 return require('packer').startup(function(use)
-        -- Packer can manage itself
-        use 'wbthomason/packer.nvim'
+    -- Packer can manage itself
+    use 'wbthomason/packer.nvim'
 
+    -------------------------------------
+    -------------------------------------
+    -- LSP configs
+    -------------------------------------
+    -------------------------------------
+    use 'neovim/nvim-lspconfig'
+    use 'williamboman/mason.nvim'
+    use 'williamboman/mason-lspconfig.nvim'
+    use 'jose-elias-alvarez/null-ls.nvim'
+    use 'jay-babu/mason-null-ls.nvim'
+    use({ "ms-jpq/coq_nvim", branch = "coq" })
+    --use ("hrsh7th/cmp-nvim-lsp")
 
-        -- LSP configs
-        use ('neovim/nvim-lspconfig') -- LSP
-        use ({'williamboman/mason.nvim'})
-        use ('williamboman/mason-lspconfig.nvim')
-        use({ "jose-elias-alvarez/null-ls.nvim" })
-        use({ "jay-babu/mason-null-ls.nvim" })
-        use({ "ms-jpq/coq_nvim", branch = "coq" })
-        --use ("hrsh7th/cmp-nvim-lsp")
-        
-        -- Copilot
-        -- setup up in pack by cloning the repo
+    -- Scala metals LSP
+    use({'scalameta/nvim-metals',
+        requires = { "nvim-lua/plenary.nvim" }
+    })
+    use 'nanotee/sqls.nvim'
 
-        -------------------------------------
-        -------------------------------------
-        -- UI 
-        -------------------------------------
-        -------------------------------------
-        
-        use 'lukas-reineke/indent-blankline.nvim' -- Indentations
-        use 'kyazdani42/nvim-web-devicons' -- File icons
-        use { -- Status Line
+    -- Copilot
+    -- setup up in pack by cloning the repo
+
+    -------------------------------------
+    -------------------------------------
+    -- UI 
+    -------------------------------------
+    -------------------------------------
+
+    use 'lukas-reineke/indent-blankline.nvim' -- Indentations
+    use 'kyazdani42/nvim-web-devicons' -- File icons
+    -- Status line with lualine
+    use {
         'nvim-lualine/lualine.nvim',
-        requires = { 'kyazdani42/nvim-web-devicons', opt = true }
+        requires = {
+            'kyazdani42/nvim-web-devicons',
+            opt = true
         }
-        use {
+    }
+    -- Tree directory using nvim-tree
+    use {
         'nvim-tree/nvim-tree.lua',
         config = function()
-                require("nvim-tree").setup {}
-                end
+            require("nvim-tree").setup {}
+        end
+    }
+    -- WinBar using barbecue
+    use({
+        "utilyre/barbecue.nvim",
+        tag = "*",
+        requires = {
+            "SmiteshP/nvim-navic",
+            "nvim-tree/nvim-web-devicons", -- optional dependency
+        },
+        --after = "nvim-web-devicons", -- keep this if you're using NvChad
+        config = function()
+            require("barbecue").setup()
+        end,
+    })
+    -- File navigator using navbuddy
+    use {
+        "SmiteshP/nvim-navbuddy",
+        requires = {
+            "neovim/nvim-lspconfig",
+            "SmiteshP/nvim-navic",
+            "MunifTanjim/nui.nvim",
+            "numToStr/Comment.nvim",        -- Optional
+            "nvim-telescope/telescope.nvim" -- Optional
         }
-        use({
-                "utilyre/barbecue.nvim",
-                tag = "*",
-                requires = {
-                  "SmiteshP/nvim-navic",
-                  "nvim-tree/nvim-web-devicons", -- optional dependency
-                },
-                --after = "nvim-web-devicons", -- keep this if you're using NvChad
-                config = function()
-                  require("barbecue").setup()
-                end,
-        })
-        use {
-            "SmiteshP/nvim-navbuddy",
-            requires = {
-                "neovim/nvim-lspconfig",
-                "SmiteshP/nvim-navic",
-                "MunifTanjim/nui.nvim",
-                "numToStr/Comment.nvim",        -- Optional
-                "nvim-telescope/telescope.nvim" -- Optional
-            }
+    }
+    use "xiyaowong/transparent.nvim"
+
+    -- Fuzzy Finder
+    use {
+            'nvim-telescope/telescope.nvim', tag = '0.1.1',
+             -- or                            , branch = '0.1.x',
+            requires = { {'nvim-lua/plenary.nvim'} }
+    }
+    use 'BurntSushi/ripgrep'
+
+    -- Markdown Preview
+    -- install without yarn or npm
+    use({
+            "iamcco/markdown-preview.nvim",
+            run = function() vim.fn["mkdp#util#install"]() end,
+    })
+
+    use 'MunifTanjim/nui.nvim'
+    use 'nvim-lua/plenary.nvim'
+
+    use({
+      "jackMort/ChatGPT.nvim",
+        config = function()
+            require("chatgpt").setup({
+            -- optional configuration
+          })
+        end,
+        requires = {
+            "MunifTanjim/nui.nvim",
+            "nvim-lua/plenary.nvim",
+            "nvim-telescope/telescope.nvim"
         }
-        use "xiyaowong/transparent.nvim"
-        use 'nvim-treesitter/nvim-treesitter-context'
+    })
 
-        --use 'tpope/vim-fugitive' -- Git
+    --use 'luk400/vim-jukit'
+    --use 'tpope/vim-fugitive' -- Git
 
-        -- Colour Schemes 
-        use 'folke/tokyonight.nvim'
-        --vim.cmd("colorscheme tokyonight-storm")
-        use "EdenEast/nightfox.nvim" 
-        --use 'rose-pine/neovim'
-        --vim.cmd("colorscheme rose-pine-moon")
-
-        -- Syntax
-        use {
-                'nmac427/guess-indent.nvim',
-                config = function() require('guess-indent').setup {} end,
-        }
-        -- Syntax highlighting
-        use {
+    -------------------------------------
+    -- Syntax highlighting
+    -------------------------------------
+    use 'nvim-treesitter/nvim-treesitter-context'
+    use {
         'nvim-treesitter/nvim-treesitter'
+    }
+    use {
+        'cameron-wags/rainbow_csv.nvim',
+        config = function()
+            require 'rainbow_csv'.setup()
+        end,
+        -- optional lazy-loading below
+        module = {
+            'rainbow_csv',
+            'rainbow_csv.fns'
+        },
+        ft = {
+            'csv',
+            'tsv',
+            'csv_semicolon',
+            'csv_whitespace',
+            'csv_pipe',
+            'rfc_csv',
+            'rfc_semicolon'
         }
-        use {
-            'cameron-wags/rainbow_csv.nvim',
-            config = function()
-                require 'rainbow_csv'.setup()
-            end,
-            -- optional lazy-loading below
-            module = {
-                'rainbow_csv',
-                'rainbow_csv.fns'
-            },
-            ft = {
-                'csv',
-                'tsv',
-                'csv_semicolon',
-                'csv_whitespace',
-                'csv_pipe',
-                'rfc_csv',
-                'rfc_semicolon'
-            }
-        }
-        -- Markdown Preview
-        -- install without yarn or npm
-        use({
-                "iamcco/markdown-preview.nvim",
-                run = function() vim.fn["mkdp#util#install"]() end,
-        })
+    }
 
-        --use 'Shougo/deoplete.nvim' -- Autocomplete
+    -- Syntax
+    use {
+        'nmac427/guess-indent.nvim',
+        config = function() require('guess-indent').setup {} end,
+    }
 
-        -- Fuzzy Finder
-        use {
-                'nvim-telescope/telescope.nvim', tag = '0.1.1',
-                 -- or                            , branch = '0.1.x',
-                requires = { {'nvim-lua/plenary.nvim'} }
-        }
-        use 'BurntSushi/ripgrep'
+    use({
+        "kylechui/nvim-surround",
+        tag = "*", -- Use for stability; omit to use `main` branch for the latest features
+        config = function()
+            require("nvim-surround").setup({
+                -- Configuration here, or leave empty to use defaults
+            })
+        end
+    })
 
+    -------------------------------------
+    -------------------------------------
+    -- Colour Schemes 
+    -------------------------------------
+    -------------------------------------
 
+    use 'fcpg/vim-farout'
+    use 'folke/tokyonight.nvim'
+    use { "bluz71/vim-moonfly-colors", as = "moonfly" }
+    use 'maxmx03/fluoromachine.nvim'
+    use "EdenEast/nightfox.nvim"
+    -- Setting them straight away using this command
+    --vim.cmd("colorscheme rose-pine-moon")
 
-        --use({ "iamcco/markdown-preview.nvim", run = "cd app && npm install", setup = function() vim.g.mkdp_filetypes = { "markdown" } end, ft = { "markdown" }, })
+    ------------------------------------- 
+    ------------------------------------- 
+    -- Debugging
+    ------------------------------------- 
+    ------------------------------------- 
 
-        use({
-            "kylechui/nvim-surround",
-            tag = "*", -- Use for stability; omit to use `main` branch for the latest features
-            config = function()
-                require("nvim-surround").setup({
-                    -- Configuration here, or leave empty to use defaults
-                })
-            end
-        })
+    use "folke/neodev.nvim"
+    use 'mfussenegger/nvim-dap'
+    use { "rcarriga/nvim-dap-ui", requires = {"mfussenegger/nvim-dap"} }
+    use {
+        'sakhnik/nvim-gdb',
+        run = './install.sh'
+    }
 
-        use 'MunifTanjim/nui.nvim'
-        use 'nvim-lua/plenary.nvim'
+    -------------------------------------
+    -------------------------------------
+    -- Misc
+    -------------------------------------
+    -------------------------------------
 
-        use({
-          "jackMort/ChatGPT.nvim",
-            config = function()
-              require("chatgpt").setup({
-                -- optional configuration
-              })
-            end,
-            requires = {
-              "MunifTanjim/nui.nvim",
-              "nvim-lua/plenary.nvim",
-              "nvim-telescope/telescope.nvim"
-            }
-        })
-        
-        --
-        --LSP
-        --
-        -- Scala metals LSP
-        use({'scalameta/nvim-metals', 
-                requires = { "nvim-lua/plenary.nvim" }
-        })
-        use 'nanotee/sqls.nvim'
-
-
-        --use 'luk400/vim-jukit'
-
-
-        --- 
-        -- Debugging
-        ---
-        use "folke/neodev.nvim"
-        use 'mfussenegger/nvim-dap'
-        use { "rcarriga/nvim-dap-ui", requires = {"mfussenegger/nvim-dap"} }
-        use {
-          'sakhnik/nvim-gdb',
-          run = './install.sh'
-        }
-
-
-        -- Noice.nvim 
+    -- Noice.nvim 
 --        use({
 --                "folke/noice.nvim",
 --                config = function()
