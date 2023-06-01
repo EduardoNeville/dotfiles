@@ -6,32 +6,32 @@ GITHUB_REPO=dotfiles
 DIR="/usr/local/opt/${GITHUB_REPO}"
 
 _process() {
-  echo "$(date) PROCESSING:  $@" >> $LOG
-  printf "$(tput setaf 6) %s...$(tput sgr0)\n" "$@"
+    echo "$(date) PROCESSING:  $@" >> $LOG
+    printf "$(tput setaf 6) %s...$(tput sgr0)\n" "$@"
 }
 
 _success() {
-  local message=$1
-  printf "%s✓ Success:%s\n" "$(tput setaf 2)" "$(tput sgr0) $message"
+    local message=$1
+    printf "%s✓ Success:%s\n" "$(tput setaf 2)" "$(tput sgr0) $message"
 }
 
 download_dotfiles() {
-  _process "→ Creating directory at ${DIR} and setting permissions"
-  mkdir -p "${DIR}"
+    _process "→ Creating directory at ${DIR} and setting permissions"
+    mkdir -p "${DIR}"
 
-  _process "→ Downloading repository to /tmp directory"
-  curl -#fLo /tmp/${GITHUB_REPO}.tar.gz "https://github.com/${GITHUB_USER}/${GITHUB_REPO}/tarball/main"
+    _process "→ Downloading repository to /tmp directory"
+    curl -#fLo /tmp/${GITHUB_REPO}.tar.gz "https://github.com/${GITHUB_USER}/${GITHUB_REPO}/tarball/main"
 
-  _process "→ Extracting files to ${DIR}"
-  tar -zxf /tmp/${GITHUB_REPO}.tar.gz --strip-components 1 -C "${DIR}"
+    _process "→ Extracting files to ${DIR}"
+    tar -zxf /tmp/${GITHUB_REPO}.tar.gz --strip-components 1 -C "${DIR}"
 
-  _process "→ Removing tarball from /tmp directory"
-  rm -rf /tmp/${GITHUB_REPO}.tar.gz
+    _process "→ Removing tarball from /tmp directory"
+    rm -rf /tmp/${GITHUB_REPO}.tar.gz
 
-  [[ $? ]] && _success "${DIR} created, repository downloaded and extracted"
+    [[ $? ]] && _success "${DIR} created, repository downloaded and extracted"
 
-  # Change to the dotfiles directory
-  cd "${DIR}"
+    # Change to the dotfiles directory
+    cd "${DIR}"
 }
 
 
@@ -52,10 +52,10 @@ function program_exists() {
 link_dotfiles() {
  # symlink files to the HOME directory.
  if [[ -f "${DIR}/opt/files" ]]; then
-   _process "→ Symlinking dotfiles in /configs"
+    _process "→ Symlinking dotfiles in /configs"
 
-   # Set variable for list of files
-   files="${DIR}/opt/files"
+    # Set variable for list of files
+    files="${DIR}/opt/files"
 
     # Store IFS separator within a temp variable
     OIFS=$IFS
@@ -67,47 +67,47 @@ link_dotfiles() {
     # Loop through array of files
     for index in ${!links[*]}
     do
-      for link in ${links[$index]}
-      do
-        _process "→ Linking ${links[$index]}"
-        # set IFS back to space to split string on
-        IFS=$' '
-        # create an array of line items
-        file=(${links[$index]})
+        for link in ${links[$index]}
+        do
+            _process "→ Linking ${links[$index]}"
+            # set IFS back to space to split string on
+            IFS=$' '
+            # create an array of line items
+            file=(${links[$index]})
 	# Remove previos file
 	rm -rf "${HOME}/${file[1]}"
-        # Create symbolic link
+    # Create symbolic link
 	ln -fs "${DIR}/${file[0]}" "${HOME}/${file[1]}"
-     done
-     # set separater back to carriage return & new line break
-     IFS=$'\r\n'
-   done
-   # Reset IFS back
-   IFS=$OIFS
-   source "${HOME}/.bash_profile"
-   [[ $? ]] && _success "All files have been copied"
-  fi
+        done
+        # set separater back to carriage return & new line break
+        IFS=$'\r\n'
+    done
+    # Reset IFS back
+    IFS=$OIFS
+    source "${HOME}/.bash_profile"
+    [[ $? ]] && _success "All files have been copied"
+    fi
 }
 
 # /install
 install_homebrew() {
- _process "→ Installing Homebrew"
- /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+    _process "→ Installing Homebrew"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 
- _process "→ Running brew doctor"
- brew doctor
- [[ $? ]] \
- && _success "Installed Homebrew"
+    _process "→ Running brew doctor"
+    brew doctor
+    [[ $? ]] \
+    && _success "Installed Homebrew"
 }
 
 install_formulae() {
  if ! type -P 'brew' &> /dev/null; then
-   _error "Homebrew not found"
+    _error "Homebrew not found"
  else
-   _process "→ Installing Homebrew packages"
+    _process "→ Installing Homebrew packages"
 
-   # Set variable for list of homebrew formulaes
-   brews="${DIR}/opt/homebrew"
+    # Set variable for list of homebrew formulaes
+    brews="${DIR}/opt/homebrew"
 
     # Update and upgrade all packages
     _process "→ Updating and upgrading Homebrew packages"
@@ -130,13 +130,13 @@ install_formulae() {
     _process "→ Checking status of desired Homebrew formulae"
     for index in ${!formulae[*]}
     do
-      # Test whether a Homebrew formula is already installed
-      echo "→ Checking status of ${formulae[$index]}"
-      program_exists "${formulae[$index]}" || brew install "${formulae[$index]}"
-      #if ! brew list ${formulae[$index]} &> /dev/null; then
-      #  echo "→ Installing ${formulae[$index]}"
-      #  brew install ${formulae[$index]}
-      #fi
+        # Test whether a Homebrew formula is already installed
+        echo "→ Checking status of ${formulae[$index]}"
+        program_exists "${formulae[$index]}" || brew install "${formulae[$index]}"
+        #if ! brew list ${formulae[$index]} &> /dev/null; then
+        #  echo "→ Installing ${formulae[$index]}"
+        #  brew install ${formulae[$index]}
+        #fi
     done
 
     # Reset IFS back
@@ -151,8 +151,8 @@ install_formulae() {
 install_oh_my_zsh(){
 	_process "→ Installing Oh-My-Zsh"
  	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-	 [[ $? ]] \
-	 && _success "Installed Oh-My-Zsh"
+	[[ $? ]] \
+	&& _success "Installed Oh-My-Zsh"
 
 	# autosuggestions plugin
 	_process "Installing autosuggestion plugin"
@@ -169,25 +169,31 @@ install_oh_my_zsh(){
 }
 
 install_packer(){
-        _process "installing packer"
-        git clone --depth 1 https://github.com/wbthomason/packer.nvim\
-         ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+    _process "installing packer"
+    git clone --depth 1 https://github.com/wbthomason/packer.nvim\
+    ~/.local/share/nvim/site/pack/packer/start/packer.nvim
 }
 
 install_nvim_plugins(){
-        _process "Installing NeoVim plugins"
-        nvim --headless +PackerInstall +qall
+    _process "Installing NeoVim plugins"
+    nvim --headless +PackerInstall +qall
 }
 
+declare -A downloader_map
+downloader_map["dotfiles"]=download_dotfiles
+downloader_map["linking_dotfiles"]=link_dotfiles
+downloader_map["Homebrew"]=install_homebrew
+downloader_map["formulaes"]=install_formulae
+downloader_map["oh-my-zsh"]=install_oh_my_zsh
+downloader_map["node"]=install_node
+downloader_map["rust"]=install_rust
+downloader_map["packer"]=install_packer
+
 install() {
-        download_dotfiles
-        link_dotfiles
-        install_homebrew
-        install_formulae
-        install_oh_my_zsh
-        install_node
-        install_rust
-        install_packer
+    for key in "${!downloader_map[@]}"; do
+        _process "→ Installing ${key}"
+        ${downloader_map[$key]}
+    done
 }
 
 install
