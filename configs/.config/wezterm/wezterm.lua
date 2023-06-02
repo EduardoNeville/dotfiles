@@ -31,7 +31,7 @@ local config = {
 	------
 	-- Cursor style
 	------
-	default_cursor_style = "BlinkingUnderline",
+	default_cursor_style = "BlinkingBlock",
 
 	------
 	-- Tab Bar
