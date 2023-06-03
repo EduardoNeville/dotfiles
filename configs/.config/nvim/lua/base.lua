@@ -75,7 +75,6 @@ vim.opt.background = 'dark'
 ------------
 
 local fm = require 'fluoromachine'
-
 fm.setup {
     glow = false,
     theme = 'retrowave',

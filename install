@@ -170,30 +170,44 @@ install_oh_my_zsh(){
 
 install_packer(){
     _process "installing packer"
+    rm -rf ~/.local/share/nvim/site/pack/packer/start
     git clone --depth 1 https://github.com/wbthomason/packer.nvim\
     ~/.local/share/nvim/site/pack/packer/start/packer.nvim
 }
 
 install_nvim_plugins(){
     _process "Installing NeoVim plugins"
-    nvim --headless +PackerInstall +qall
+    nvim --headless -c 'autocmd User PackerComplete quitall' -c 'silent PackerSync'
 }
 
-declare -A downloader_map
-downloader_map["dotfiles"]=download_dotfiles
-downloader_map["linking_dotfiles"]=link_dotfiles
-downloader_map["Homebrew"]=install_homebrew
-downloader_map["formulaes"]=install_formulae
-downloader_map["oh-my-zsh"]=install_oh_my_zsh
-downloader_map["node"]=install_node
-downloader_map["rust"]=install_rust
-downloader_map["packer"]=install_packer
+dwld_arr=( download_dotfiles link_dotfiles install_homebrew install_formulae install_packer install_nvim_plugins )
 
-install() {
-    for key in "${!downloader_map[@]}"; do
-        _process "→ Installing ${key}"
-        ${downloader_map[$key]}
+buf_arr=()
+precise_install(){
+
+    echo " What do you want to install "
+    for dwnld in "${dwld_arr[@]}"
+    do
+	echo " $dwnld "
     done
+    
+    for dwnld in "${dwld_arr[@]}"
+    do
+        echo -n " Download $dwnld [y/n]: "
+        read -n 1 ans
+        printf '\n' 
+        if [[ "$ans" == "y" ]]; then
+            buf_arr+=("$dwnld")
+        fi
+    done
+
+    for buff in "${buf_arr[@]}"
+    do
+        $buff
+    done
+    #Clean the buffer
+    buf_arr=()
 }
 
-install
+precise_install
+#install
