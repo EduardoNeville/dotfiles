@@ -107,7 +107,9 @@ install_formulae() {
     _process "→ Installing Homebrew packages"
 
     # Set variable for list of homebrew formulaes
+    taps="${DIR}/opt/brew_tap"
     brews="${DIR}/opt/homebrew"
+
 
     # Update and upgrade all packages
     _process "→ Updating and upgrading Homebrew packages"
@@ -115,9 +117,23 @@ install_formulae() {
     brew upgrade
 
     # Tap some necessary formulae
-    brew tap homebrew/cask-versions
-    brew tap homebrew/cask-drivers
-    brew tap vitorgalvao/tiny-scripts
+    _process "-> Checking status of brew taps "
+    # Set the separator to a carriage return & a new line break
+    # read in passed-in file and store as an array
+    IFS=$'\r\n' brew_taps=($(cat "${taps}"))
+
+    # Loop through split list of brew_taps
+    _process "→ Checking status of desired Homebrew brew_taps"
+    for index in ${!brew_taps[*]}
+    do
+        # Test whether a Homebrew formula is already installed
+        echo "→ Checking status of ${brew_taps[$index]}"
+        program_exists "${brew_taps[$index]}" || brew tap "${brew_taps[$index]}"
+        #if ! brew list ${brew_taps[$index]} &> /dev/null; then
+        #  echo "→ Installing ${brew_taps[$index]}"
+        #  brew install ${brew_taps[$index]}
+        #fi
+    done
 
     # Store IFS within a temp variable
     OIFS=$IFS

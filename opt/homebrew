@@ -32,4 +32,6 @@ rust
 sqlite
 spotify-tui
 spotifyd
-
+cookiecutter
+--cask ghdl
+--cask gtkwave

@@ -1,4 +1,6 @@
 configs/.config/nvim/pack/github/
 configs/.config/github-copilot/
 /openAI_key.txt
-.config/spotify-tui/.spotify_token_cache.json
+configs/.config/spotify-tui/.spotify_token_cache.json
+configs/.config/thefuck/__pycache__/
+
