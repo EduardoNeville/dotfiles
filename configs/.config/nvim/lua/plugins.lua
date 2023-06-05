@@ -189,10 +189,20 @@ return require('packer').startup(function(use)
 
     use "folke/neodev.nvim"
     use 'mfussenegger/nvim-dap'
-    use { "rcarriga/nvim-dap-ui", requires = {"mfussenegger/nvim-dap"} }
     use {
-        'sakhnik/nvim-gdb',
-        run = './install.sh'
+        "rcarriga/nvim-dap-ui",
+        requires = {"mfussenegger/nvim-dap"}
+    }
+    use {'mfussenegger/nvim-dap-python',
+        ft = "python",
+        dependencies = {
+            "mfussenegger/nvim-dap",
+            "rcarriga/nvim-dap-ui"
+        },
+        config = function(_, opts)
+            local path = "~/.local/share/nvim/mason/packages/debugpy/venv/bin/python"
+            require("dap-python").setup(path)
+        end,
     }
 
     -------------------------------------

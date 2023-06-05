@@ -92,3 +92,14 @@ vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist)
 vim.keymap.set("n", "<leader>hov", vim.lsp.buf.hover)
 vim.keymap.set("n", "<leader>def", vim.lsp.buf.definition)
 
+
+------------------------------------------
+------------------------------------------
+-- Debugging keymaps
+------------------------------------------
+------------------------------------------
+vim.api.nvim_set_keymap("n","<leader>br", ":DapToggleBreakpoint<CR>", { noremap = true, silent = true })
+
+-- Dap python 
+vim.api.nvim_set_keymap("n","<leader>dpr", ":lua require('dap-python').test_method()<CR>", { noremap = true, silent = true })
+

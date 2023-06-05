@@ -49,8 +49,10 @@ require("mason-null-ls").setup({
         "jq",
         "isort",
         "black",
-        -- "mypy",
         "prettierd",
+        "debugpy",
+        "ruff",
+        -- "mypy",
     },
     automatic_installation = true,
     automatic_setup = true,
@@ -63,7 +65,7 @@ vim.g.coq_settings = {
     auto_start = "shut-up",
     keymap = {
         jump_to_mark = "", -- Prevent clash with split jumping
-        eval_snips = "<leader>j",
+        --eval_snips = "<leader>j",
     },
 }
 local coq = require("coq")

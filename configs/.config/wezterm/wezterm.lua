@@ -17,8 +17,8 @@ local config = {
 	-----------------------------------
 
 	--color_scheme = "Catppuccin", -- Machiatto
-	--color_scheme = "Tokyo Night Storm",	
-	color_scheme = 'Papercolor Light (Gogh)', -- "Aesthetic Night
+	color_scheme = "Tokyo Night Storm",	
+	--color_scheme = 'Papercolor Light (Gogh)', -- "Aesthetic Night
 
 	color_scheme_dirs = { os.getenv("HOME") .. "/.config/wezterm/colors/" },
 	-- Aesthetic Night Colorscheme
