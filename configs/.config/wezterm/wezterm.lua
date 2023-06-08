@@ -1,7 +1,47 @@
 local wezterm = require("wezterm")
 
+-----------------------------------
+-----------------------------------
+-- Theme Cycler
+-----------------------------------
+-----------------------------------
+
+---cycle through builtin dark schemes in dark mode, 
+---and through light schemes in light mode
+local function themeCycler(window, _)
+	local allSchemes = wezterm.color.get_builtin_schemes()
+	local currentMode = wezterm.gui.get_appearance()
+	local currentScheme = window:effective_config().color_scheme
+	local darkSchemes = {'Tokyo Night Storm', 'Catppuccin Machiatto'}
+	local lightSchemes = {'Papercolor Light (Gogh)'}
+
+	for name, scheme in pairs(allSchemes) do
+		local bg = wezterm.color.parse(scheme.background) -- parse into a color object
+		---@diagnostic disable-next-line: unused-local
+		local h, s, l, a = bg:hsla() -- and extract HSLA information
+		if l < 0.4 then
+			table.insert(darkSchemes, name)
+		else
+			table.insert(lightSchemes, name)
+		end
+	end
+	local schemesToSearch = currentMode:find("Dark") and darkSchemes or lightSchemes
+
+	for i = 1, #schemesToSearch, 1 do
+		if schemesToSearch[i] == currentScheme then
+			local overrides = window:get_config_overrides() or {}
+			overrides.color_scheme = schemesToSearch[i+1]
+			wezterm.log_info("Switched to: " .. schemesToSearch[i+1])
+			window:set_config_overrides(overrides)
+			return
+		end
+	end
+end
+
+---------------------------------------------------------------
 ---------------------------------------------------------------
 --- Config
+---------------------------------------------------------------
 ---------------------------------------------------------------
 local config = {
 	check_for_updates = false,
@@ -23,6 +63,17 @@ local config = {
 	color_scheme_dirs = { os.getenv("HOME") .. "/.config/wezterm/colors/" },
 	-- Aesthetic Night Colorscheme
 	bold_brightens_ansi_colors = true,
+
+	------
+	-- Theme Cycler
+	------
+	keys = {
+		-- Calling the themeCycler
+		{ key = "t", mods = "CTRL", action = wezterm.action_callback(themeCycler) },
+
+		-- Look up Scheme you switched to
+		{ key = "Escape", mods = "CTRL", action = wezterm.action.ShowDebugOverlay },
+	},
 
 	-----------------------------------
 	-----------------------------------
