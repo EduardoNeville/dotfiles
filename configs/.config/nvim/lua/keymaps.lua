@@ -95,11 +95,21 @@ vim.keymap.set("n", "<leader>def", vim.lsp.buf.definition)
 
 ------------------------------------------
 ------------------------------------------
--- Debugging keymaps
 ------------------------------------------
 ------------------------------------------
-vim.api.nvim_set_keymap("n","<leader>br", ":DapToggleBreakpoint<CR>", { noremap = true, silent = true })
+--vim.api.nvim_set_keymap("n","<leader>br", ":DapToggleBreakpoint<CR>", { noremap = true, silent = true })
+--vim.keymap.set('n', '<leader>con', require 'dap'.continue)
+--vim.keymap.set('n', '<leader>sover', require 'dap'.step_over)
+--vim.keymap.set('n', '<leader>sin', require 'dap'.step_into)
+--vim.keymap.set('n', '<leader>sout', require 'dap'.step_out)
+--
+---- Dap UI launc
+--vim.keymap.set('n', '<leader>debug', "require 'dapui'.toggle() <CR>")
+--vim.keymap.set('n', '<leader>eval', "require 'dapui'.eval() <CR>")
+--vim.keymap.set('n', '<leader>evali', "require 'dapui'.eval(vim.fn.input '[Expression] > ') <CR>")
+--
+--
+---- Dap python 
+--vim.api.nvim_set_keymap("n","<leader>dpr", ":lua require('dap-python').test_method()<CR>", { noremap = true, silent = true })
 
--- Dap python 
-vim.api.nvim_set_keymap("n","<leader>dpr", ":lua require('dap-python').test_method()<CR>", { noremap = true, silent = true })
 

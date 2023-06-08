@@ -120,7 +120,7 @@ return require('packer').startup(function(use)
         }
     })
 
-    --use 'luk400/vim-jukit'
+    use 'luk400/vim-jukit'
     --use 'tpope/vim-fugitive' -- Git
 
     -------------------------------------
@@ -152,20 +152,20 @@ return require('packer').startup(function(use)
     }
 
     -- Syntax
-    use {
-        'nmac427/guess-indent.nvim',
-        config = function() require('guess-indent').setup {} end,
-    }
+    --use {
+    --    'nmac427/guess-indent.nvim',
+    --    config = function() require('guess-indent').setup {} end,
+    --}
 
-    use({
-        "kylechui/nvim-surround",
-        tag = "*", -- Use for stability; omit to use `main` branch for the latest features
-        config = function()
-            require("nvim-surround").setup({
-                -- Configuration here, or leave empty to use defaults
-            })
-        end
-    })
+    --use({
+    --    "kylechui/nvim-surround",
+    --    tag = "*", -- Use for stability; omit to use `main` branch for the latest features
+    --    config = function()
+    --        require("nvim-surround").setup({
+    --            -- Configuration here, or leave empty to use defaults
+    --        })
+    --    end
+    --})
 
     -------------------------------------
     -------------------------------------
@@ -175,11 +175,41 @@ return require('packer').startup(function(use)
 
     use 'fcpg/vim-farout'
     use 'folke/tokyonight.nvim'
-    use { "bluz71/vim-moonfly-colors", as = "moonfly" }
+    use {"bluz71/vim-moonfly-colors", as = "moonfly"}
     use 'maxmx03/fluoromachine.nvim'
     use "EdenEast/nightfox.nvim"
-    -- Setting them straight away using this command
-    --vim.cmd("colorscheme rose-pine-moon")
+    local fm = require 'fluoromachine'
+    fm.setup {
+        glow = false,
+        theme = 'retrowave',
+        transparent = false,
+        overrides = {
+            ['@type'] = { italic = true, bold = false },
+            ['@function'] = { italic = false, bold = false },
+            ['@comment'] = { italic = true , bold = false},
+            ['@keyword'] = { italic = false , bold= false},
+            ['@constant'] = { italic = false, bold = false },
+            ['@variable'] = { italic = true , bold= false},
+            ['@field'] = { italic = true , bold= false},
+            ['@parameter'] = { italic = true , bold= false},
+        },
+        colors = function(_, d)
+            return {
+                bg = '#190920',
+                alt_bg = d('#190920', 20),
+                cyan = '#49eaff',
+                red = '#ff1e34',
+                yellow = '#ffe756',
+                comment = '#57ff00', 
+                orange = '#f38e21',
+                pink = '#ffadff',
+                purple = '#9544f7',
+            }
+        end,
+
+    }
+
+    vim.cmd.colorscheme('fluoromachine')
 
     ------------------------------------- 
     ------------------------------------- 
@@ -188,22 +218,24 @@ return require('packer').startup(function(use)
     ------------------------------------- 
 
     use "folke/neodev.nvim"
-    use 'mfussenegger/nvim-dap'
-    use {
-        "rcarriga/nvim-dap-ui",
-        requires = {"mfussenegger/nvim-dap"}
-    }
-    use {'mfussenegger/nvim-dap-python',
-        ft = "python",
-        dependencies = {
-            "mfussenegger/nvim-dap",
-            "rcarriga/nvim-dap-ui"
-        },
-        config = function(_, opts)
-            local path = "~/.local/share/nvim/mason/packages/debugpy/venv/bin/python"
-            require("dap-python").setup(path)
-        end,
-    }
+    --use {
+    --  "mfussenegger/nvim-dap",
+    --  opt = true,
+    --  event = "BufReadPre",
+    --  module = {"dap"},
+    --  wants = {"nvim-dap-virtual-text", "DAPInstall.nvim", "nvim-dap-ui", "nvim-dap-python"},
+    --  requires = {
+    --    "Pocco81/DAPInstall.nvim",
+    --    "theHamsta/nvim-dap-virtual-text",
+    --    "rcarriga/nvim-dap-ui",
+    --    "mfussenegger/nvim-dap-python",
+    --    "nvim-telescope/telescope-dap.nvim",
+    --    { "jbyuki/one-small-step-for-vimkind", module = "osv" },
+    --  },
+    --  config = function()
+    --    require("config.dap").setup()
+    --  end,
+    --}
 
     -------------------------------------
     -------------------------------------
