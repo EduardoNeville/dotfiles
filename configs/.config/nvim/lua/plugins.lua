@@ -90,9 +90,9 @@ return require('packer').startup(function(use)
 
     -- Fuzzy Finder
     use {
-            'nvim-telescope/telescope.nvim', tag = '0.1.1',
-             -- or                            , branch = '0.1.x',
-            requires = { {'nvim-lua/plenary.nvim'} }
+        'nvim-telescope/telescope.nvim', tag = '0.1.1',
+         -- or                         , branch = '0.1.x',
+        requires = { {'nvim-lua/plenary.nvim'} }
     }
     use 'BurntSushi/ripgrep'
 
@@ -122,14 +122,20 @@ return require('packer').startup(function(use)
 
     use 'luk400/vim-jukit'
     --use 'tpope/vim-fugitive' -- Git
+    use {
+        "folke/which-key.nvim",
+        config = function()
+            vim.o.timeout = true
+            vim.o.timeoutlen = 300
+        end
+    }
 
     -------------------------------------
     -- Syntax highlighting
     -------------------------------------
+
     use 'nvim-treesitter/nvim-treesitter-context'
-    use {
-        'nvim-treesitter/nvim-treesitter'
-    }
+    use 'nvim-treesitter/nvim-treesitter'
     use {
         'cameron-wags/rainbow_csv.nvim',
         config = function()
@@ -157,15 +163,15 @@ return require('packer').startup(function(use)
     --    config = function() require('guess-indent').setup {} end,
     --}
 
-    --use({
-    --    "kylechui/nvim-surround",
-    --    tag = "*", -- Use for stability; omit to use `main` branch for the latest features
-    --    config = function()
-    --        require("nvim-surround").setup({
-    --            -- Configuration here, or leave empty to use defaults
-    --        })
-    --    end
-    --})
+    use({
+        "kylechui/nvim-surround",
+        tag = "*", -- Use for stability; omit to use `main` branch for the latest features
+        config = function()
+            require("nvim-surround").setup({
+                -- Configuration here, or leave empty to use defaults
+            })
+        end
+    })
 
     -------------------------------------
     -------------------------------------
@@ -182,7 +188,7 @@ return require('packer').startup(function(use)
     fm.setup {
         glow = false,
         theme = 'retrowave',
-        transparent = false,
+        transparent = "full",
         overrides = {
             ['@type'] = { italic = true, bold = false },
             ['@function'] = { italic = false, bold = false },
@@ -200,7 +206,7 @@ return require('packer').startup(function(use)
                 cyan = '#49eaff',
                 red = '#ff1e34',
                 yellow = '#ffe756',
-                comment = '#57ff00', 
+                comment = '#57ff00',
                 orange = '#f38e21',
                 pink = '#ffadff',
                 purple = '#9544f7',
