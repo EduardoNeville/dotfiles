@@ -109,12 +109,12 @@ zstyle ':fzf-tab:*' fzf-bindings 'ctrl-j:toggle' 'ctrl-a:accept' 'ctrl-a:toggle-
 #
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+export NNN_PLUG='P:preview-tui;F:fzcd'
 
-export NNN_PLUG='f:finder;o:fzopen;p:mocplay;d:diffs;t:nmount;v:imgview;P:preview-tui'
 export NNN_FIFO='/tmp/nnn.fifo'
 export NNN_USE_EDITOR='nvim'
 export NNN_ICONS=".config/nnn/plugins/icons-in-terminal"
-alias nnn='nnn -P p'
+alias nnn='nnn -P P'
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 # POMODORO

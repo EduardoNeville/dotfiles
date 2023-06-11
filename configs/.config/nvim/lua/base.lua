@@ -21,7 +21,7 @@ vim.wo.relativenumber = true
 
 vim.opt.title = true
 vim.opt.autoindent = true
-vim.opt.hlsearch = true 
+vim.opt.hlsearch = true
 vim.opt.showcmd = true
 vim.opt.cmdheight = 1
 vim.opt.laststatus = 2
@@ -57,6 +57,7 @@ vim.opt.guicursor = 'n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50,a:blinkwait700
 ------------
 -- Nvim Tree
 ------------
+
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.opt.termguicolors = true

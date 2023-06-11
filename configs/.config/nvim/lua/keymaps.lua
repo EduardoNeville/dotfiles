@@ -12,17 +12,16 @@ vim.g.mapleader = ' '
 ------------------------------------------
 
 --------
--- Move lines up (;) and down (n)
+-- Move lines up (k) and down (j)
 --------
 
--- Map ; to move the current line up in normal mode
-set_api_keymaps('n', ';', ":m .-2<CR>==", { noremap = true, silent = true })
--- Map N to move the current line down in normal mode
-set_api_keymaps('n', 'N', ":m .+1<CR>==", { noremap = true, silent = true })
--- Map ; to move the selected lines up in visual mode
-set_api_keymaps('v', ';', ":'<,'>m '<-2<CR>gv=gv", { noremap = true, silent = true })
--- Map N to move the selected lines down in visual mode
-set_api_keymaps('v', 'N', ":'>m '>+1<CR>gv=gv", { noremap = true, silent = true })
+-- Map <leader> k to move the current line up in normal mode
+set_api_keymaps('n', '<leader>k', ":m .-2<CR>==", { noremap = true, silent = true })
+set_api_keymaps('v', '<leader>k', ":'<,'>m '<-2<CR>gv=gv", { noremap = true, silent = true })
+
+-- Map <leader> j to move the current line down in normal mode
+set_api_keymaps('n', '<leader>j', ":m .+1<CR>==", { noremap = true, silent = true })
+set_api_keymaps('v', '<leader>j', ":'>m '>+1<CR>gv=gv", { noremap = true, silent = true })
 
 --------
 -- Insert closing sign after {, (, [, "
@@ -52,13 +51,11 @@ set_api_keymaps('n', '<leader>a', '/<\\_^i\\+><cr>n:call setpos(".", getpos("\'[
 ------------------------------------------
 ------------------------------------------
 
--- NavBuddy
-set_api_keymaps('n', '<leader>nav', ':Navbuddy<CR>', { noremap = true, silent = true })
-
--- Telescope keymaps
-set_api_keymaps('n', '<leader>tel', ':Telescope<CR>', { noremap = true, silent = true })
+--
+---- Telescope keymaps
+--set_api_keymaps('n', '<leader>tel', ':Telescope<CR>', { noremap = true, silent = true })
 --local builtin = require('telescope.builtin')
---vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
+--set_keymaps('n', '<leader>ff', builtin.find_files, {})
 --vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
 --vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
 --vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
@@ -67,14 +64,9 @@ set_api_keymaps('n', '<leader>tel', ':Telescope<CR>', { noremap = true, silent =
 vim.g.copilot_no_tab_map = true
 -- Maps copilot accept to Control + J
 set_api_keymaps("i", "<C-J>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
--- Toggle NvimTree buffer with Tab while in a file
 -- Maps copilot next to Control + K
 set_api_keymaps("i", "<C-K>", 'copilot#Next()', { silent = true, expr = true })
 
--- Nvim Tree
-set_api_keymaps('n', 'q', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
-
-------------------------------------------
 ------------------------------------------
 -- LSP keymaps
 ------------------------------------------
