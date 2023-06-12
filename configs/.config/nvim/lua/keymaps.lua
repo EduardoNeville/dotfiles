@@ -55,7 +55,7 @@ set_api_keymaps('n', '<leader>nt', ':NvimTreeToggle<CR>', { noremap = true, sile
 -------- NnnPicker
 set_api_keymaps('n', '<leader>nn', ':NnnPicker<CR>', { noremap = true, silent = true })
 -------- Navbuddy
-set_api_keymaps('n', '<leader>nav', ':NavBuddy<CR>', { noremap = true, silent = true })
+set_api_keymaps('n', '<leader>nav', ':Navbuddy<CR>', { noremap = true, silent = true })
 
 --
 ---- Telescope keymaps
