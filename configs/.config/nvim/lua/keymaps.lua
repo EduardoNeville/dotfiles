@@ -50,12 +50,18 @@ set_api_keymaps('n', '<leader>a', '/<\\_^i\\+><cr>n:call setpos(".", getpos("\'[
 -- Shortcuts to plugins 
 ------------------------------------------
 ------------------------------------------
+-------- NvimTreeToggle 
+set_api_keymaps('n', '<leader>nt', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
+-------- NnnPicker
+set_api_keymaps('n', '<leader>nn', ':NnnPicker<CR>', { noremap = true, silent = true })
+-------- Navbuddy
+set_api_keymaps('n', '<leader>nav', ':NavBuddy<CR>', { noremap = true, silent = true })
 
 --
 ---- Telescope keymaps
---set_api_keymaps('n', '<leader>tel', ':Telescope<CR>', { noremap = true, silent = true })
---local builtin = require('telescope.builtin')
---set_keymaps('n', '<leader>ff', builtin.find_files, {})
+set_api_keymaps('n', '<leader>tel', ':Telescope<CR>', { noremap = true, silent = true })
+local builtin = require('telescope.builtin')
+set_keymaps('n', '<leader>ff', builtin.find_files, {})
 --vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
 --vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
 --vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})

@@ -138,13 +138,13 @@ return require('packer').startup(function(use)
 
         --use 'luk400/vim-jukit'
         --use 'tpope/vim-fugitive' -- Git
-        use {
-            "folke/which-key.nvim",
-            config = function()
-                vim.o.timeout = true
-                vim.o.timeoutlen = 300
-            end
-        }
+        --use {
+        --    "folke/which-key.nvim",
+        --    config = function()
+        --        vim.o.timeout = true
+        --        vim.o.timeoutlen = 300
+        --    end
+        --}
     }
 
     -------------------------------------
