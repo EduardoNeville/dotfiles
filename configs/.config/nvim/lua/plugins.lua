@@ -14,14 +14,10 @@ end
 vim.cmd [[packadd packer.nvim]]
 
 return require('packer').startup(function(use)
-    -- Packer can manage itself
+    --- Packer can manage itself
     use 'wbthomason/packer.nvim'
 
-    -------------------------------------
-    -------------------------------------
-    -- LSP configs
-    -------------------------------------
-    -------------------------------------
+    --- LSP configs --------------------------------------
     local lsp = use {
         use 'neovim/nvim-lspconfig',
         use 'williamboman/mason.nvim',
@@ -37,14 +33,10 @@ return require('packer').startup(function(use)
         }),
         use 'nanotee/sqls.nvim'
     }
-    -- Copilot
-    -- setup up in pack by cloning the repo
+    --- Copilot ------------------------------------------
+    --- setup up in pack by cloning the repo 
 
-    -------------------------------------
-    -------------------------------------
-    -- UI 
-    -------------------------------------
-    -------------------------------------
+    --- UI ------------------------------------------------
     local ui = use {
         use {
             'lukas-reineke/indent-blankline.nvim', -- Indentations
@@ -147,10 +139,7 @@ return require('packer').startup(function(use)
         --}
     }
 
-    -------------------------------------
-    -- Syntax highlighting
-    -------------------------------------
-
+    --- Syntax highlighting ----------------------------------
     local syntax = use {
         use 'nvim-treesitter/nvim-treesitter-context',
         use 'nvim-treesitter/nvim-treesitter',
@@ -192,12 +181,7 @@ return require('packer').startup(function(use)
         })
     }
 
-    -------------------------------------
-    -------------------------------------
-    -- Colour Schemes 
-    -------------------------------------
-    -------------------------------------
-
+    --- Colour Schemes ------------------------------------------
     local colorscheme = use {
         use 'fcpg/vim-farout',
         use 'folke/tokyonight.nvim', 
@@ -206,12 +190,7 @@ return require('packer').startup(function(use)
         use "EdenEast/nightfox.nvim",
     }
 
-    ------------------------------------- 
-    ------------------------------------- 
-    -- Debugging
-    ------------------------------------- 
-    ------------------------------------- 
-
+    --- Debugging ------------------------------------------------
     local debugging = use {
         use "folke/neodev.nvim",
         --use {
@@ -235,12 +214,7 @@ return require('packer').startup(function(use)
     }
 
 
-    -------------------------------------
-    -------------------------------------
-    -- Misc
-    -------------------------------------
-    -------------------------------------
-
+    --- Misc -----------------------------------------------------
     -- Noice.nvim 
 --        use({
 --                "folke/noice.nvim",
@@ -258,7 +232,7 @@ return require('packer').startup(function(use)
 --                }
 --        })
 
-    -- Colorscheme config
+    --- Colorscheme config ----------------------------------------
     local fm = require 'fluoromachine'
     fm.setup {
         glow = false,

@@ -8,14 +8,10 @@ vim.opt.encoding = 'utf-8'
 -- vim.opt.background_opacity = 0.92
 
 -------------------------------------
--------------------------------------
--- Misc
--------------------------------------
+--- Misc ----------------------------
 -------------------------------------
 
---------
--- Line Info
---------
+--- Line Info -----------------------
 vim.wo.number = true
 vim.wo.relativenumber = true
 
@@ -30,10 +26,7 @@ vim.opt.scrolloff = 10
 vim.opt.shell = 'zsh'
 vim.opt.clipboard:append {'unnamedplus'}
 
-------------
--- Tab info
-------------
-
+--- Tab info ------------------------
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 
@@ -41,10 +34,7 @@ vim.opt.number = true
 vim.opt.cursorline = true
 vim.opt.showmode = true
 
-------------
--- Cursor
-------------
-
+--- Cursor --------------------------
 vim.opt.guicursor = 'n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,sm:block-blinkwait175-blinkoff150-blinkon175'
 --highlight Cursor guifg=white guibg=black
 --highlight iCursor guifg=white guibg=steelblue
@@ -54,27 +44,18 @@ vim.opt.guicursor = 'n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50,a:blinkwait700
 --set guicursor+=i:blinkwait10
 
 
-------------
--- Nvim Tree
-------------
-
+--- Nvim Tree -----------------------
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.opt.termguicolors = true
 
-------------
--- Highlights
-------------
-
+--- Highlights ----------------------
 vim.opt.termguicolors = true
 -- vim.opt.winblend = 0
 vim.opt.wildoptions = 'pum'
 vim.opt.background = 'dark'
 
-------------
--- Theme
-------------
-
+--- Theme ---------------------------
 --local fm = require 'fluoromachine'
 --fm.setup {
 --    glow = false,
