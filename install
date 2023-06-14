@@ -164,23 +164,32 @@ install_formulae() {
   fi
 }
 
-install_oh_my_zsh(){
-	_process "→ Installing Oh-My-Zsh"
- 	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-	[[ $? ]] \
-	&& _success "Installed Oh-My-Zsh"
+install_zsh_plugins()
+    zsh_clone_name="${DIR}/opt/zsh_plugins"
 
-	# autosuggestions plugin
-	_process "Installing autosuggestion plugin"
-	git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+	_process "→ Installing ZSH Plugins"
+    for i in "${!zsh_clone_name[@]}"
+        zsh_plugin_name=${zsh_clone_name[$i]#*/}
+        _process "-> Checking if ${zsh_plugin_name} is installed"
+        if [[ -d ~/.config/zsh/plugins/${zsh_plugin_name} ]]; then
+            _process "→ ${zsh_plugin_name} is already installed"
+        else
+            _process "→ Installing ${zsh_plugin_name}"
+            git clone git@github.com:${zsh_clone_name[$i]}.git ~/.config/zsh/plugins/${zsh_plugin_name}
+        
+
+
+	_process "Installing fast-syntax-highlighting plugin"
+    rm -rf ~/.config/zsh/plugins/fast-syntax-highlighting/
+    git clone git@github.com:zdharma-continuum/fast-syntax-highlighting.git ~/.config/zsh/plugins/fast-syntax-highlighting/
 
 	# syntax highlighting
-	_process "Installing zsh-syntax-highlighting plugin"
-	git clone https://github.com/zsh-users/zsh-syntax-highlighting ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting 
+	_process "Installing zsh--autosuggestions plugin"
+	git clone git@github.com:zsh-users/zsh-autosuggestions.git ~/.config/zsh/plugins/zsh-autosuggestions/
 
 	# fzf-tab highlighting
 	_process "Installing fzf-tab plugin"
-    git clone https://github.com/Aloxaf/fzf-tab ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-tab
+    git clone git@github.com:Aloxaf/fzf-tab.git ~/.config/zsh/plugins/fzf-tab/
 
 }
 
@@ -196,7 +205,7 @@ install_nvim_plugins(){
     nvim --headless -c 'autocmd User PackerComplete quitall' -c 'silent PackerSync'
 }
 
-dwld_arr=( download_dotfiles link_dotfiles install_homebrew install_formulae install_packer install_nvim_plugins )
+dwld_arr=( download_dotfiles link_dotfiles install_homebrew install_formulae install_packer install_nvim_plugins install_zsh_plugins)
 
 buf_arr=()
 precise_install(){

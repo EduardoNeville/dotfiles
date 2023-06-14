@@ -34,7 +34,7 @@ if type brew &>/dev/null; then
     
 fi
 
-### ---- PLUGINS & THEMES -----------------------------------
+### ---- Plugins & Themes -----------------------------------
 
 # ZSH PLUGINS
 fpath=($ZSH/plugins/zsh-completions/src $fpath)
