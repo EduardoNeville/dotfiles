@@ -1,10 +1,8 @@
 local wezterm = require("wezterm")
 
------------------------------------
------------------------------------
--- Theme Cycler
------------------------------------
------------------------------------
+----------------------------------------------------
+--- Theme Cycler -----------------------------------
+----------------------------------------------------
 
 ---cycle through builtin dark schemes in dark mode, 
 ---and through light schemes in light mode
@@ -39,34 +37,24 @@ local function themeCycler(window, _)
 end
 
 ---------------------------------------------------------------
----------------------------------------------------------------
---- Config
----------------------------------------------------------------
+--- Config ----------------------------------------------------
 ---------------------------------------------------------------
 local config = {
 	check_for_updates = false,
 
-    -- https://github.com/tonsky/FiraCode
+    --- https://github.com/tonsky/FiraCode
 	font = wezterm.font('Fira Code', {weight="Regular", stretch='Normal', style='Normal'}),
     font_size = 16,
 
-	-----------------------------------
-	-----------------------------------
-	-- Colour Schemes
-	-----------------------------------
-	-----------------------------------
-
+	--- Colour Schemes ------------------
 	--color_scheme = "Catppuccin", -- Machiatto
 	color_scheme = "Tokyo Night Storm",	
 	--color_scheme = 'Papercolor Light (Gogh)', -- "Aesthetic Night
-
 	color_scheme_dirs = { os.getenv("HOME") .. "/.config/wezterm/colors/" },
 	-- Aesthetic Night Colorscheme
 	bold_brightens_ansi_colors = true,
 
-	------
-	-- Theme Cycler
-	------
+	--- Theme Cycler --------------------
 	keys = {
 		-- Calling the themeCycler
 		{ key = "t", mods = "CTRL", action = wezterm.action_callback(themeCycler) },
@@ -75,34 +63,19 @@ local config = {
 		{ key = "Escape", mods = "CTRL", action = wezterm.action.ShowDebugOverlay },
 	},
 
-	-----------------------------------
-	-----------------------------------
-	-- UI 
-	-----------------------------------
-	-----------------------------------
-    
-    ------
-    -- Underline
-    ------
+	--- UI --------------------------------
+    --- Underline ------
     underline_thickness = 5,
 
-	------
-	-- Cursor style
-	------
+	--- Cursor style ---
 	default_cursor_style = "BlinkingBlock",
 
-	------
-	-- Tab Bar
-	------
-
+	--- Tab Bar --------
 	hide_tab_bar_if_only_one_tab = true,
 	show_tab_index_in_tab_bar = false,
 	tab_bar_at_bottom = true,
 
-	------
-	-- Window Info
-	------
-
+	--- Window Info ----
 	window_background_opacity = 0.85,
 	window_decorations = "RESIZE",
 	scrollback_lines = 5000,
@@ -114,10 +87,7 @@ local config = {
 	    	bottom = 0,
 	},
 
-	------
-	-- Window Frame
-	------
-
+	--- Window Frame ---
 	window_frame = {
 		-- The overall background color of the tab bar when
 		-- the window is focused
@@ -213,6 +183,5 @@ local config = {
 		},
 	}
 }
-
 return config
 
