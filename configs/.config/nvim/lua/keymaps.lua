@@ -33,6 +33,9 @@ set_api_keymaps('i', '[', '[]<Esc>ha', { noremap = true, silent = true })
 --- Map " to insert "" and move the cursor inside the brackets in insert mode
 set_api_keymaps('i', '"', '""<Esc>ha', { noremap = true, silent = true })
 
+--- Replace all instances of a highlighted word in block ---------- 
+set_api_keymaps('v', '<leader>r', [["hy:%s/<C-r>h//gc<left><left><left>]], {noremap = true})
+
 -- selecting multiple non-contiguos lines
 -- map the shortcut key to start selecting blocks of code
 set_api_keymaps('v', '<leader>a', [[:<c-u>let @a=""]]..'\n', {silent=true})

@@ -164,32 +164,24 @@ install_formulae() {
   fi
 }
 
-install_zsh_plugins()
-    zsh_clone_name="${DIR}/opt/zsh_plugins"
+install_zsh_plugins(){
+    _process "→ Installing ZSH Plugins"
+    zsh_plugins="${DIR}/opt/zsh_plugins"
+    # Set the separator to a carriage return & a new line break
+    # read in passed-in file and store as an array
+    IFS=$'\r\n' zsh_clone_names=($(cat "${zsh_plugins}"))
 
-	_process "→ Installing ZSH Plugins"
-    for i in "${!zsh_clone_name[@]}"
-        zsh_plugin_name=${zsh_clone_name[$i]#*/}
-        _process "-> Checking if ${zsh_plugin_name} is installed"
+    for i in "${!zsh_clone_names[@]}"
+    do
+        IFS="/" read user zsh_plugin_name <<< "${zsh_clone_names[$i]}"
+        _process "[$i / ${#zsh_clone_names[@]}] -> Checking if ${zsh_plugin_name} is installed"
         if [[ -d ~/.config/zsh/plugins/${zsh_plugin_name} ]]; then
             _process "→ ${zsh_plugin_name} is already installed"
         else
             _process "→ Installing ${zsh_plugin_name}"
-            git clone git@github.com:${zsh_clone_name[$i]}.git ~/.config/zsh/plugins/${zsh_plugin_name}
-        
-
-
-	_process "Installing fast-syntax-highlighting plugin"
-    rm -rf ~/.config/zsh/plugins/fast-syntax-highlighting/
-    git clone git@github.com:zdharma-continuum/fast-syntax-highlighting.git ~/.config/zsh/plugins/fast-syntax-highlighting/
-
-	# syntax highlighting
-	_process "Installing zsh--autosuggestions plugin"
-	git clone git@github.com:zsh-users/zsh-autosuggestions.git ~/.config/zsh/plugins/zsh-autosuggestions/
-
-	# fzf-tab highlighting
-	_process "Installing fzf-tab plugin"
-    git clone git@github.com:Aloxaf/fzf-tab.git ~/.config/zsh/plugins/fzf-tab/
+            git clone git@github.com:${zsh_clone_names[$i]}.git ~/.config/zsh/plugins/${zsh_plugin_name}
+        fi
+    done
 
 }
 
