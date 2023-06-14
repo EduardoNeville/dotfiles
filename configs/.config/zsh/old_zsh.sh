@@ -1,25 +1,3 @@
-### PATH 
-export PATH=$HOME/bin:/usr/local/bin:$PATH
-
-### ZSH HOME
-export ZSH="$HOME/.config/zsh"
-
-### ---- history config -------------------------------------
-export HISTFILE=$ZSH/.zsh_history
-
-# How many commands zsh will load to memory.
-export HISTSIZE=10000
-
-# How many commands history will save on file.
-export SAVEHIST=10000
-
-# History won't save duplicates.
-setopt HIST_IGNORE_ALL_DUPS
-
-# History won't show duplicates on search.
-setopt HIST_FIND_NO_DUPS
-
-
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -46,6 +24,9 @@ fi
 ## If you come from bash you might have to change your $PATH.
 ## export PATH=$HOME/bin:/usr/local/bin:$PATH
 #
+## Path to your oh-my-zsh installation.
+export ZSH="$HOME/.oh-my-zsh"
+#
 ## To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 if command -v pyenv 1>/dev/null 2>&1; then
@@ -53,31 +34,18 @@ if command -v pyenv 1>/dev/null 2>&1; then
 fi
 
 ZSH_THEME="powerlevel10k/powerlevel10k"
-#ZSH_THEME="jonathan"
+#"minimal"
 #"jonathan"
 #"powerlevel10k/powerlevel10k"
 
-# cd without cd 
-setopt autocd 
+# Set name of the theme to load --- if set to "random", it will
+# load a random theme each time oh-my-zsh is loaded, in which case,
+# to know which specific one was loaded, run: echo $RANDOM_THEME
+# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#
-# PLUGINS 
-#
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting web-search fzf-tab)
 
-source $ZSH/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source $ZSH/plugins/fzf-tab/fzf-tab.plugin.zsh
-source $ZSH/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#
-# THEMES
-#
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-source ~/powerlevel10k/powerlevel10k.zsh-theme
+source $ZSH/oh-my-zsh.sh
 
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
@@ -94,12 +62,21 @@ export OPENAI_API_KEY="$file_content"
 
 source "$HOME/.cargo/env"
 
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#
+# PATH SETUP
+#
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 # Preferred editor for local and remote sessions
-if [[ -n $SSH_CONNECTION ]]; then
-   export EDITOR='nvim'
-else
-   export EDITOR='nvim'
-fi
+ if [[ -n $SSH_CONNECTION ]]; then
+    export EDITOR='nvim'
+ else
+    export EDITOR='nvim'
+ fi
 
 bindkey -v
 export CLICOLOR=1
@@ -186,6 +163,7 @@ alias .3="cd ../../.."
 alias ls="exa --icons --tree --level=2 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
 alias ls3="exa --icons --tree --level=3 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
 alias ls4="exa --icons --tree --level=4 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
+alias lsn="exa --icons --tree --level=2 --sort='name' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
 
 alias lshelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%% 
 ls COMMANDS 
@@ -282,5 +260,4 @@ alias whatsapp='cd ~/.config/WhatsGo/ && go run .'
 # --------------------------------------------------------------------------------
 alias sclist='ghelp;fzfhelp;lshelp' 
 export PATH=$PATH:/Users/eduardoneville82/.spicetify
-
 
