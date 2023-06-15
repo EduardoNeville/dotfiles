@@ -20,7 +20,7 @@ setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_FIND_NO_DUPS
 
 ### ----- configs ------------------------------------------
-bindkey -v
+#bindkey -v
 export CLICOLOR=1
 
 # cd without cd 

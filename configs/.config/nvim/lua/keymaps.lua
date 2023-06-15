@@ -56,6 +56,13 @@ set_api_keymaps('n', '<leader>nn', ':NnnPicker<CR>', { noremap = true, silent = 
 --- Navbuddy -----------------------------
 set_api_keymaps('n', '<leader>nav', ':Navbuddy<CR>', { noremap = true, silent = true })
 
+--- Tmux ---------------------------------
+--- < Control and direction > ------------
+set_api_keymaps('n', '<C-h>', ':TmuxNavigateLeft<CR>', { noremap = true, silent = true })
+set_api_keymaps('n', '<C-j>', ':TmuxNavigateDown<CR>', { noremap = true, silent = true })
+set_api_keymaps('n', '<C-k>', ':TmuxNavigateUp<CR>', { noremap = true, silent = true })
+set_api_keymaps('n', '<C-l>', ':TmuxNavigateRight<CR>', { noremap = true, silent = true })
+
 --- Telescope ---------------------------- 
 set_api_keymaps('n', '<leader>tel', ':Telescope<CR>', { noremap = true, silent = true })
 local builtin = require('telescope.builtin')

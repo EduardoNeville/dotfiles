@@ -18,200 +18,197 @@ return require('packer').startup(function(use)
     use 'wbthomason/packer.nvim'
 
     --- LSP configs --------------------------------------
-    local lsp = use {
-        use 'neovim/nvim-lspconfig',
-        use 'williamboman/mason.nvim',
-        use 'williamboman/mason-lspconfig.nvim',
-        use 'jose-elias-alvarez/null-ls.nvim',
-        use 'jay-babu/mason-null-ls.nvim',
-        use({ "ms-jpq/coq_nvim", branch = "coq" }),
-        --use ("hrsh7th/cmp-nvim-lsp")
+    use 'neovim/nvim-lspconfig'
+    use 'williamboman/mason.nvim'
+    use 'williamboman/mason-lspconfig.nvim'
+    use 'jose-elias-alvarez/null-ls.nvim'
+    use 'jay-babu/mason-null-ls.nvim'
+    use({ "ms-jpq/coq_nvim", branch = "coq" })
+    --use ("hrsh7th/cmp-nvim-lsp")
 
-        -- Scala metals LSP
-        use({'scalameta/nvim-metals',
-            requires = { "nvim-lua/plenary.nvim" }
-        }),
-        use 'nanotee/sqls.nvim'
-    }
+    -- Scala metals LSP
+    use({'scalameta/nvim-metals',
+        requires = { "nvim-lua/plenary.nvim" }
+    })
+    use 'nanotee/sqls.nvim'
     --- Copilot ------------------------------------------
     --- setup up in pack by cloning the repo 
 
     --- UI ------------------------------------------------
-    local ui = use {
-        use {
-            'lukas-reineke/indent-blankline.nvim', -- Indentations
-            config = function()
-                require("indent_blankline").setup {
-                    buftype_exclude = {"terminal"},
-                    show_current_context = true,
-                    show_current_context_start = true,
-                }
-            end
-        },
-        use 'kyazdani42/nvim-web-devicons', -- File icons
-        -- Status line with lualine
-        use {
-            'nvim-lualine/lualine.nvim',
-            requires = {
-                'kyazdani42/nvim-web-devicons',
-                opt = true
+    use {
+        'lukas-reineke/indent-blankline.nvim', -- Indentations
+        config = function()
+            require("indent_blankline").setup {
+                buftype_exclude = {"terminal"},
+                show_current_context = true,
+                show_current_context_start = true,
             }
-        },
-        -- Tree directory using nvim-tree
-        use {
-            'nvim-tree/nvim-tree.lua',
-            config = function()
-                require("nvim-tree").setup {}
-            end
-        },
-        use {
-            "luukvbaal/nnn.nvim",
-            config = function() require("nnn").setup() end
-        },
-
-        -- WinBar using barbecue
-        use({
-            "utilyre/barbecue.nvim",
-            tag = "*",
-            requires = {
-                "SmiteshP/nvim-navic",
-                "nvim-tree/nvim-web-devicons", -- optional dependency
-            },
-            --after = "nvim-web-devicons", -- keep this if you're using NvChad
-            config = function()
-                require("barbecue").setup()
-            end,
-        }),
-        use 'chentoast/marks.nvim',
-
-        -- File navigator using navbuddy
-        use {
-            "SmiteshP/nvim-navbuddy",
-            requires = {
-                "neovim/nvim-lspconfig",
-                "SmiteshP/nvim-navic",
-                "MunifTanjim/nui.nvim",
-                "numToStr/Comment.nvim",        -- Optional
-                "nvim-telescope/telescope.nvim" -- Optional
-            }
-        },
-        use "xiyaowong/transparent.nvim",
-
-        -- Fuzzy Finder
-        use {
-            'nvim-telescope/telescope.nvim', tag = '0.1.1',
-             -- or                         , branch = '0.1.x',
-            requires = { {'nvim-lua/plenary.nvim'} }
-        },
-        use 'BurntSushi/ripgrep',
-
-        -- Markdown Preview
-        use({
-                "iamcco/markdown-preview.nvim",
-                run = function() vim.fn["mkdp#util#install"]() end,
-        }),
-
-        use 'MunifTanjim/nui.nvim',
-        use 'nvim-lua/plenary.nvim',
-
-        use({
-          "jackMort/ChatGPT.nvim",
-            config = function()
-                require("chatgpt").setup({
-                -- optional configuration
-              })
-            end,
-            requires = {
-                "MunifTanjim/nui.nvim",
-                "nvim-lua/plenary.nvim",
-                "nvim-telescope/telescope.nvim"
-            }
-        }),
-
-        --use 'luk400/vim-jukit'
-        --use 'tpope/vim-fugitive' -- Git
-        --use {
-        --    "folke/which-key.nvim",
-        --    config = function()
-        --        vim.o.timeout = true
-        --        vim.o.timeoutlen = 300
-        --    end
-        --}
+        end
     }
+    use 'kyazdani42/nvim-web-devicons' -- File icons
+    -- Status line with lualine
+    use {
+        'nvim-lualine/lualine.nvim',
+        requires = {
+            'kyazdani42/nvim-web-devicons',
+            opt = true
+        }
+    }
+    -- Tree directory using nvim-tree
+    use {
+        'nvim-tree/nvim-tree.lua',
+        config = function()
+            require("nvim-tree").setup {}
+        end
+    }
+    use {
+        "luukvbaal/nnn.nvim",
+        config = function() require("nnn").setup() end
+    }
+
+    -- WinBar using barbecue
+    use({
+        "utilyre/barbecue.nvim",
+        tag = "*",
+        requires = {
+            "SmiteshP/nvim-navic",
+            "nvim-tree/nvim-web-devicons", -- optional dependency
+        },
+        --after = "nvim-web-devicons", -- keep this if you're using NvChad
+        config = function()
+            require("barbecue").setup()
+        end,
+    })
+    use 'chentoast/marks.nvim'
+
+    -- File navigator using navbuddy
+    use {
+        "SmiteshP/nvim-navbuddy",
+        requires = {
+            "neovim/nvim-lspconfig",
+            "SmiteshP/nvim-navic",
+            "MunifTanjim/nui.nvim",
+            "numToStr/Comment.nvim",        -- Optional
+            "nvim-telescope/telescope.nvim" -- Optional
+        }
+    }
+    use "xiyaowong/transparent.nvim"
+
+    -- Fuzzy Finder
+    use {
+        'nvim-telescope/telescope.nvim', tag = '0.1.1',
+         -- or                         , branch = '0.1.x',
+        requires = { {'nvim-lua/plenary.nvim'} }
+    }
+    use 'BurntSushi/ripgrep'
+
+    -- Markdown Preview
+    use({
+            "iamcco/markdown-preview.nvim",
+            run = function() vim.fn["mkdp#util#install"]() end,
+    })
+
+    use 'MunifTanjim/nui.nvim'
+    use 'nvim-lua/plenary.nvim'
+
+    use({
+      "jackMort/ChatGPT.nvim",
+        config = function()
+            require("chatgpt").setup({
+            -- optional configuration
+          })
+        end,
+        requires = {
+            "MunifTanjim/nui.nvim",
+            "nvim-lua/plenary.nvim",
+            "nvim-telescope/telescope.nvim"
+        }
+    })
+
+    use({
+        "aserowy/tmux.nvim",
+        config = function() return require("tmux").setup() end
+    })
+
+    --use 'luk400/vim-jukit'
+    --use 'tpope/vim-fugitive' -- Git
+    --use {
+    --    "folke/which-key.nvim",
+    --    config = function()
+    --        vim.o.timeout = true
+    --        vim.o.timeoutlen = 300
+    --    end
+    --}
 
     --- Syntax highlighting ----------------------------------
-    local syntax = use {
-        use 'nvim-treesitter/nvim-treesitter-context',
-        use 'nvim-treesitter/nvim-treesitter',
-        use {
-            'cameron-wags/rainbow_csv.nvim',
-            config = function()
-                require 'rainbow_csv'.setup()
-            end,
-            -- optional lazy-loading below
-            module = {
-                'rainbow_csv',
-                'rainbow_csv.fns'
-            },
-            ft = {
-                'csv',
-                'tsv',
-                'csv_semicolon',
-                'csv_whitespace',
-                'csv_pipe',
-                'rfc_csv',
-                'rfc_semicolon'
-            }
+    use 'nvim-treesitter/nvim-treesitter-context'
+    use 'nvim-treesitter/nvim-treesitter'
+    use {
+        'cameron-wags/rainbow_csv.nvim',
+        config = function()
+            require 'rainbow_csv'.setup()
+        end,
+        -- optional lazy-loading below
+        module = {
+            'rainbow_csv',
+            'rainbow_csv.fns'
         },
-
-        -- Syntax
-        --use {
-        --    'nmac427/guess-indent.nvim',
-        --    config = function() require('guess-indent').setup {} end,
-        --}
-
-        use({
-            "kylechui/nvim-surround",
-            tag = "*", -- Use for stability; omit to use `main` branch for the latest features
-            config = function()
-                require("nvim-surround").setup({
-                    -- Configuration here, or leave empty to use defaults
-                })
-            end
-        })
+        ft = {
+            'csv',
+            'tsv',
+            'csv_semicolon',
+            'csv_whitespace',
+            'csv_pipe',
+            'rfc_csv',
+            'rfc_semicolon'
+        }
     }
+
+    -- Syntax
+    --use {
+    --    'nmac427/guess-indent.nvim',
+    --    config = function() require('guess-indent').setup {} end,
+    --}
+
+    use({
+        "kylechui/nvim-surround",
+        tag = "*", -- Use for stability; omit to use `main` branch for the latest features
+        config = function()
+            require("nvim-surround").setup({
+                -- Configuration here, or leave empty to use defaults
+            })
+        end
+    })
 
     --- Colour Schemes ------------------------------------------
-    local colorscheme = use {
-        use 'fcpg/vim-farout',
-        use 'folke/tokyonight.nvim', 
-        use {"bluz71/vim-moonfly-colors", as = "moonfly"},
-        use 'maxmx03/fluoromachine.nvim',
-        use "EdenEast/nightfox.nvim",
-    }
+    use 'fcpg/vim-farout'
+    use 'folke/tokyonight.nvim'
+    use {"bluz71/vim-moonfly-colors", as = "moonfly"}
+    use 'maxmx03/fluoromachine.nvim'
+    use "EdenEast/nightfox.nvim"
 
     --- Debugging ------------------------------------------------
-    local debugging = use {
-        use "folke/neodev.nvim",
-        --use {
-        --  "mfussenegger/nvim-dap",
-        --  opt = true,
-        --  event = "BufReadPre",
-        --  module = {"dap"},
-        --  wants = {"nvim-dap-virtual-text", "DAPInstall.nvim", "nvim-dap-ui", "nvim-dap-python"},
-        --  requires = {
-        --    "Pocco81/DAPInstall.nvim",
-        --    "theHamsta/nvim-dap-virtual-text",
-        --    "rcarriga/nvim-dap-ui",
-        --    "mfussenegger/nvim-dap-python",
-        --    "nvim-telescope/telescope-dap.nvim",
-        --    { "jbyuki/one-small-step-for-vimkind", module = "osv" },
-        --  },
-        --  config = function()
-        --    require("config.dap").setup()
-        --  end,
-        --}
-    }
+    --local debugging = use {
+    --    use "folke/neodev.nvim",
+    --    --use {
+    --    --  "mfussenegger/nvim-dap",
+    --    --  opt = true,
+    --    --  event = "BufReadPre",
+    --    --  module = {"dap"},
+    --    --  wants = {"nvim-dap-virtual-text", "DAPInstall.nvim", "nvim-dap-ui", "nvim-dap-python"},
+    --    --  requires = {
+    --    --    "Pocco81/DAPInstall.nvim",
+    --    --    "theHamsta/nvim-dap-virtual-text",
+    --    --    "rcarriga/nvim-dap-ui",
+    --    --    "mfussenegger/nvim-dap-python",
+    --    --    "nvim-telescope/telescope-dap.nvim",
+    --    --    { "jbyuki/one-small-step-for-vimkind", module = "osv" },
+    --    --  },
+    --    --  config = function()
+    --    --    require("config.dap").setup()
+    --    --  end,
+    --    --}
+    --}
 
 
     --- Misc -----------------------------------------------------
