@@ -259,5 +259,6 @@ alias whatsapp='cd ~/.config/WhatsGo/ && go run .'
 # --------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------
 alias sclist='ghelp;fzfhelp;lshelp' 
+
 export PATH=$PATH:/Users/eduardoneville82/.spicetify
 

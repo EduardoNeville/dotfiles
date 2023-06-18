@@ -92,13 +92,33 @@ zstyle ':fzf-tab:*' switch-group ',' '.'
 # fzf-bindings
 zstyle ':fzf-tab:*' fzf-bindings 'ctrl-j:toggle' 'ctrl-a:accept' 'ctrl-a:toggle-all'
 
+### ----- zoxide config ------------------------------------------
+# Preview all past directories stored in zoxide
+cdz() {
+    local dir
+    dir=$(zoxide query --interactive)
+    cd "$dir"
+}
+alias zq="cdz"
+
+alias zhelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%% 
+zoxide COMMANDS 
+%%%%%%%%%%%%%%%%%%%%%%%%%% \n 
+zq -> zoxide query --interactive and cd there \n'"
 
 # ----- NNN SETUP -------------------------------
-export NNN_PLUG='p:preview-tui;f:fzcd;g:gitroot;c:cdpath'
+export NNN_PLUG='p:preview-tui;f:fzcd;g:gitroot;c:cdpath;a:autojump'
 export NNN_FIFO='/tmp/nnn.fifo'
 export NNN_USE_EDITOR='nvim'
 export NNN_ICONS=".config/icons-in-terminal"
-alias nnn='nnn -P p'
+alias nnn='nnn'
+
+#{XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd
+#
+## Quit nnn after chdir
+#if [ -f /usr/share/nnn/quitcd/quitcd.bash_zsh ]; then
+#    source /usr/share/nnn/quitcd/quitcd.bash_zsh
+#fi
 
 # --- POMODORO -------------------------------
 alias pom='~/.config/pomodoro/pomodoro'
@@ -132,12 +152,24 @@ eval $(thefuck --alias)
 
 # --- fzf shortcuts -------------------------------
 _fzf_comprun() {
-    local command=$1
-    shift
+    command=$1
 
     case "$command" in
-        cd)           cd "$(find . -type d \( -name .git -o -name __pycache__ -o -name .mypy_cache -o -name .ipynb_checkpoints \) -prune -o -print | fzf --preview 'exa --icons --tree --level=2 --sort=size --reverse -a -I ".git|__pycache__|.mypy_cache|.ipynb_checkpoints" {}')" ;;
-        *)            fzf "$@" ;;
+        cd)
+            target_dir=$(find . -type d \( -name .git -o -name __pycache__ -o -name .mypy_cache -o -name .ipynb_checkpoints \) -prune -o -print | fzf --preview 'exa --icons --tree --level=2 --sort=size --reverse -a -I ".git|__pycache__|.mypy_cache|.ipynb_checkpoints" {}')
+            if [ -n "$target_dir" ]; then
+                z "$target_dir" 2>/dev/null || cd "$target_dir"
+            fi
+            ;;
+        z)
+            target_dir=$(zoxide query -ls | fzf --preview 'exa --icons --tree --level=2 --sort=size --reverse -a {}')
+            if [ -n "$target_dir" ]; then
+                z "$target_dir" 2>/dev/null || cd "$target_dir"
+            fi
+            ;;
+        *)
+            fzf "$@"
+            ;;
     esac
 }
 
@@ -182,9 +214,17 @@ gstsh -> git stash \n
 gco -> git checkout\n'"
 
 
+# --- Zoxide config ----------------------------------
+eval "$(zoxide init zsh)"
+
 # --- Other shortchuts -------------------------------
 alias whatsapp='cd ~/.config/WhatsGo/ && go run .'
 
 # --- Help -------------------------------
-alias sclist='ghelp;fzfhelp;lshelp' 
+alias sclist='ghelp;fzfhelp;lshelp;zhelp' 
+export PATH=$PATH:/Users/eduardoneville82/.spicetify
+
+
+
+
 
