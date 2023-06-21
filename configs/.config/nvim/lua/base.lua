@@ -1,4 +1,4 @@
-local vim = vim 
+local vim = vim
 vim.cmd('autocmd!')
 
 -- File encoding
@@ -53,7 +53,6 @@ vim.opt.termguicolors = true
 vim.opt.termguicolors = true
 -- vim.opt.winblend = 0
 vim.opt.wildoptions = 'pum'
-vim.opt.background = 'dark'
 
 --- Theme ---------------------------
 --local fm = require 'fluoromachine'

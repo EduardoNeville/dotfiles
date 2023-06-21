@@ -94,12 +94,7 @@ zstyle ':fzf-tab:*' fzf-bindings 'ctrl-j:toggle' 'ctrl-a:accept' 'ctrl-a:toggle-
 
 ### ----- zoxide config ------------------------------------------
 # Preview all past directories stored in zoxide
-cdz() {
-    local dir
-    dir=$(zoxide query --interactive)
-    cd "$dir"
-}
-alias zq="cdz"
+alias zq='cd $(zoxide query --interactive)'
 
 alias zhelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%% 
 zoxide COMMANDS 
@@ -136,6 +131,7 @@ alias .2="cd ../.."
 alias .3="cd ../../.."
 
 # --- ls shortcuts -------------------------------
+alias ls1="exa --icons --tree --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
 alias ls="exa --icons --tree --level=2 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
 alias ls3="exa --icons --tree --level=3 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
 alias ls4="exa --icons --tree --level=4 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
@@ -146,42 +142,27 @@ ls COMMANDS
 %%%%%%%%%%%%%%%%%%%%%%%%%% \n 
 ls  -> exa all files in a tree of depth 2 sorted by size \n 
 ls3 -> exa all files in a tree of depth 3 sorted by size \n 
-ls4 -> exa all files in a tree of depth 4 sorted by size \n" 
+ls4 -> exa all files in a tree of depth 4 sorted by size \n'" 
 
-eval $(thefuck --alias)
 
 # --- fzf shortcuts -------------------------------
-_fzf_comprun() {
-    command=$1
+#_fzf_comprun() {
+#    local target_dir="$(fd --type directory --hidden --exclude .git | fzf-tmux -p --reverse)"
+#    
+#    if [ -n "$target_dir" ]; then
+#        if ! zoxide query --all --exact "$target_dir" >/dev/null 2>&1; then
+#            echo "Add directory to zoxide? [y/n]"
+#            read -r add_to_zoxide
+#            if [ "$add_to_zoxide" = "y" ]; then
+#                zoxide add "$target_dir"
+#            fi
+#        fi
+#        cd "$target_dir"
+#    fi
+#}
 
-    case "$command" in
-        cd)
-            target_dir=$(find . -type d \( -name .git -o -name __pycache__ -o -name .mypy_cache -o -name .ipynb_checkpoints \) -prune -o -print | fzf --preview 'exa --icons --tree --level=2 --sort=size --reverse -a -I ".git|__pycache__|.mypy_cache|.ipynb_checkpoints" {}')
-            if [ -n "$target_dir" ]; then
-                z "$target_dir" 2>/dev/null || cd "$target_dir"
-            fi
-            ;;
-        z)
-            target_dir=$(zoxide query -ls | fzf --preview 'exa --icons --tree --level=2 --sort=size --reverse -a {}')
-            if [ -n "$target_dir" ]; then
-                z "$target_dir" 2>/dev/null || cd "$target_dir"
-            fi
-            ;;
-        *)
-            fzf "$@"
-            ;;
-    esac
-}
-
-alias fp="fzf --preview 'bat --style=numbers --color=always --line-range :500 {}'"
-
-# !!!!!!!!!!!!!!!!!!!!!!!! DO NOT REPLICATE FOR ALL DEVICES THIS ONLY WORKS ON MY MAC 
-#lib_mus =! -path ~/Library/* ! -path ~/Music/?*
-#-not -path "./directory/*"
-#!-path ~/.node-gyp/* not -path "~/Music/*"
-#!-path ~/.node-gyp/* !-path ~/Music/* !-path ~/Documents/* !-path ~/Animation/*
-
-alias fcd="_fzf_comprun cd"
+alias fp='fd --type file --hidden --exclude .git | fzf-tmux -p --reverse | xargs nvim'
+alias fcd='cd $(fd --type d --hidden --exclude .git | fzf-tmux -p --reverse)'
 
 alias fzfhelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%% 
 fzf COMMANDS 
@@ -217,14 +198,14 @@ gco -> git checkout\n'"
 # --- Zoxide config ----------------------------------
 eval "$(zoxide init zsh)"
 
+#eval $(thefuck --alias)
+
 # --- Other shortchuts -------------------------------
 alias whatsapp='cd ~/.config/WhatsGo/ && go run .'
 
 # --- Help -------------------------------
 alias sclist='ghelp;fzfhelp;lshelp;zhelp' 
 export PATH=$PATH:/Users/eduardoneville82/.spicetify
-
-
 
 
 
