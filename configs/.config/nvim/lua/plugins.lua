@@ -79,7 +79,33 @@ return require('packer').startup(function(use)
             require("barbecue").setup()
         end,
     })
-    use 'chentoast/marks.nvim'
+
+    use {
+        'chentoast/marks.nvim',
+        config = {
+            default_mappings = true,
+            signs = true,
+            mappings = {}
+        }
+    }
+
+    --use {
+    --    "folke/flash.nvim",
+    --    config = function()
+    --    local flash = require("flash")
+    --    local keys = {
+    --        { "s", { "n", "x", "o" }, flash.jump, "Flash" },
+    --        { "S", { "n", "o", "x" }, flash.treesitter, "Flash Treesitter" },
+    --        { "r", "o", flash.remote, "Remote Flash" },
+    --        { "R", { "o", "x" }, flash.treesitter_search, "Flash Treesitter Search" },
+    --        { "<c-s>", "c", flash.toggle, "Toggle Flash Search" },
+    --    }
+    --    for _, key in ipairs(keys) do
+    --        local key, mode, func, desc = unpack(key)
+    --        vim.api.nvim_set_keymap(mode, key, '<cmd>lua ' .. func .. '()<cr>', { noremap = true, silent = true})
+    --    end
+    --    end,
+    --}
 
     -- File navigator using navbuddy
     use {
@@ -92,6 +118,7 @@ return require('packer').startup(function(use)
             "nvim-telescope/telescope.nvim" -- Optional
         }
     }
+
     use "xiyaowong/transparent.nvim"
 
     -- Fuzzy Finder
@@ -115,8 +142,14 @@ return require('packer').startup(function(use)
       "jackMort/ChatGPT.nvim",
         config = function()
             require("chatgpt").setup({
-            -- optional configuration
-          })
+                -- optional configuration
+                openai_params = {
+                    model="gpt-4"
+                }, 
+                openai_edit_params = {
+                    model="gpt-4"
+                },
+            })
         end,
         requires = {
             "MunifTanjim/nui.nvim",

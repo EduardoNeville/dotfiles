@@ -30,6 +30,15 @@ vim.opt.clipboard:append {'unnamedplus'}
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 
+vim.api.nvim_exec([[
+  augroup IndentSettings
+    autocmd!
+    autocmd FileType javascript setlocal tabstop=2 shiftwidth=2
+    autocmd FileType html setlocal tabstop=2 shiftwidth=2
+    autocmd FileType css setlocal tabstop=2 shiftwidth=2
+  augroup END
+]], false)
+
 vim.opt.number = true
 vim.opt.cursorline = true
 vim.opt.showmode = true
@@ -43,7 +52,6 @@ vim.opt.guicursor = 'n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50,a:blinkwait700
 --set guicursor+=n-v-c:blinkon0
 --set guicursor+=i:blinkwait10
 
-
 --- Nvim Tree -----------------------
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
@@ -53,6 +61,9 @@ vim.opt.termguicolors = true
 vim.opt.termguicolors = true
 -- vim.opt.winblend = 0
 vim.opt.wildoptions = 'pum'
+
+--- Pane Management -----------------
+
 
 --- Theme ---------------------------
 --local fm = require 'fluoromachine'

@@ -73,11 +73,16 @@ set_keymaps('n', '<leader>ff', builtin.find_files, {})
 
 --- Copilot ------------------------------
 --- Copilot change of key
-vim.g.copilot_no_tab_map = true
 --- Maps copilot accept to Control + J
-set_api_keymaps("i", "<C-J>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
+vim.api.nvim_set_keymap('i', '<C-J>', [[<Cmd>lua require('copilot').Accept("\<CR>")<CR>]], {silent = true, expr = true, noremap = true})
 --- Maps copilot next to Control + K
 set_api_keymaps("i", "<C-K>", 'copilot#Next()', { silent = true, expr = true })
+vim.g.copilot_no_tab_map = true
+
+----
+--- ChatGPT --------------------------------
+---
+set_api_keymaps("n","<leader>cg",":ChatGPT<CR>", { noremap = true, silent = true })
 
 --- LSP ---------------------------------- 
 

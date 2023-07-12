@@ -44,7 +44,7 @@ local config = {
 
     --- https://github.com/tonsky/FiraCode
 	font = wezterm.font('Fira Code', {weight="Regular", stretch='Normal', style='Normal'}),
-    font_size = 15,
+    font_size = 16,
 
 	--- Colour Schemes ------------------
 	--color_scheme = "Catppuccin", -- Machiatto

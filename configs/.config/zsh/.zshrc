@@ -92,6 +92,10 @@ zstyle ':fzf-tab:*' switch-group ',' '.'
 # fzf-bindings
 zstyle ':fzf-tab:*' fzf-bindings 'ctrl-j:toggle' 'ctrl-a:accept' 'ctrl-a:toggle-all'
 
+### ------
+### --- Aliases -----------------
+### ------
+
 ### ----- zoxide config ------------------------------------------
 # Preview all past directories stored in zoxide
 alias zq='cd $(zoxide query --interactive)'
@@ -131,11 +135,11 @@ alias .2="cd ../.."
 alias .3="cd ../../.."
 
 # --- ls shortcuts -------------------------------
-alias ls1="exa --icons --tree --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
-alias ls="exa --icons --tree --level=2 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
-alias ls3="exa --icons --tree --level=3 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
-alias ls4="exa --icons --tree --level=4 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
-alias lsn="exa --icons --tree --level=2 --sort='name' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints'"
+alias ls0="exa --icons --tree --level=1 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
+alias ls="exa  --icons --tree --level=2 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
+alias ls3="exa --icons --tree --level=3 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
+alias ls4="exa --icons --tree --level=4 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
+alias lsn="exa --icons --tree --level=2 --sort='name' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
 
 alias lshelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%% 
 ls COMMANDS 
@@ -146,29 +150,21 @@ ls4 -> exa all files in a tree of depth 4 sorted by size \n'"
 
 
 # --- fzf shortcuts -------------------------------
-#_fzf_comprun() {
-#    local target_dir="$(fd --type directory --hidden --exclude .git | fzf-tmux -p --reverse)"
-#    
-#    if [ -n "$target_dir" ]; then
-#        if ! zoxide query --all --exact "$target_dir" >/dev/null 2>&1; then
-#            echo "Add directory to zoxide? [y/n]"
-#            read -r add_to_zoxide
-#            if [ "$add_to_zoxide" = "y" ]; then
-#                zoxide add "$target_dir"
-#            fi
-#        fi
-#        cd "$target_dir"
-#    fi
-#}
+fzf_cd() {
+    local dir
+    dir=$(fd --type d --hidden --exclude .git | fzf-tmux -p 80%,80% --reverse --preview "exa --icons --tree --level=1 --reverse -a {}")
+    if [ -n "$dir" ]; then
+        cd "$dir"
+    fi
+}
 
-alias fp='fd --type file --hidden --exclude .git | fzf-tmux -p --reverse | xargs nvim'
-alias fcd='cd $(fd --type d --hidden --exclude .git | fzf-tmux -p --reverse)'
-
+alias fp='fd --type file --hidden --exclude .git | fzf-tmux -p 80%,80%  --reverse --preview "bat --style=numbers --color=always {}" | xargs nvim'
+alias fcd='fzf_cd'
 alias fzfhelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%% 
 fzf COMMANDS 
 %%%%%%%%%%%%%%%%%%%%%%%%%% \n 
-fp -> fzf preview with bat \n 
-fcd -> cd from current dir using the fexa cmd \n" 
+fp -> fzf files with bat and open in nvim \n 
+fcd -> cd from current dir \n" 
 
 
 # --- Git shortchuts -------------------------------
@@ -195,8 +191,12 @@ gstsh -> git stash \n
 gco -> git checkout\n'"
 
 
-# --- Zoxide config ----------------------------------
+# --- evals config ----------------------------------
 eval "$(zoxide init zsh)"
+
+# --- tmux config ----------------------------------
+export PATH="$HOME/.config/tmux/plugins/tmuxifier/bin:$PATH"
+eval "$(tmuxifier init -)"
 
 #eval $(thefuck --alias)
 
