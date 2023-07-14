@@ -41,6 +41,7 @@ fpath=($ZSH/plugins/zsh-completions/src $fpath)
 source $ZSH/plugins/fzf-tab/fzf-tab.plugin.zsh
 source $ZSH/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
 source $ZSH/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $ZSH/plugins/zsh-fzf-history-search/zsh-fzf-history-search.zsh
 
 # ZSH THEMES
 #source $ZSH/themes/spaceship-zsh-theme/spaceship.zsh-theme
@@ -98,7 +99,14 @@ zstyle ':fzf-tab:*' fzf-bindings 'ctrl-j:toggle' 'ctrl-a:accept' 'ctrl-a:toggle-
 
 ### ----- zoxide config ------------------------------------------
 # Preview all past directories stored in zoxide
-alias zq='cd $(zoxide query --interactive)'
+zq_cd() {
+    local dir
+    dir=$(zoxide query --interactive)
+    if [ -n "$dir" ]; then
+        cd "$dir"
+    fi
+}
+alias zq='zq_cd'
 
 alias zhelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%% 
 zoxide COMMANDS 
