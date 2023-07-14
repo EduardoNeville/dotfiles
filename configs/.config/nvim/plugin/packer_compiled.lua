@@ -91,10 +91,21 @@ _G.packer_plugins = {
     path = "/Users/eduardoneville82/.local/share/nvim/site/pack/packer/start/barbecue.nvim",
     url = "https://github.com/utilyre/barbecue.nvim"
   },
+  ["better-comments.nvim"] = {
+    loaded = true,
+    path = "/Users/eduardoneville82/.local/share/nvim/site/pack/packer/start/better-comments.nvim",
+    url = "https://github.com/Djancyp/better-comments.nvim"
+  },
   coq_nvim = {
     loaded = true,
     path = "/Users/eduardoneville82/.local/share/nvim/site/pack/packer/start/coq_nvim",
     url = "https://github.com/ms-jpq/coq_nvim"
+  },
+  ["flash.nvim"] = {
+    config = { "\27LJ\2\n´\4\0\0\18\1\22\0B6\0\0\0'\2\1\0B\0\2\0024\1\6\0005\2\2\0005\3\3\0>\3\2\0026\3\0\0'\5\1\0B\3\2\0029\3\4\3>\3\3\2>\2\1\0015\2\5\0005\3\6\0>\3\2\0026\3\0\0'\5\1\0B\3\2\0029\3\a\3>\3\3\2>\2\2\0015\2\b\0006\3\0\0'\5\1\0B\3\2\0029\3\t\3>\3\3\2>\2\3\0015\2\n\0005\3\v\0>\3\2\0026\3\0\0'\5\1\0B\3\2\0029\3\f\3>\3\3\2>\2\4\0015\2\r\0006\3\0\0'\5\1\0B\3\2\0029\3\14\3>\3\3\2>\2\5\0016\2\15\0\18\4\1\0B\2\2\4X\5\14€6\a\16\0\18\t\6\0B\a\2\5-\v\0\0009\v\17\v9\v\18\v\18\r\b\0\18\14\a\0'\15\19\0\18\16\t\0'\17\20\0&\15\17\0155\16\21\0B\v\5\1E\5\3\3R\5ð\127K\0\1\0\0\0\1\0\2\fnoremap\2\vsilent\2\v()<cr>\14<cmd>lua \20nvim_set_keymap\bapi\vunpack\vipairs\vtoggle\1\5\0\0\14<leader>f\6l\0\24Toggle Flash Search\22treesitter_search\1\3\0\0\6o\6x\1\5\0\0\6R\0\0\28Flash Treesitter Search\vremote\1\5\0\0\6r\6o\0\17Remote Flash\15treesitter\1\4\0\0\6n\6o\6x\1\5\0\0\6S\0\0\21Flash Treesitter\tjump\1\4\0\0\6n\6x\6o\1\5\0\0\6s\0\0\nFlash\nflash\frequire\0" },
+    loaded = true,
+    path = "/Users/eduardoneville82/.local/share/nvim/site/pack/packer/start/flash.nvim",
+    url = "https://github.com/folke/flash.nvim"
   },
   ["fluoromachine.nvim"] = {
     loaded = true,
@@ -167,6 +178,12 @@ _G.packer_plugins = {
     loaded = true,
     path = "/Users/eduardoneville82/.local/share/nvim/site/pack/packer/start/null-ls.nvim",
     url = "https://github.com/jose-elias-alvarez/null-ls.nvim"
+  },
+  ["nvim-colorizer.lua"] = {
+    config = { "\27LJ\2\n;\0\0\3\0\3\0\a6\0\0\0'\2\1\0B\0\2\0029\0\2\0004\2\0\0B\0\2\1K\0\1\0\nsetup\14colorizer\frequire\0" },
+    loaded = true,
+    path = "/Users/eduardoneville82/.local/share/nvim/site/pack/packer/start/nvim-colorizer.lua",
+    url = "https://github.com/norcalli/nvim-colorizer.lua"
   },
   ["nvim-lspconfig"] = {
     loaded = true,
@@ -301,29 +318,10 @@ if not vim.g.packer_custom_loader_enabled then
   vim.g.packer_custom_loader_enabled = true
 end
 
--- Config for: ChatGPT.nvim
-time([[Config for ChatGPT.nvim]], true)
-try_loadstring("\27LJ\2\n‹\1\0\0\4\0\b\0\v6\0\0\0'\2\1\0B\0\2\0029\0\2\0005\2\4\0005\3\3\0=\3\5\0025\3\6\0=\3\a\2B\0\2\1K\0\1\0\23openai_edit_params\1\0\1\nmodel\ngpt-4\18openai_params\1\0\0\1\0\1\nmodel\ngpt-4\nsetup\fchatgpt\frequire\0", "config", "ChatGPT.nvim")
-time([[Config for ChatGPT.nvim]], false)
--- Config for: nnn.nvim
-time([[Config for nnn.nvim]], true)
-try_loadstring("\27LJ\2\n1\0\0\3\0\3\0\0066\0\0\0'\2\1\0B\0\2\0029\0\2\0B\0\1\1K\0\1\0\nsetup\bnnn\frequire\0", "config", "nnn.nvim")
-time([[Config for nnn.nvim]], false)
--- Config for: marks.nvim
-time([[Config for marks.nvim]], true)
-time([[Config for marks.nvim]], false)
 -- Config for: tmux.nvim
 time([[Config for tmux.nvim]], true)
 try_loadstring("\27LJ\2\n.\0\0\3\0\3\0\0056\0\0\0'\2\1\0B\0\2\0029\0\2\0D\0\1\0\nsetup\ttmux\frequire\0", "config", "tmux.nvim")
 time([[Config for tmux.nvim]], false)
--- Config for: nvim-surround
-time([[Config for nvim-surround]], true)
-try_loadstring("\27LJ\2\n?\0\0\3\0\3\0\a6\0\0\0'\2\1\0B\0\2\0029\0\2\0004\2\0\0B\0\2\1K\0\1\0\nsetup\18nvim-surround\frequire\0", "config", "nvim-surround")
-time([[Config for nvim-surround]], false)
--- Config for: indent-blankline.nvim
-time([[Config for indent-blankline.nvim]], true)
-try_loadstring("\27LJ\2\nœ\1\0\0\4\0\6\0\t6\0\0\0'\2\1\0B\0\2\0029\0\2\0005\2\4\0005\3\3\0=\3\5\2B\0\2\1K\0\1\0\20buftype_exclude\1\0\2\31show_current_context_start\2\25show_current_context\2\1\2\0\0\rterminal\nsetup\21indent_blankline\frequire\0", "config", "indent-blankline.nvim")
-time([[Config for indent-blankline.nvim]], false)
 -- Config for: nvim-tree.lua
 time([[Config for nvim-tree.lua]], true)
 try_loadstring("\27LJ\2\n;\0\0\3\0\3\0\a6\0\0\0'\2\1\0B\0\2\0029\0\2\0004\2\0\0B\0\2\1K\0\1\0\nsetup\14nvim-tree\frequire\0", "config", "nvim-tree.lua")
@@ -332,6 +330,33 @@ time([[Config for nvim-tree.lua]], false)
 time([[Config for barbecue.nvim]], true)
 try_loadstring("\27LJ\2\n6\0\0\3\0\3\0\0066\0\0\0'\2\1\0B\0\2\0029\0\2\0B\0\1\1K\0\1\0\nsetup\rbarbecue\frequire\0", "config", "barbecue.nvim")
 time([[Config for barbecue.nvim]], false)
+-- Config for: nnn.nvim
+time([[Config for nnn.nvim]], true)
+try_loadstring("\27LJ\2\n1\0\0\3\0\3\0\0066\0\0\0'\2\1\0B\0\2\0029\0\2\0B\0\1\1K\0\1\0\nsetup\bnnn\frequire\0", "config", "nnn.nvim")
+time([[Config for nnn.nvim]], false)
+-- Config for: marks.nvim
+time([[Config for marks.nvim]], true)
+time([[Config for marks.nvim]], false)
+-- Config for: indent-blankline.nvim
+time([[Config for indent-blankline.nvim]], true)
+try_loadstring("\27LJ\2\nœ\1\0\0\4\0\6\0\t6\0\0\0'\2\1\0B\0\2\0029\0\2\0005\2\4\0005\3\3\0=\3\5\2B\0\2\1K\0\1\0\20buftype_exclude\1\0\2\31show_current_context_start\2\25show_current_context\2\1\2\0\0\rterminal\nsetup\21indent_blankline\frequire\0", "config", "indent-blankline.nvim")
+time([[Config for indent-blankline.nvim]], false)
+-- Config for: nvim-surround
+time([[Config for nvim-surround]], true)
+try_loadstring("\27LJ\2\n?\0\0\3\0\3\0\a6\0\0\0'\2\1\0B\0\2\0029\0\2\0004\2\0\0B\0\2\1K\0\1\0\nsetup\18nvim-surround\frequire\0", "config", "nvim-surround")
+time([[Config for nvim-surround]], false)
+-- Config for: flash.nvim
+time([[Config for flash.nvim]], true)
+try_loadstring("\27LJ\2\n´\4\0\0\18\1\22\0B6\0\0\0'\2\1\0B\0\2\0024\1\6\0005\2\2\0005\3\3\0>\3\2\0026\3\0\0'\5\1\0B\3\2\0029\3\4\3>\3\3\2>\2\1\0015\2\5\0005\3\6\0>\3\2\0026\3\0\0'\5\1\0B\3\2\0029\3\a\3>\3\3\2>\2\2\0015\2\b\0006\3\0\0'\5\1\0B\3\2\0029\3\t\3>\3\3\2>\2\3\0015\2\n\0005\3\v\0>\3\2\0026\3\0\0'\5\1\0B\3\2\0029\3\f\3>\3\3\2>\2\4\0015\2\r\0006\3\0\0'\5\1\0B\3\2\0029\3\14\3>\3\3\2>\2\5\0016\2\15\0\18\4\1\0B\2\2\4X\5\14€6\a\16\0\18\t\6\0B\a\2\5-\v\0\0009\v\17\v9\v\18\v\18\r\b\0\18\14\a\0'\15\19\0\18\16\t\0'\17\20\0&\15\17\0155\16\21\0B\v\5\1E\5\3\3R\5ð\127K\0\1\0\0\0\1\0\2\fnoremap\2\vsilent\2\v()<cr>\14<cmd>lua \20nvim_set_keymap\bapi\vunpack\vipairs\vtoggle\1\5\0\0\14<leader>f\6l\0\24Toggle Flash Search\22treesitter_search\1\3\0\0\6o\6x\1\5\0\0\6R\0\0\28Flash Treesitter Search\vremote\1\5\0\0\6r\6o\0\17Remote Flash\15treesitter\1\4\0\0\6n\6o\6x\1\5\0\0\6S\0\0\21Flash Treesitter\tjump\1\4\0\0\6n\6x\6o\1\5\0\0\6s\0\0\nFlash\nflash\frequire\0", "config", "flash.nvim")
+time([[Config for flash.nvim]], false)
+-- Config for: ChatGPT.nvim
+time([[Config for ChatGPT.nvim]], true)
+try_loadstring("\27LJ\2\n‹\1\0\0\4\0\b\0\v6\0\0\0'\2\1\0B\0\2\0029\0\2\0005\2\4\0005\3\3\0=\3\5\0025\3\6\0=\3\a\2B\0\2\1K\0\1\0\23openai_edit_params\1\0\1\nmodel\ngpt-4\18openai_params\1\0\0\1\0\1\nmodel\ngpt-4\nsetup\fchatgpt\frequire\0", "config", "ChatGPT.nvim")
+time([[Config for ChatGPT.nvim]], false)
+-- Config for: nvim-colorizer.lua
+time([[Config for nvim-colorizer.lua]], true)
+try_loadstring("\27LJ\2\n;\0\0\3\0\3\0\a6\0\0\0'\2\1\0B\0\2\0029\0\2\0004\2\0\0B\0\2\1K\0\1\0\nsetup\14colorizer\frequire\0", "config", "nvim-colorizer.lua")
+time([[Config for nvim-colorizer.lua]], false)
 vim.cmd [[augroup packer_load_aucmds]]
 vim.cmd [[au!]]
   -- Filetype lazy-loads

@@ -26,7 +26,7 @@ vim.opt.scrolloff = 10
 vim.opt.shell = 'zsh'
 vim.opt.clipboard:append {'unnamedplus'}
 
---- Tab info ------------------------
+--- Tabs ------------------------
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 
@@ -38,6 +38,9 @@ vim.api.nvim_exec([[
     autocmd FileType css setlocal tabstop=2 shiftwidth=2
   augroup END
 ]], false)
+
+--- Folds ----------------------
+vim.opt.foldmethod = 'indent'
 
 vim.opt.number = true
 vim.opt.cursorline = true

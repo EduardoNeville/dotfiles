@@ -31,6 +31,10 @@ return require('packer').startup(function(use)
         requires = { "nvim-lua/plenary.nvim" }
     })
     use 'nanotee/sqls.nvim'
+
+    --- Coc.nvim ----------------------------------------
+    use {'neoclide/coc.nvim', branch = 'release'}
+
     --- Copilot ------------------------------------------
     --- setup up in pack by cloning the repo 
 
@@ -61,6 +65,14 @@ return require('packer').startup(function(use)
             require("nvim-tree").setup {}
         end
     }
+
+    use {'Djancyp/better-comments.nvim'}
+    use {'norcalli/nvim-colorizer.lua',
+        config = function()
+            require("colorizer").setup {}
+        end;
+        }
+
     use {
         "luukvbaal/nnn.nvim",
         config = function() require("nnn").setup() end
@@ -89,23 +101,23 @@ return require('packer').startup(function(use)
         }
     }
 
-    --use {
-    --    "folke/flash.nvim",
-    --    config = function()
-    --    local flash = require("flash")
-    --    local keys = {
-    --        { "s", { "n", "x", "o" }, flash.jump, "Flash" },
-    --        { "S", { "n", "o", "x" }, flash.treesitter, "Flash Treesitter" },
-    --        { "r", "o", flash.remote, "Remote Flash" },
-    --        { "R", { "o", "x" }, flash.treesitter_search, "Flash Treesitter Search" },
-    --        { "<c-s>", "c", flash.toggle, "Toggle Flash Search" },
-    --    }
-    --    for _, key in ipairs(keys) do
-    --        local key, mode, func, desc = unpack(key)
-    --        vim.api.nvim_set_keymap(mode, key, '<cmd>lua ' .. func .. '()<cr>', { noremap = true, silent = true})
-    --    end
-    --    end,
-    --}
+    use {
+        "folke/flash.nvim",
+        config = function()
+        local flash = require("flash")
+        local keys = {
+            { "s", { "n", "x", "o" }, require("flash").jump, "Flash" },
+            { "S", { "n", "o", "x" }, require("flash").treesitter, "Flash Treesitter" },
+            { "r", "o", require("flash").remote, "Remote Flash" },
+            { "R", { "o", "x" }, require("flash").treesitter_search, "Flash Treesitter Search" },
+            { "<leader>f", "l", require("flash").toggle, "Toggle Flash Search" },
+        }
+        for _, key in ipairs(keys) do
+            local key, mode, func, desc = unpack(key)
+            vim.api.nvim_set_keymap(mode, key, '<cmd>lua ' .. func .. '()<cr>', { noremap = true, silent = true})
+        end
+        end,
+    }
 
     -- File navigator using navbuddy
     use {
