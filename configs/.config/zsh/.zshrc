@@ -127,8 +127,15 @@ alias nnn='nnn'
 #    source /usr/share/nnn/quitcd/quitcd.bash_zsh
 #fi
 
-# --- POMODORO -------------------------------
+# ---
+# --- CLI -----------------------------------
+# ---
+
+# --- POMODORO ------------------------------
 alias pom='~/.config/pomodoro/pomodoro'
+
+# --- BARD ----------------------------------
+alias bc='bard-cli'
 
 # -------------------------------  
 # --- SHORTCUTS -----------------
@@ -160,7 +167,7 @@ ls4 -> exa all files in a tree of depth 4 sorted by size \n'"
 # --- fzf shortcuts -------------------------------
 fzf_cd() {
     local dir
-    dir=$(fd --type d --hidden --exclude .git | fzf-tmux -p 80%,80% --reverse --preview "exa --icons --tree --level=1 --reverse -a {}")
+    dir=$(fd --type d --hidden --exclude .git | fzf-tmux -p 90%,80% --reverse --preview "exa --icons --tree --level=1 --reverse -a {}")
     if [ -n "$dir" ]; then
         cd "$dir"
     fi
@@ -182,8 +189,9 @@ alias gac='git add . && git commit'
 alias gps='git push'
 alias gpl='git pull'
 alias gf='git fetch'
-alias gstat='git status'
-alias gstsh='git stash'
+alias gl='git log'
+alias gst='git status'
+alias gst='git stash'
 alias gco='git checkout'
 alias ghelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%% 
 github COMMANDS 
@@ -194,8 +202,9 @@ gac -> git add . && git commit \n
 gps -> git push \n
 gpl -> git pull \n
 gf -> git fetch \n
-gstat -> git status \n
-gstsh -> git stash \n
+gl -> git log \n
+gst -> git status \n
+gss -> git stash \n
 gco -> git checkout\n'"
 
 
