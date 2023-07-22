@@ -191,7 +191,7 @@ alias gpl='git pull'
 alias gf='git fetch'
 alias gl='git log'
 alias gst='git status'
-alias gst='git stash'
+alias gss='git stash'
 alias gco='git checkout'
 alias ghelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%% 
 github COMMANDS 
