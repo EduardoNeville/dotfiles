@@ -16,6 +16,7 @@ local lsp_servers = {
     sqlls = {},
     metals = {},
     hdl_checker = {},
+    dockerls = {},
     --rome = {},
     --ruff_lsp = {},
     --eslint = {},
@@ -25,6 +26,7 @@ local lsp_servers = {
     --tflint = {},
     --sumneko_lua = { Lua = { diagnostics = { globals = { "vim" } } } },
     --yamlls = {},
+    --
 }
 
 

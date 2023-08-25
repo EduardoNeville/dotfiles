@@ -1,19 +1,6 @@
-local vim = vim
-
-local ensure_packer = function()
-    local fn = vim.fn
-    local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
-        if fn.empty(fn.glob(install_path)) > 0 then
-            fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
-            vim.cmd [[packadd packer.nvim]]
-            return true
-        end
-    return false
-end
-
 vim.cmd [[packadd packer.nvim]]
 
-return require('packer').startup(function(use)
+return require('packer').startup(function()
     --- Packer can manage itself
     use 'wbthomason/packer.nvim'
 
@@ -101,24 +88,6 @@ return require('packer').startup(function(use)
         }
     }
 
-    use {
-        "folke/flash.nvim",
-        config = function()
-        local flash = require("flash")
-        local keys = {
-            { "s", { "n", "x", "o" }, require("flash").jump, "Flash" },
-            { "S", { "n", "o", "x" }, require("flash").treesitter, "Flash Treesitter" },
-            { "r", "o", require("flash").remote, "Remote Flash" },
-            { "R", { "o", "x" }, require("flash").treesitter_search, "Flash Treesitter Search" },
-            { "<leader>f", "l", require("flash").toggle, "Toggle Flash Search" },
-        }
-        for _, key in ipairs(keys) do
-            local key, mode, func, desc = unpack(key)
-            vim.api.nvim_set_keymap(mode, key, '<cmd>lua ' .. func .. '()<cr>', { noremap = true, silent = true})
-        end
-        end,
-    }
-
     -- File navigator using navbuddy
     use {
         "SmiteshP/nvim-navbuddy",
@@ -187,7 +156,22 @@ return require('packer').startup(function(use)
 
     --- Syntax highlighting ----------------------------------
     use 'nvim-treesitter/nvim-treesitter-context'
-    use 'nvim-treesitter/nvim-treesitter'
+    --use 'nvim-treesitter/nvim-treesitter'
+    -- tree-sitter
+    use { 'nvim-treesitter/nvim-treesitter' , 
+      run = ':TSUpdate',
+      config = function()
+        require'nvim-treesitter.configs'.setup {
+          highlight = {
+            enable = true,
+            custom_captures = {
+             -- Highlight the @foo.bar capture group with the "Identifier" highlight group.
+             ["foo.bar"] = "Identifier",
+            },
+          },
+        }
+      end,}
+
     use {
         'cameron-wags/rainbow_csv.nvim',
         config = function()
@@ -225,12 +209,19 @@ return require('packer').startup(function(use)
         end
     })
 
+    use('MunifTanjim/prettier.nvim')
+
     --- Colour Schemes ------------------------------------------
     use 'fcpg/vim-farout'
     use 'folke/tokyonight.nvim'
     use {"bluz71/vim-moonfly-colors", as = "moonfly"}
     use 'maxmx03/fluoromachine.nvim'
     use "EdenEast/nightfox.nvim"
+    use 'shaunsingh/moonlight.nvim'
+    use {
+        "nobbmaestro/nvim-andromeda",
+        requires = { "tjdevries/colorbuddy.nvim", branch = "dev" }
+    }
 
     --- Debugging ------------------------------------------------
     --local debugging = use {
@@ -300,12 +291,8 @@ return require('packer').startup(function(use)
                 comment = '#57ff00',
                 orange = '#f38e21',
                 pink = '#ffadff',
-                purple = '#9544f7',
-            }
-        end,
+                purple = '#9544f7'}
+            end
     }
     vim.cmd.colorscheme('fluoromachine')
 end)
-
-
-

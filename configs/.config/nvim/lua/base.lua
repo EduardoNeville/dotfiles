@@ -1,5 +1,4 @@
 local vim = vim
-vim.cmd('autocmd!')
 
 -- File encoding
 vim.scriptencoding = 'utf-8'
@@ -27,17 +26,15 @@ vim.opt.shell = 'zsh'
 vim.opt.clipboard:append {'unnamedplus'}
 
 --- Tabs ------------------------
-vim.opt.tabstop = 4
-vim.opt.shiftwidth = 4
+vim.cmd.tabstop = 4
+vim.cmd.shiftwidth = 4
 
-vim.api.nvim_exec([[
-  augroup IndentSettings
-    autocmd!
-    autocmd FileType javascript setlocal tabstop=2 shiftwidth=2
-    autocmd FileType html setlocal tabstop=2 shiftwidth=2
-    autocmd FileType css setlocal tabstop=2 shiftwidth=2
-  augroup END
-]], false)
+vim.api.nvim_command('autocmd FileType python setlocal tabstop=4 shiftwidth=4')
+vim.api.nvim_command('autocmd FileType lua setlocal tabstop=4 shiftwidth=4')
+vim.api.nvim_command('autocmd FileType javascript setlocal tabstop=2 shiftwidth=2')
+vim.api.nvim_command('autocmd FileType typescript setlocal tabstop=2 shiftwidth=2')
+vim.api.nvim_command('autocmd FileType html setlocal tabstop=2 shiftwidth=2')
+vim.api.nvim_command('autocmd FileType css setlocal tabstop=2 shiftwidth=2')
 
 --- Folds ----------------------
 vim.opt.foldmethod = 'indent'
@@ -65,39 +62,36 @@ vim.opt.termguicolors = true
 -- vim.opt.winblend = 0
 vim.opt.wildoptions = 'pum'
 
---- Pane Management -----------------
-
-
 --- Theme ---------------------------
---local fm = require 'fluoromachine'
---fm.setup {
---    glow = false,
---    theme = 'retrowave',
---    transparent = false,
---    overrides = {
---        ['@type'] = { italic = true, bold = false },
---        ['@function'] = { italic = false, bold = false },
---        ['@comment'] = { italic = true , bold = false},
---        ['@keyword'] = { italic = false , bold= false},
---        ['@constant'] = { italic = false, bold = false },
---        ['@variable'] = { italic = true , bold= false},
---        ['@field'] = { italic = true , bold= false},
---        ['@parameter'] = { italic = true , bold= false},
---    },
---    colors = function(_, d)
---        return {
---            bg = '#190920',
---            alt_bg = d('#190920', 20),
---            cyan = '#49eaff',
---            red = '#ff1e34',
---            yellow = '#ffe756',
---            comment = '#57ff00', 
---            orange = '#f38e21',
---            pink = '#ffadff',
---            purple = '#9544f7',
---        }
---    end,
---
---}
---
---vim.cmd.colorscheme('fluoromachine')
+    --local fm = require 'fluoromachine'
+    --fm.setup {
+    --    glow = false,
+    --    theme = 'retrowave',
+    --    transparent = false,
+    --    overrides = {
+    --        ['@type'] = { italic = true, bold = false },
+    --        ['@function'] = { italic = false, bold = false },
+    --        ['@comment'] = { italic = true , bold = false},
+    --        ['@keyword'] = { italic = false , bold= false},
+    --        ['@constant'] = { italic = false, bold = false },
+    --        ['@variable'] = { italic = true , bold= false},
+    --        ['@field'] = { italic = true , bold= false},
+    --        ['@parameter'] = { italic = true , bold= false},
+    --    },
+    --    colors = function(_, d)
+    --        return {
+    --            bg = '#190920',
+    --            alt_bg = d('#190920', 20),
+    --            cyan = '#49eaff',
+    --            red = '#ff1e34',
+    --            yellow = '#ffe756',
+    --            comment = '#57ff00', 
+    --            orange = '#f38e21',
+    --            pink = '#ffadff',
+    --            purple = '#9544f7',
+    --        }
+    --    end,
+    --
+    --}
+    --
+    --vim.cmd.colorscheme('fluoromachine')
