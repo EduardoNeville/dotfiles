@@ -193,6 +193,7 @@ alias gl='git log'
 alias gst='git status'
 alias gss='git stash'
 alias gco='git checkout'
+alias lg='lazygit'
 alias ghelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%% 
 github COMMANDS 
 %%%%%%%%%%%%%%%%%%%%%%%%%% 
@@ -205,8 +206,11 @@ gf -> git fetch \n
 gl -> git log \n
 gst -> git status \n
 gss -> git stash \n
-gco -> git checkout\n'"
+gco -> git checkout\n
+lg -> lazygit\n'"
 
+# --- Docker ----------------------------------
+alias ld='lazydocker'
 
 # --- evals config ----------------------------------
 eval "$(zoxide init zsh)"
