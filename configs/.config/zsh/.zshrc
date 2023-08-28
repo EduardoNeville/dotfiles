@@ -216,7 +216,7 @@ alias ld='lazydocker'
 eval "$(zoxide init zsh)"
 
 # --- tmux config ----------------------------------
-export PATH="$HOME/.config/tmux/plugins/tmuxifier/bin:$PATH"
+export PATH="~/.tmuxifier/bin:$PATH"
 eval "$(tmuxifier init -)"
 
 #eval $(thefuck --alias)
@@ -227,6 +227,5 @@ alias whatsapp='cd ~/.config/WhatsGo/ && go run .'
 # --- Help -------------------------------
 alias sclist='ghelp;fzfhelp;lshelp;zhelp' 
 export PATH=$PATH:/Users/eduardoneville82/.spicetify
-
 
 

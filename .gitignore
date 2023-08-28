@@ -4,3 +4,4 @@ configs/.config/github-copilot/
 configs/.config/spotify-tui/.spotify_token_cache.json
 configs/.config/thefuck/__pycache__/
 configs/.config/zsh/.zsh_history
+configs/.config/nvim/plugin/packer_compiled.lua
