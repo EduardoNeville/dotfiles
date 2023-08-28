@@ -218,7 +218,9 @@ return require('packer').startup(function()
         end
     })
 
-    use('MunifTanjim/prettier.nvim')
+    use 'ggandor/lightspeed.nvim'
+
+    use 'prettier/vim-prettier'
 
     --- Colour Schemes ------------------------------------------
     use 'fcpg/vim-farout'

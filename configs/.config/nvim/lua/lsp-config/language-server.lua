@@ -78,14 +78,12 @@ local coq = require("coq")
 -- activated for them at the same time.
 for lsp, settings in pairs(lsp_servers) do
     require("lspconfig")[lsp].setup(coq.lsp_ensure_capabilities({
-        on_attach = function(_, buffer)
+        on_attach = function(client, buffer)
             server_maps({ buffer = buffer })
+            navbuddy.attach(client, buffer)
         end,
-    on_attach = function(client, bufnr)
-        navbuddy.attach(client, bufnr)
-    end,
-    settings = settings,
-  }))
+        settings = settings,
+    }))
 end
 
 

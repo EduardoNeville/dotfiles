@@ -26,19 +26,37 @@ vim.opt.shell = 'zsh'
 vim.opt.clipboard:append {'unnamedplus'}
 
 --- Tabs ------------------------
-vim.cmd.tabstop = 4
-vim.cmd.shiftwidth = 4
+local languages = {
+    {4, {'python', 'lua'}},
+    {2, {'javascript','typescript', 'html', 'css'}}
+}
 
-vim.api.nvim_command('autocmd FileType python setlocal tabstop=4 shiftwidth=4')
-vim.api.nvim_command('autocmd FileType lua setlocal tabstop=4 shiftwidth=4')
-vim.api.nvim_command('autocmd FileType javascript setlocal tabstop=2 shiftwidth=2')
-vim.api.nvim_command('autocmd FileType typescript setlocal tabstop=2 shiftwidth=2')
-vim.api.nvim_command('autocmd FileType html setlocal tabstop=2 shiftwidth=2')
-vim.api.nvim_command('autocmd FileType css setlocal tabstop=2 shiftwidth=2')
+vim.cmd('autocmd FileType python setlocal tabstop=4 shiftwidth=4')
+vim.cmd('autocmd FileType lua setlocal tabstop=4 shiftwidth=4')
+vim.cmd('autocmd FileType javascript setlocal tabstop=2 shiftwidth=2')
+vim.cmd('autocmd FileType typescript setlocal tabstop=2 shiftwidth=2')
+vim.cmd('autocmd FileType html setlocal tabstop=2 shiftwidth=2')
+vim.cmd('autocmd FileType css setlocal tabstop=2 shiftwidth=2')
+
+
+for _, kv in ipairs(languages) do
+    local tabstop = kv[1]
+    local languages = kv[2]
+
+    for _, language in ipairs(languages) do
+        vim.api.nvim_create_autocmd('FileType', {
+            desc = 'Local tabstop',
+            pattern = language,
+            callback = function (opts)
+                vim.api.nvim_set_option('tabstop', tabstop)
+                vim.api.nvim_set_option('shiftwidth', tabstop)
+            end,
+        })
+    end
+end
 
 --- Folds ----------------------
 vim.opt.foldmethod = 'indent'
-
 vim.opt.number = true
 vim.opt.cursorline = true
 vim.opt.showmode = true
@@ -58,8 +76,6 @@ vim.g.loaded_netrwPlugin = 1
 vim.opt.termguicolors = true
 
 --- Highlights ----------------------
-vim.opt.termguicolors = true
--- vim.opt.winblend = 0
 vim.opt.wildoptions = 'pum'
 
 --- Theme ---------------------------
