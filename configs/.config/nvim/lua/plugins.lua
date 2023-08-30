@@ -21,6 +21,7 @@ return require('packer').startup(function()
     use 'jay-babu/mason-null-ls.nvim'
     use({ "ms-jpq/coq_nvim", branch = "coq" })
     --use ("hrsh7th/cmp-nvim-lsp")
+    use 'mattn/emmet-vim'
 
     -- Scala metals LSP
     use({'scalameta/nvim-metals',
