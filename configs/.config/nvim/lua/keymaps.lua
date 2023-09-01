@@ -19,14 +19,13 @@ vim.cmd('nnoremap s <Nop>')
 --- Move lines up (k) and down (j) --------
 
 --- Map <leader> k to move the current line up in normal mode
-set_api_keymaps('n', '<leader>k', ":m .-2<CR>==", { noremap = true, silent = true })
-set_api_keymaps('v', '<leader>k', ":'<,'>m '<-2<CR>gv=gv", { noremap = true, silent = true })
+set_api_keymaps('n', '<M-k>', ":m .-2<CR>==", { noremap = true, silent = true })
+set_api_keymaps('v', '<M-k>', ":'<,'>m '<-2<CR>gv=gv", { noremap = true, silent = true })
 
 --- Map <leader> j to move the current line down in normal mode
 
-set_api_keymaps('n', '<leader>j', ":m .+1<CR>==", { noremap = true, silent = true })
-
-set_api_keymaps('v', '<leader>j', ":'>m '>+1<CR>gv=gv", { noremap = true, silent = true })
+set_api_keymaps('n', '<M-j>', ":m .+1<CR>==", { noremap = true, silent = true })
+set_api_keymaps('v', '<M-j>', ":'>m '>+1<CR>gv=gv", { noremap = true, silent = true })
 
 --- Insert closing sign after {, (, [, " --------
 
