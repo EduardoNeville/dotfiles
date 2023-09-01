@@ -13,7 +13,6 @@ require("nvim-tree").setup { -- BEGIN_DEFAULT_OPTS
     reload_on_bufenter = false,
     respect_buf_cwd = false,
     on_attach = "default",
-    remove_keymaps = false,
     select_prompts = false,
     view = {
         centralize_selection = false,
@@ -26,12 +25,6 @@ require("nvim-tree").setup { -- BEGIN_DEFAULT_OPTS
         number = false,
         relativenumber = false,
         signcolumn = "yes",
-        mappings = {
-            custom_only = false,
-            list = {
-              -- user mappings go here
-            },
-        },
         float = {
             enable = false,
             quit_on_focus_loss = true,
