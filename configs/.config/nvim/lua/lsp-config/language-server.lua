@@ -14,14 +14,25 @@ local lsp_servers = {
     html = {},
     lua_ls = {},
     sqlls = {},
-    metals = {},
     hdl_checker = {},
     dockerls = {},
+    capabilities = vim.lsp.protocol.make_client_capabilities(),
+    filetypes = {"css", "html", "javascript", "javascriptreact", "typescriptreact"},
+    init_options = {
+        html = {
+            options = {
+                ["bem.enabled"] = true,
+            },
+        },
+    },
+    metals = {},
+    emmet_ls = {
+    },
+    tailwindcss = {},
     --rome = {},
     --ruff_lsp = {},
     --eslint = {},
     --jsonls = {},
-    --tailwindcss = {},
     --terraformls = {},
     --tflint = {},
     --sumneko_lua = { Lua = { diagnostics = { globals = { "vim" } } } },
