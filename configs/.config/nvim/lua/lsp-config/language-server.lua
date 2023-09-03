@@ -16,17 +16,17 @@ local lsp_servers = {
     sqlls = {},
     hdl_checker = {},
     dockerls = {},
-    capabilities = vim.lsp.protocol.make_client_capabilities(),
-    filetypes = {"css", "html", "javascript", "javascriptreact", "typescriptreact"},
-    init_options = {
-        html = {
-            options = {
-                ["bem.enabled"] = true,
-            },
-        },
-    },
     metals = {},
     emmet_ls = {
+        capabilities = vim.lsp.protocol.make_client_capabilities(),
+        filetypes = {"css", "html", "javascript", "javascriptreact", "typescriptreact"},
+        init_options = {
+            html = {
+                options = {
+                    ["bem.enabled"] = true,
+                },
+            },
+        },
     },
     tailwindcss = {},
     --rome = {},
@@ -94,7 +94,9 @@ for lsp, settings in pairs(lsp_servers) do
             navbuddy.attach(client, buffer)
         end,
         settings = settings,
-    }))
+    }
+
+    ))
 end
 
 
