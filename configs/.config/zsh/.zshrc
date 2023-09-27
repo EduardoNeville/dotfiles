@@ -229,3 +229,10 @@ alias sclist='ghelp;fzfhelp;lshelp;zhelp'
 export PATH=$PATH:/Users/eduardoneville82/.spicetify
 
 
+
+# bun completions
+[ -s "/Users/eduardoneville82/.bun/_bun" ] && source "/Users/eduardoneville82/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"

@@ -72,7 +72,13 @@ return require('packer').startup(function()
 
     use {
         "luukvbaal/nnn.nvim",
-        config = function() require("nnn").setup() end
+        config = function() require("nnn").setup({
+            picker = {
+                cmd = "tmux new-session nnn -Pp",
+                offset = true,
+            },
+            replace_netrw = "picker",
+        }) end
     }
 
     -- WinBar using barbecue
