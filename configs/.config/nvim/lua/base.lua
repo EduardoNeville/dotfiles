@@ -26,30 +26,40 @@ vim.opt.shell = 'zsh'
 vim.opt.clipboard:append {'unnamedplus'}
 
 --- Tabs ------------------------
-local languages = {
-    {4, {'python', 'lua'}},
-    {2, {'javascript','typescript', 'html', 'css', 'typescriptreact'}}
-}
+-- Define the function
+function set_tabstop(languages)
+    for _, lang in ipairs(languages) do
+        local ts = lang.tabstop -- Tabstop value for this language
+        local filetypes = lang.filetypes -- List of filetypes for this language
 
-vim.cmd('autocmd FileType python setlocal tabstop=4 shiftwidth=4')
-vim.cmd('autocmd FileType lua setlocal tabstop=4 shiftwidth=4')
-vim.cmd('autocmd FileType javascript setlocal tabstop=2 shiftwidth=2')
-vim.cmd('autocmd FileType typescript setlocal tabstop=2 shiftwidth=2')
-vim.cmd('autocmd FileType typescriptreact setlocal tabstop=2 shiftwidth=2')
-vim.cmd('autocmd FileType html setlocal tabstop=2 shiftwidth=2')
-vim.cmd('autocmd FileType css setlocal tabstop=2 shiftwidth=2')
-vim.cmd('autocmd FileType c setlocal tabstop=2 shiftwidth=2')
-vim.cmd('autocmd FileType cpp setlocal tabstop=2 shiftwidth=2')
-
-
-for _, kv in ipairs(languages) do
-    local tabstop = kv[1]
-    local languages = kv[2]
-
-    for _, language in ipairs(languages) do
-        vim.cmd('autocmd FileType language setlocal tabstop=tabstop shiftwidth=tabstop')
+        for _, ft in ipairs(filetypes) do
+            local cmd = string.format("autocmd FileType %s setlocal tabstop=%d shiftwidth=%d", ft, ts, ts)
+            vim.cmd(cmd)
+        end
     end
 end
+
+-- Example usage
+local languages = {
+    {   tabstop = 4,
+        filetypes = {'python', 'lua', 'conf', 'sh', 'cpp', 'zsh'}
+    },
+    {   tabstop = 2,
+        filetypes = { 'javascript', 'typescript', 'html', 'css', 'typescriptreact', 'c', 'json'}
+    }
+}
+
+set_tabstop(languages)
+
+---vim.cmd('autocmd FileType python setlocal tabstop=4 shiftwidth=4')
+---vim.cmd('autocmd FileType lua setlocal tabstop=4 shiftwidth=4')
+---vim.cmd('autocmd FileType javascript setlocal tabstop=2 shiftwidth=2')
+---vim.cmd('autocmd FileType typescript setlocal tabstop=2 shiftwidth=2')
+---vim.cmd('autocmd FileType typescriptreact setlocal tabstop=2 shiftwidth=2')
+---vim.cmd('autocmd FileType html setlocal tabstop=2 shiftwidth=2')
+---vim.cmd('autocmd FileType css setlocal tabstop=2 shiftwidth=2')
+---vim.cmd('autocmd FileType c setlocal tabstop=2 shiftwidth=2')
+---vim.cmd('autocmd FileType cpp setlocal tabstop=2 shiftwidth=2')
 
 --- Folds ----------------------
 vim.opt.foldmethod = 'indent'

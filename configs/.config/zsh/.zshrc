@@ -75,8 +75,7 @@ fi
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
 ### ----- ChatGPT config ------------------------------------------# ChatGPT OPENAI_API_KEY
-file_content=$(cat $HOME/openAI_key.txt)
-export OPENAI_API_KEY="$file_content"
+export OPENAI_API_KEY="$(cat $HOME/OPENAI_API_KEY.txt)"
 
 
 ### ----- fzf-tab config ------------------------------------------
@@ -91,7 +90,7 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath' # 
 # switch group using `,` and `.`
 zstyle ':fzf-tab:*' switch-group ',' '.'
 # fzf-bindings
-zstyle ':fzf-tab:*' fzf-bindings 'ctrl-j:toggle' 'ctrl-a:accept' 'ctrl-a:toggle-all'
+zstyle ':fzf-tab:*' fzf-bindings 'space:toggle' 'ctrl-a:accept' 'ctrl-A:toggle-all'
 
 ### ------
 ### --- Aliases -----------------
@@ -227,8 +226,6 @@ alias whatsapp='cd ~/.config/WhatsGo/ && go run .'
 # --- Help -------------------------------
 alias sclist='ghelp;fzfhelp;lshelp;zhelp' 
 export PATH=$PATH:/Users/eduardoneville82/.spicetify
-
-
 
 # bun completions
 [ -s "/Users/eduardoneville82/.bun/_bun" ] && source "/Users/eduardoneville82/.bun/_bun"

@@ -161,7 +161,7 @@ return require('packer').startup(function()
     })
 
     --use 'luk400/vim-jukit'
-    --use 'tpope/vim-fugitive' -- Git
+    use 'tpope/vim-fugitive' -- Git
     --use {
     --    "folke/which-key.nvim",
     --    config = function()
