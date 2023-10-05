@@ -15,9 +15,10 @@ GITHUB_USER=EduardoNeville
 GITHUB_REPO=dotfiles
 DIR="${DOTFILES_DIR}/${GITHUB_REPO}"
 
+
 _process() {
-    echo "$(date) PROCESSING:  $@" >> $LOG
-    printf "$(tput setaf 6) %s...$(tput sgr0)\n" "$@"
+    #echo "$(date) PROCESSING:  $@" >> $LOG
+    #printf "$(tput setaf 6) %s...$(tput sgr0)\n" "$@"
 }
 
 _success() {

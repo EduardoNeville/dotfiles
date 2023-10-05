@@ -1,15 +1,15 @@
 
 local status, ts = pcall(require, "nvim-treesitter.configs")
 if (not status) then return end
-
+ts.build = ":TSUpdate"
 ts.setup {
     highlight = {
-    enable = true,
-    disable = {},
+        enable = true,
+        disable = {},
     },
     indent = {
-    enable = true,
-    disable = {},
+        enable = true,
+        disable = {},
     },
     ensure_installed = {
         "markdown",
@@ -25,9 +25,11 @@ ts.setup {
         "sql",
         "vim",
         "glsl",
-        "javascript"
+        "javascript",
+        "typescript",
+        "bash",
     },
     autotag = {
-            enable = true,
+        enable = true,
     },
 }

@@ -42,7 +42,7 @@ end
 -- Example usage
 local languages = {
     {   tabstop = 4,
-        filetypes = {'python', 'lua', 'conf', 'sh', 'cpp', 'zsh'}
+        filetypes = {'python', 'lua', 'conf', 'sh', 'cpp', 'zsh', 'vhdl'}
     },
     {   tabstop = 2,
         filetypes = { 'javascript', 'typescript', 'html', 'css', 'typescriptreact', 'c', 'json'}
