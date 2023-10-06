@@ -214,10 +214,6 @@ alias ld='lazydocker'
 # --- evals config ----------------------------------
 eval "$(zoxide init zsh)"
 
-# --- tmux config ----------------------------------
-export PATH="~/.tmuxifier/bin:$PATH"
-eval "$(tmuxifier init -)"
-
 #eval $(thefuck --alias)
 
 # --- Other shortchuts -------------------------------
