@@ -112,7 +112,7 @@ install_homebrew() {
 }
 
 install_formulae() {
-if [ "$PACKAGE_MANAGER" == "apt" ]; then
+if [ "$PACKAGE_MANAGER" == "brew" ]; then
     if ! type -P 'brew' &> /dev/null; then
         _error "Homebrew not found"
     else
@@ -181,6 +181,7 @@ elif [ "$PACKAGE_MANAGER" == "apt" ]; then
         _process "→ Installing apt packages"
         # Set variable for list of apt packages
         packages="${DIR}/opt/apt"
+        echo "${DIR}"
         # Update and upgrade all packages
         _process "→ Updating and upgrading apt packages"
         sudo apt update
@@ -196,7 +197,7 @@ elif [ "$PACKAGE_MANAGER" == "apt" ]; then
         do
             # Test whether an apt package is already installed
             echo "→ Checking status of ${formulae[$index]}"
-            dpkg -s "${formulae[$index]}" >/dev/null 2>&1 || sudo apt install -y "${formulae[$index]}"
+            dpkg -s "${formulae[$index]}" >/dev/null 2>&1 || sudo apt install "${formulae[$index]}"
         done
         # Reset IFS back
         IFS=$OIFS
@@ -218,7 +219,7 @@ install_zsh_plugins(){
     do
         IFS="/" read user zsh_plugin_name <<< "${zsh_clone_names[$i]}"
         _process "[$i / ${#zsh_clone_names[@]}] -> Checking if ${zsh_plugin_name} is installed"
-        if [[ -d ~/.config/zsh/plugins/${zsh_plugin_name} ]]; then
+        if [[ -d ~/.config/zsh/plugins/${zsh_plugin_name}/${zsh_plugin_name}.plugin.zsh]]; then
             _process "→ ${zsh_plugin_name} is already installed"
         else
             _process "→ Installing ${zsh_plugin_name}"

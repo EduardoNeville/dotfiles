@@ -1,5 +1,4 @@
 wezterm
-font-hack-nerd-font
 nnn
 btop
 tree-sitter
@@ -30,6 +29,7 @@ luajit
 lua-language-server
 rust
 sqlite
+font-hack-nerd-font
 spotify-tui
 spotifyd
 cookiecutter
