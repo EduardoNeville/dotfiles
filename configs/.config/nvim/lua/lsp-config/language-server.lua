@@ -28,7 +28,6 @@ local lsp_servers = {
             },
         },
     },
-    tailwindcss = {},
     --rome = {},
     --ruff_lsp = {},
     --eslint = {},
@@ -94,9 +93,7 @@ for lsp, settings in pairs(lsp_servers) do
             navbuddy.attach(client, buffer)
         end,
         settings = settings,
-    }
-
-    ))
+    }))
 end
 
 
