@@ -1,6 +1,6 @@
 ### ---- PATH config ----------------------------------------
 export PATH=$HOME/bin:/usr/local/bin:$PATH
-
+export PATH="$HOME/.local/bin:$PATH"
 ### ZSH HOME
 export ZSH=$HOME/.config/zsh
 
@@ -172,7 +172,17 @@ fzf_cd() {
     fi
 }
 
-alias fp='fd --type file --hidden --exclude .git | fzf-tmux -p 80%,80%  --reverse --preview "bat --style=numbers --color=always {}" | xargs nvim'
+fp_cd() {
+    local file
+    file=$(fd --type file --hidden --exclude .git | fzf-tmux -p 80%,80%  --reverse --preview "bat --style=numbers --color=always {}")
+    echo $file
+    if [ -n "$file" ]; then
+        nvim "$file"
+    fi
+}
+
+alias fp='fp_cd'
+#'fd --type file --hidden --exclude .git | fzf-tmux -p 80%,80%  --reverse --preview "bat --style=numbers --color=always {}" | xargs nvim'
 alias fcd='fzf_cd'
 alias fzfhelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%% 
 fzf COMMANDS 

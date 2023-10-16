@@ -2,5 +2,6 @@
   "dependencies": {
     "coc-emmet": ">=1.1.6",
     "@yaegassy/coc-tailwindcss3": ">=0.5.4"
-  }
+  },
+  "lastUpdate": 1697366657583
 }
