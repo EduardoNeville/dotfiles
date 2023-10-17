@@ -117,7 +117,6 @@ export NNN_PLUG='p:preview-tui;f:fzcd;g:gitroot;c:cdpath;a:autojump'
 export NNN_FIFO='/tmp/nnn.fifo'
 export NNN_USE_EDITOR='nvim'
 export NNN_ICONS=".config/icons-in-terminal"
-alias nnn='nnn'
 
 #{XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd
 #
@@ -131,11 +130,7 @@ alias nnn='nnn'
 # ---
 
 # --- Markdown on zathura -------------------
-mtozar() {
-    local path_file=$1
-    cat $path_file | pandoc -f markdown -t pdf | zathura -
-}
-alias mtozar='mtozar'
+alias mtozar="cat $1 | pandoc -f markdown -t pdf | zathura -"
 
 # --- POMODORO ------------------------------
 alias pom='~/.config/pomodoro/pomodoro'
@@ -197,6 +192,8 @@ fzf COMMANDS
 fp -> fzf files with bat and open in nvim \n 
 fcd -> cd from current dir \n" 
 
+# --- Tmux shortcuts -------------------------------
+alias tmux="TERM=xterm-256color tmux"
 
 # --- Git shortchuts -------------------------------
 alias ga='git add .'

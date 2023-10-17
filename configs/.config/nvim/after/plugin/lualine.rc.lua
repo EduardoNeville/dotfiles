@@ -1,8 +1,8 @@
 local vim = vim 
 
--- Custom background
+-- Custom background for duskfox
 local custom_duskfox = require'lualine.themes.duskfox'
-custom_duskfox.normal.c.bg = "#2e3540"
+custom_duskfox.normal.c.bg = "#080062"
 
 local status, lualine = pcall(require, "lualine")
 if (not status) then return end
