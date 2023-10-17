@@ -130,6 +130,13 @@ alias nnn='nnn'
 # --- CLI -----------------------------------
 # ---
 
+# --- Markdown on zathura -------------------
+mtozar() {
+    local path_file=$1
+    cat $path_file | pandoc -f markdown -t pdf | zathura -
+}
+alias mtozar='mtozar'
+
 # --- POMODORO ------------------------------
 alias pom='~/.config/pomodoro/pomodoro'
 
