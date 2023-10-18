@@ -240,6 +240,7 @@ return require('packer').startup(function()
         "nobbmaestro/nvim-andromeda",
         requires = { "tjdevries/colorbuddy.nvim", branch = "dev" }
     }
+    use 'zanglg/nova.nvim'
 
     --- Debugging ------------------------------------------------
     --local debugging = use {

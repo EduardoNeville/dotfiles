@@ -130,7 +130,15 @@ export NNN_ICONS=".config/icons-in-terminal"
 # ---
 
 # --- Markdown on zathura -------------------
-alias mtozar="cat $1 | pandoc -f markdown -t pdf | zathura -"
+mtozar_func() {
+  local file=$1
+  if [ -f "$file" ]; then
+    cat $file | pandoc -f markdown -t pdf | zathura -
+  else
+    echo "File $file does not exist"
+  fi
+}
+alias mtozar='mtozar_func'
 
 # --- POMODORO ------------------------------
 alias pom='~/.config/pomodoro/pomodoro'
@@ -229,9 +237,6 @@ alias ld='lazydocker'
 eval "$(zoxide init zsh)"
 
 #eval $(thefuck --alias)
-
-# --- Other shortchuts -------------------------------
-alias whatsapp='cd ~/.config/WhatsGo/ && go run .'
 
 # --- Help -------------------------------
 alias sclist='ghelp;fzfhelp;lshelp;zhelp' 

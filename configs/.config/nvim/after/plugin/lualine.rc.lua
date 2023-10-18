@@ -2,7 +2,9 @@ local vim = vim
 
 -- Custom background for duskfox
 local custom_duskfox = require'lualine.themes.duskfox'
+local custom_nova = require'lualine.themes.nova'
 custom_duskfox.normal.c.bg = "#080062"
+custom_nova.normal.c.bg = "#080062"
 
 local status, lualine = pcall(require, "lualine")
 if (not status) then return end
@@ -25,7 +27,7 @@ end
 lualine.setup {
     options = {
         icons_enabled = true,
-        theme = custom_duskfox, -- "duskfox",
+        theme = custom_duskfox, -- custom_nova, -- "nova", -- custom_duskfox, -- "duskfox",
         section_separators = { left = '', right = '' },
         --  
         --   
