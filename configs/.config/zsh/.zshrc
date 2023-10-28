@@ -168,9 +168,11 @@ alias lsn="exa --icons --tree --level=2 --sort='name' --reverse -a -I '.git|__py
 alias lshelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%% 
 ls COMMANDS 
 %%%%%%%%%%%%%%%%%%%%%%%%%% \n 
+ls0 -> exa all files in a tree of depth 1 sorted by size \n 
 ls  -> exa all files in a tree of depth 2 sorted by size \n 
 ls3 -> exa all files in a tree of depth 3 sorted by size \n 
-ls4 -> exa all files in a tree of depth 4 sorted by size \n'" 
+ls4 -> exa all files in a tree of depth 4 sorted by size \n 
+lsn -> exa all files in a tree of depth 4 sorted by name \n'" 
 
 
 # --- fzf shortcuts -------------------------------

@@ -241,6 +241,7 @@ return require('packer').startup(function()
         requires = { "tjdevries/colorbuddy.nvim", branch = "dev" }
     }
     use 'zanglg/nova.nvim'
+    use 'jaredgorski/SpaceCamp'
 
     --- Debugging ------------------------------------------------
     --local debugging = use {

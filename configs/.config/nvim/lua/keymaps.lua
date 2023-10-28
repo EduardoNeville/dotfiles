@@ -15,20 +15,18 @@ vim.cmd('nnoremap s <Nop>')
 --- Movements ----------------------------
 ------------------------------------------
 
-
 --- Move lines up (k) and down (j) --------
-
+---
 --- Map <leader> k to move the current line up in normal mode
 set_api_keymaps('n', '<M-k>', ":m .-2<CR>==", { noremap = true, silent = true })
 set_api_keymaps('v', '<M-k>', ":'<,'>m '<-2<CR>gv=gv", { noremap = true, silent = true })
-
 --- Map <leader> j to move the current line down in normal mode
 
 set_api_keymaps('n', '<M-j>', ":m .+1<CR>==", { noremap = true, silent = true })
 set_api_keymaps('v', '<M-j>', ":'>m '>+1<CR>gv=gv", { noremap = true, silent = true })
 
 --- Insert closing sign after {, (, [, " --------
-
+---
 --- Map { to insert {} and move the cursor inside the braces in insert mode
 set_api_keymaps('i', '{', '{}<Esc>ha', { noremap = true, silent = true })
 --- Map ( to insert () and move the cursor inside the parentheses in insert mode
@@ -40,6 +38,9 @@ set_api_keymaps('i', '"', '""<Esc>ha', { noremap = true, silent = true })
 
 --- Replace all instances of a highlighted word in block ---------- 
 set_api_keymaps('v', '<leader>r', [["hy:%s/<C-r>h//gc<left><left><left>]], {noremap = true})
+
+--- Remap pasted over text to void reg
+set_api_keymaps('v', '<leader>p', "\"_dP", {noremap = true})
 
 -- selecting multiple non-contiguos lines
 -- map the shortcut key to start selecting blocks of code
@@ -89,6 +90,9 @@ vim.g.copilot_no_tab_map = true
 --- ChatGPT --------------------------------
 ---
 set_api_keymaps("n","<leader>cg",":ChatGPT<CR>", { noremap = true, silent = true })
+set_api_keymaps("n","<leader>cga",":ChatGPTActAs<CR>", { noremap = true, silent = true })
+set_api_keymaps("n","<leader>cgi",":ChatGPTEditWithInstructions<CR>", { noremap = true, silent = true })
+
 
 --- LSP ---------------------------------- 
 
