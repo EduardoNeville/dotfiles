@@ -15,7 +15,6 @@ GITHUB_USER=EduardoNeville
 GITHUB_REPO=dotfiles
 DIR="${DOTFILES_DIR}/${GITHUB_REPO}"
 
-
 _process() {
     echo "$(date) PROCESSING:  $@" >> $LOG
     printf "$(tput setaf 6) %s...$(tput sgr0)\n" "$@"
@@ -44,7 +43,6 @@ download_dotfiles() {
     # Change to the dotfiles directory
     cd "${DIR}"
 }
-
 
 # Check if program exists 
 function program_exists() {
@@ -85,7 +83,7 @@ link_dotfiles() {
 				IFS=$' '
 				# create an array of line items
 				file=(${links[$index]})
-		# Remove previos file
+		# Remove previous file
 		rm -rf "${HOME}/${file[1]}"
 		# Create symbolic link
 		ln -fs "${DIR}/${file[0]}" "${HOME}/${file[1]}"
@@ -112,100 +110,99 @@ install_homebrew() {
 }
 
 install_formulae() {
-if [ "$PACKAGE_MANAGER" == "brew" ]; then
-    if ! type -P 'brew' &> /dev/null; then
-        _error "Homebrew not found"
-    else
-        _process "→ Installing Homebrew packages"
+	if [ "$PACKAGE_MANAGER" == "brew" ]; then
+		if ! type -P 'brew' &> /dev/null; then
+			_error "Homebrew not found"
+		else
+			_process "→ Installing Homebrew packages"
 
-        # Set variable for list of homebrew formulaes
-        taps="${DIR}/opt/brew_tap"
-        brews="${DIR}/opt/homebrew"
+			# Set variable for list of homebrew formulaes
+			taps="${DIR}/opt/brew_tap"
+			brews="${DIR}/opt/homebrew"
 
 
-        # Update and upgrade all packages
-        _process "→ Updating and upgrading Homebrew packages"
-        brew update
-        brew upgrade
+			# Update and upgrade all packages
+			_process "→ Updating and upgrading Homebrew packages"
+			brew update
+			brew upgrade
 
-        # Tap some necessary formulae
-        _process "-> Checking status of brew taps "
-        # Set the separator to a carriage return & a new line break
-        # read in passed-in file and store as an array
-        IFS=$'\r\n' brew_taps=($(cat "${taps}"))
+			# Tap some necessary formulae
+			_process "-> Checking status of brew taps "
+			# Set the separator to a carriage return & a new line break
+			# read in passed-in file and store as an array
+			IFS=$'\r\n' brew_taps=($(cat "${taps}"))
 
-        # Loop through split list of brew_taps
-        _process "→ Checking status of desired Homebrew brew_taps"
-        for index in ${!brew_taps[*]}
-        do
-            # Test whether a Homebrew formula is already installed
-            echo "→ Checking status of ${brew_taps[$index]}"
-            program_exists "${brew_taps[$index]}" || brew tap "${brew_taps[$index]}"
-            if ! brew list ${brew_taps[$index]} &> /dev/null; then
-              echo "→ Installing ${brew_taps[$index]}"
-              brew install ${brew_taps[$index]}
-            fi
-        done
+			# Loop through split list of brew_taps
+			_process "→ Checking status of desired Homebrew brew_taps"
+			for index in ${!brew_taps[*]}
+			do
+				# Test whether a Homebrew formula is already installed
+				echo "→ Checking status of ${brew_taps[$index]}"
+				program_exists "${brew_taps[$index]}" || brew tap "${brew_taps[$index]}"
+				if ! brew list ${brew_taps[$index]} &> /dev/null; then
+				  echo "→ Installing ${brew_taps[$index]}"
+				  brew install ${brew_taps[$index]}
+				fi
+			done
 
-        # Store IFS within a temp variable
-        OIFS=$IFS
+			# Store IFS within a temp variable
+			OIFS=$IFS
 
-        # Set the separator to a carriage return & a new line break
-        # read in passed-in file and store as an array
-        IFS=$'\r\n' formulae=($(cat "${brews}"))
+			# Set the separator to a carriage return & a new line break
+			# read in passed-in file and store as an array
+			IFS=$'\r\n' formulae=($(cat "${brews}"))
 
-        # Loop through split list of formulae
-        _process "→ Checking status of desired Homebrew formulae"
-        for index in ${!formulae[*]}
-        do
-            # Test whether a Homebrew formula is already installed
-            echo "→ Checking status of ${formulae[$index]}"
-            program_exists "${formulae[$index]}" || brew install "${formulae[$index]}"
-            if ! brew list ${formulae[$index]} &> /dev/null; then
-              echo "→ Installing ${formulae[$index]}"
-              brew install ${formulae[$index]}
-            fi
-        done
+			# Loop through split list of formulae
+			_process "→ Checking status of desired Homebrew formulae"
+			for index in ${!formulae[*]}
+			do
+				# Test whether a Homebrew formula is already installed
+				echo "→ Checking status of ${formulae[$index]}"
+				program_exists "${formulae[$index]}" || brew install "${formulae[$index]}"
+				if ! brew list ${formulae[$index]} &> /dev/null; then
+				  echo "→ Installing ${formulae[$index]}"
+				  brew install ${formulae[$index]}
+				fi
+			done
 
-        # Reset IFS back
-        IFS=$OIFS
+			# Reset IFS back
+			IFS=$OIFS
 
-        brew cleanup
+			brew cleanup
 
-        [[ $? ]] && _success "All Homebrew packages installed and updated"
-    fi
-elif [ "$PACKAGE_MANAGER" == "apt" ]; then
-    if ! type -P 'apt' &> /dev/null; then
-        _error "apt not found"
-    else
-        _process "→ Installing apt packages"
-        # Set variable for list of apt packages
-        packages="${DIR}/opt/apt"
-        echo "${DIR}"
-        # Update and upgrade all packages
-        _process "→ Updating and upgrading apt packages"
-        sudo apt update
-        sudo apt upgrade
-        # Store IFS within a temp variable
-        OIFS=$IFS
-        # Set the separator to a carriage return & a new line break
-        # read in passed-in file and store as an array
-        IFS=$'\r\n' formulae=($(cat "${packages}"))
-        # Loop through split list of formulae
-        _process "→ Checking status of desired apt packages"
-        for index in ${!formulae[*]}
-        do
-            # Test whether an apt package is already installed
-            echo "→ Checking status of ${formulae[$index]}"
-            dpkg -s "${formulae[$index]}" >/dev/null 2>&1 || sudo apt install "${formulae[$index]}"
-        done
-        # Reset IFS back
-        IFS=$OIFS
-        sudo apt autoremove
-        [[ $? ]] && _success "All apt packages installed and updated"
-    fi
-fi
-
+			[[ $? ]] && _success "All Homebrew packages installed and updated"
+		fi
+	elif [ "$PACKAGE_MANAGER" == "apt" ]; then
+		if ! type -P 'apt' &> /dev/null; then
+			_error "apt not found"
+		else
+			_process "→ Installing apt packages"
+			# Set variable for list of apt packages
+			packages="${DIR}/opt/apt"
+			echo "${DIR}"
+			# Update and upgrade all packages
+			_process "→ Updating and upgrading apt packages"
+			sudo apt update
+			sudo apt upgrade
+			# Store IFS within a temp variable
+			OIFS=$IFS
+			# Set the separator to a carriage return & a new line break
+			# read in passed-in file and store as an array
+			IFS=$'\r\n' formulae=($(cat "${packages}"))
+			# Loop through split list of formulae
+			_process "→ Checking status of desired apt packages"
+			for index in ${!formulae[*]}
+			do
+				# Test whether an apt package is already installed
+				echo "→ Checking status of ${formulae[$index]}"
+				dpkg -s "${formulae[$index]}" >/dev/null 2>&1 || sudo apt install "${formulae[$index]}"
+			done
+			# Reset IFS back
+			IFS=$OIFS
+			sudo apt autoremove
+			[[ $? ]] && _success "All apt packages installed and updated"
+		fi
+	fi
 }
 
 install_zsh_plugins(){
@@ -227,7 +224,6 @@ install_zsh_plugins(){
             git clone git@github.com:${zsh_clone_names[$i]}.git ~/.config/zsh/plugins/${zsh_plugin_name}
         #fi
     done
-
 }
 
 install_packer(){

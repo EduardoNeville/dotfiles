@@ -31,7 +31,6 @@ if type brew &>/dev/null; then
 
     autoload -Uz compinit
     compinit -i
-    
 fi
 
 ### ---- Plugins & Themes -----------------------------------
@@ -39,7 +38,7 @@ fi
 # ZSH PLUGINS
 fpath=($ZSH/plugins/zsh-completions/src $fpath)
 source $ZSH/plugins/fzf-tab/fzf-tab.plugin.zsh
-source $ZSH/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
+source $ZSH/plugins/fast-syntax-highlighting/F-Sy-H.plugin.zsh
 source $ZSH/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $ZSH/plugins/zsh-fzf-history-search/zsh-fzf-history-search.zsh
 
