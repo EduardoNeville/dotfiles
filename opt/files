@@ -1,3 +1,7 @@
 # /opt/files
 configs/.zprofile .zprofile
 configs/.config .config
+configs/.config/zsh/.zshrc .zshrc
+configs/.config/tmux/tmux.conf .tmux.conf
+configs/.config/tmux .tmux
+configs/.config/zathura/.zathurarc .zathurarc
