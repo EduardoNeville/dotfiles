@@ -16,8 +16,8 @@ GITHUB_REPO=dotfiles
 DIR="${DOTFILES_DIR}/${GITHUB_REPO}"
 
 _process() {
-    #echo "$(date) PROCESSING:  $@" >> $LOG
-    #printf "$(tput setaf 6) %s...$(tput sgr0)\n" "$@"
+    echo "$(date) PROCESSING:  $@" >> $LOG
+    printf "$(tput setaf 6) %s...$(tput sgr0)\n" "$@"
 }
 
 _success() {
@@ -59,19 +59,19 @@ function program_exists() {
 
 # /install
 link_dotfiles() {
- # symlink files to the HOME directory.
- if [[ -f "${DIR}/opt/files" ]]; then
-    _process "→ Symlinking dotfiles in /configs"
+	 # symlink files to the HOME directory.
+	 if [[ -f "${DIR}/opt/files" ]]; then
+		_process "→ Symlinking dotfiles in /configs"
 
-    # Set variable for list of files
-    files="${DIR}/opt/files"
+		# Set variable for list of files
+		files="${DIR}/opt/files"
 
-    # Store IFS separator within a temp variable
-    OIFS=$IFS
-    # Set the separator to a carriage return & a new line break
-    # read in passed-in file and store as an array
-    IFS=$'\r\n'
-    links=($(cat "${files}"))
+		# Store IFS separator within a temp variable
+		OIFS=$IFS
+		# Set the separator to a carriage return & a new line break
+		# read in passed-in file and store as an array
+		IFS=$'\r\n'
+		links=($(cat "${files}"))
 
 		# Loop through array of files
 		for index in ${!links[*]}
@@ -216,17 +216,18 @@ install_zsh_plugins(){
     do
         IFS="/" read user zsh_plugin_name <<< "${zsh_clone_names[$i]}"
         _process "[$i / ${#zsh_clone_names[@]}] -> Checking if ${zsh_plugin_name} is installed"
-        if [[ -d ~/.config/zsh/plugins/${zsh_plugin_name}/${zsh_plugin_name}.plugin.zsh]]; then
-            _process "→ ${zsh_plugin_name} is already installed"
-        else
+
+        #if [[ -d ~/.config/zsh/plugins/${zsh_plugin_name}/${zsh_plugin_name}.plugin.zsh]] then
+        #    _process "→ ${zsh_plugin_name} is already installed"
+        #else
             _process "→ Installing ${zsh_plugin_name}"
             git clone git@github.com:${zsh_clone_names[$i]}.git ~/.config/zsh/plugins/${zsh_plugin_name}
-        fi
+        #fi
     done
 }
 
 install_packer(){
-    _process "installing packer"
+    _process "Installing packer"
     rm -rf ~/.local/share/nvim/site/pack/packer/start
     git clone --depth 1 https://github.com/wbthomason/packer.nvim\
     ~/.local/share/nvim/site/pack/packer/start/packer.nvim
@@ -237,7 +238,7 @@ install_nvim_plugins(){
     nvim --headless -c 'autocmd User PackerComplete quitall' -c 'silent PackerSync'
 }
 
-dwld_arr=( download_dotfiles link_dotfiles install_homebrew install_formulae install_packer install_nvim_plugins install_zsh_plugins)
+dwld_arr=( download_dotfiles link_dotfiles install_homebrew install_formulae install_packer install_nvim_plugins) #install_zsh_plugins)
 
 buf_arr=()
 precise_install(){
