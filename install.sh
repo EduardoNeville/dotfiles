@@ -17,8 +17,8 @@ DIR="${DOTFILES_DIR}/${GITHUB_REPO}"
 
 
 _process() {
-    #echo "$(date) PROCESSING:  $@" >> $LOG
-    #printf "$(tput setaf 6) %s...$(tput sgr0)\n" "$@"
+    echo "$(date) PROCESSING:  $@" >> $LOG
+    printf "$(tput setaf 6) %s...$(tput sgr0)\n" "$@"
 }
 
 _success() {
@@ -61,42 +61,42 @@ function program_exists() {
 
 # /install
 link_dotfiles() {
- # symlink files to the HOME directory.
- if [[ -f "${DIR}/opt/files" ]]; then
-    _process "→ Symlinking dotfiles in /configs"
+	 # symlink files to the HOME directory.
+	 if [[ -f "${DIR}/opt/files" ]]; then
+		_process "→ Symlinking dotfiles in /configs"
 
-    # Set variable for list of files
-    files="${DIR}/opt/files"
+		# Set variable for list of files
+		files="${DIR}/opt/files"
 
-    # Store IFS separator within a temp variable
-    OIFS=$IFS
-    # Set the separator to a carriage return & a new line break
-    # read in passed-in file and store as an array
-    IFS=$'\r\n'
-    links=($(cat "${files}"))
+		# Store IFS separator within a temp variable
+		OIFS=$IFS
+		# Set the separator to a carriage return & a new line break
+		# read in passed-in file and store as an array
+		IFS=$'\r\n'
+		links=($(cat "${files}"))
 
-    # Loop through array of files
-    for index in ${!links[*]}
-    do
-        for link in ${links[$index]}
-        do
-            _process "→ Linking ${links[$index]}"
-            # set IFS back to space to split string on
-            IFS=$' '
-            # create an array of line items
-            file=(${links[$index]})
-	# Remove previos file
-	rm -rf "${HOME}/${file[1]}"
-    # Create symbolic link
-	ln -fs "${DIR}/${file[0]}" "${HOME}/${file[1]}"
-        done
-        # set separater back to carriage return & new line break
-        IFS=$'\r\n'
-    done
-    # Reset IFS back
-    IFS=$OIFS
-    source "${HOME}/.bash_profile"
-    [[ $? ]] && _success "All files have been copied"
+		# Loop through array of files
+		for index in ${!links[*]}
+		do
+			for link in ${links[$index]}
+			do
+				_process "→ Linking ${links[$index]}"
+				# set IFS back to space to split string on
+				IFS=$' '
+				# create an array of line items
+				file=(${links[$index]})
+		# Remove previos file
+		rm -rf "${HOME}/${file[1]}"
+		# Create symbolic link
+		ln -fs "${DIR}/${file[0]}" "${HOME}/${file[1]}"
+			done
+			# set separater back to carriage return & new line break
+			IFS=$'\r\n'
+		done
+		# Reset IFS back
+		IFS=$OIFS
+		source "${HOME}/.bash_profile"
+		[[ $? ]] && _success "All files have been copied"
     fi
 }
 
@@ -141,10 +141,10 @@ if [ "$PACKAGE_MANAGER" == "brew" ]; then
             # Test whether a Homebrew formula is already installed
             echo "→ Checking status of ${brew_taps[$index]}"
             program_exists "${brew_taps[$index]}" || brew tap "${brew_taps[$index]}"
-            #if ! brew list ${brew_taps[$index]} &> /dev/null; then
-            #  echo "→ Installing ${brew_taps[$index]}"
-            #  brew install ${brew_taps[$index]}
-            #fi
+            if ! brew list ${brew_taps[$index]} &> /dev/null; then
+              echo "→ Installing ${brew_taps[$index]}"
+              brew install ${brew_taps[$index]}
+            fi
         done
 
         # Store IFS within a temp variable
@@ -161,10 +161,10 @@ if [ "$PACKAGE_MANAGER" == "brew" ]; then
             # Test whether a Homebrew formula is already installed
             echo "→ Checking status of ${formulae[$index]}"
             program_exists "${formulae[$index]}" || brew install "${formulae[$index]}"
-            #if ! brew list ${formulae[$index]} &> /dev/null; then
-            #  echo "→ Installing ${formulae[$index]}"
-            #  brew install ${formulae[$index]}
-            #fi
+            if ! brew list ${formulae[$index]} &> /dev/null; then
+              echo "→ Installing ${formulae[$index]}"
+              brew install ${formulae[$index]}
+            fi
         done
 
         # Reset IFS back
@@ -219,18 +219,19 @@ install_zsh_plugins(){
     do
         IFS="/" read user zsh_plugin_name <<< "${zsh_clone_names[$i]}"
         _process "[$i / ${#zsh_clone_names[@]}] -> Checking if ${zsh_plugin_name} is installed"
-        if [[ -d ~/.config/zsh/plugins/${zsh_plugin_name}/${zsh_plugin_name}.plugin.zsh]]; then
-            _process "→ ${zsh_plugin_name} is already installed"
-        else
+
+        #if [[ -d ~/.config/zsh/plugins/${zsh_plugin_name}/${zsh_plugin_name}.plugin.zsh]] then
+        #    _process "→ ${zsh_plugin_name} is already installed"
+        #else
             _process "→ Installing ${zsh_plugin_name}"
             git clone git@github.com:${zsh_clone_names[$i]}.git ~/.config/zsh/plugins/${zsh_plugin_name}
-        fi
+        #fi
     done
 
 }
 
 install_packer(){
-    _process "installing packer"
+    _process "Installing packer"
     rm -rf ~/.local/share/nvim/site/pack/packer/start
     git clone --depth 1 https://github.com/wbthomason/packer.nvim\
     ~/.local/share/nvim/site/pack/packer/start/packer.nvim
@@ -241,7 +242,7 @@ install_nvim_plugins(){
     nvim --headless -c 'autocmd User PackerComplete quitall' -c 'silent PackerSync'
 }
 
-dwld_arr=( download_dotfiles link_dotfiles install_homebrew install_formulae install_packer install_nvim_plugins install_zsh_plugins)
+dwld_arr=( download_dotfiles link_dotfiles install_homebrew install_formulae install_packer install_nvim_plugins) #install_zsh_plugins)
 
 buf_arr=()
 precise_install(){

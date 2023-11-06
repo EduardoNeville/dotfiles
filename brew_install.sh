@@ -134,8 +134,4 @@ function pip_install() {
         program_exists "websockets" || pip install websockets
 }
 
-#function pip3_install() {
-#        program_must_exist "pip3"
-
-
 
