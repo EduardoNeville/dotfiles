@@ -39,10 +39,9 @@ return require('packer').startup(function()
     use {
         'lukas-reineke/indent-blankline.nvim', -- Indentations
         config = function()
-            require("indent_blankline").setup {
-                buftype_exclude = {"terminal"},
-                show_current_context = true,
-                show_current_context_start = true,
+            require("ibl").setup {
+                scope = {enabled = true, show_start = true,},
+                indent = { smart_indent_cap = true,},
             }
         end
     }
@@ -68,7 +67,7 @@ return require('packer').startup(function()
         config = function()
             require("colorizer").setup {}
         end;
-        }
+    }
 
     use {
         "luukvbaal/nnn.nvim",
@@ -125,6 +124,8 @@ return require('packer').startup(function()
         requires = { {'nvim-lua/plenary.nvim'} }
     }
     use 'BurntSushi/ripgrep'
+
+    use 'mg979/vim-visual-multi'
 
     -- Markdown Preview
     use({
@@ -225,6 +226,7 @@ return require('packer').startup(function()
         end
     })
 
+    -- Flash and others
     use 'ggandor/lightspeed.nvim'
 
     use 'prettier/vim-prettier'

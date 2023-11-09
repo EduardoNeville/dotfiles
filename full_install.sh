@@ -182,8 +182,28 @@ function zsh_plugins(){
 	git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
 }
 
+# ---
+# Installing packer
+# ---
+
+install_packer(){
+    _process "Installing NeoVim Packer"
+    rm -rf ~/.local/share/nvim/site/pack/packer/start
+    git clone --depth 1 https://github.com/wbthomason/packer.nvim\
+    ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+}
+
+install_nvim_plugins(){
+    _process "Installing NeoVim plugins"
+    bat neoVimPlugins.md
+
+    _process "-> Installing Copilot"
+    git clone https://github.com/github/copilot.vim \
+   ~/.config/nvim/pack/github/start/copilot.vim
+}
+
 # Buffer arrays
-dwld_arr=(link_dotfiles install_homebrew backup_new_packages installing_packages zsh_plugins)
+dwld_arr=(link_dotfiles install_homebrew backup_new_packages installing_packages zsh_plugins install_packer install_nvim_plugins)
 buf_arr=()
 
 # ---
