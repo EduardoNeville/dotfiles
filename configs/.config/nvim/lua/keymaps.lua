@@ -16,7 +16,7 @@ vim.cmd('nnoremap s <Nop>')
 ------------------------------------------
 
 --- Move lines up (k) and down (j) --------
----
+
 --- Map <leader> k to move the current line up in normal mode
 set_api_keymaps('n', '<M-k>', ":m .-2<CR>==", { noremap = true, silent = true })
 set_api_keymaps('v', '<M-k>', ":'<,'>m '<-2<CR>gv=gv", { noremap = true, silent = true })
@@ -73,10 +73,11 @@ set_api_keymaps('n', '<C-l>', ':TmuxNavigateRight<CR>', { noremap = true, silent
 set_api_keymaps('n', '<leader>tel', ':Telescope<CR>', { noremap = true, silent = true })
 local builtin = require('telescope.builtin')
 set_keymaps('n', '<leader>ff', builtin.find_files, {})
---vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
---vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
---vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
+set_keymaps('n', '<leader>fg', builtin.live_grep, {})
+set_keymaps('n', '<leader>fb', builtin.buffers, {})
+set_keymaps('n', '<leader>fh', builtin.help_tags, {})
 
+---
 --- Copilot ------------------------------
 --- Copilot change of key
 --- Maps copilot accept to Control + J
@@ -86,7 +87,7 @@ vim.g.copilot_no_tab_map = true
 set_api_keymaps("i", "<C-K>", 'copilot#Next("<CR>")', { silent = true, expr = true })
 vim.g.copilot_no_tab_map = true
 
-----
+---
 --- ChatGPT --------------------------------
 ---
 set_api_keymaps("n","<leader>cg",":ChatGPT<CR>", { noremap = true, silent = true })

@@ -5,7 +5,7 @@
 ``` git clone git@github.com:EduardoNeville/dotfiles.git ```
 
 2. Run the install script by running
-``` bash install ```
+``` bash full_install ```
 
 3. Then run ```source ~/.zshrc```
 

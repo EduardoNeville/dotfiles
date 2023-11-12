@@ -163,6 +163,7 @@ alias ls="exa  --icons --tree --level=2 --sort='size' --reverse -a -I '.git|__py
 alias ls3="exa --icons --tree --level=3 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
 alias ls4="exa --icons --tree --level=4 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
 alias lsn="exa --icons --tree --level=2 --sort='name' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
+alias lss="ds -m 2 -d 2"
 
 alias lshelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%% 
 ls COMMANDS 
@@ -171,7 +172,8 @@ ls0 -> exa all files in a tree of depth 1 sorted by size \n
 ls  -> exa all files in a tree of depth 2 sorted by size \n 
 ls3 -> exa all files in a tree of depth 3 sorted by size \n 
 ls4 -> exa all files in a tree of depth 4 sorted by size \n 
-lsn -> exa all files in a tree of depth 4 sorted by name \n'" 
+lsn -> exa all files in a tree of depth 4 sorted by name \n
+lss -> tree of file sizes of depth 2 min 2% \n'" 
 
 
 # --- fzf shortcuts -------------------------------
@@ -192,8 +194,8 @@ fp_cd() {
     fi
 }
 
-alias fp='fp_cd'
 #'fd --type file --hidden --exclude .git | fzf-tmux -p 80%,80%  --reverse --preview "bat --style=numbers --color=always {}" | xargs nvim'
+alias fp='fp_cd'
 alias fcd='fzf_cd'
 alias fzfhelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%% 
 fzf COMMANDS 
@@ -241,7 +243,7 @@ eval "$(zoxide init zsh)"
 
 # --- Help -------------------------------
 alias sclist='ghelp;fzfhelp;lshelp;zhelp' 
-export PATH=$PATH:/Users/eduardoneville82/.spicetify
+export PATH=$PATH:/Users/eduardoneville821/.cargo/bin
 
 # bun completions
 [ -s "/Users/eduardoneville82/.bun/_bun" ] && source "/Users/eduardoneville82/.bun/_bun"
