@@ -1,4 +1,3 @@
-local vim = vim
 local set_api_keymaps =  vim.api.nvim_set_keymap
 local set_keymaps = vim.keymap.set
 
@@ -17,10 +16,10 @@ vim.cmd('nnoremap s <Nop>')
 
 --- Move lines up (k) and down (j) --------
 
---- Map <leader> k to move the current line up in normal mode
+--- Map <Option> k to move the current line up in normal mode
 set_api_keymaps('n', '<M-k>', ":m .-2<CR>==", { noremap = true, silent = true })
 set_api_keymaps('v', '<M-k>', ":'<,'>m '<-2<CR>gv=gv", { noremap = true, silent = true })
---- Map <leader> j to move the current line down in normal mode
+--- Map <Option> j to move the current line down in normal mode
 
 set_api_keymaps('n', '<M-j>', ":m .+1<CR>==", { noremap = true, silent = true })
 set_api_keymaps('v', '<M-j>', ":'>m '>+1<CR>gv=gv", { noremap = true, silent = true })
@@ -41,15 +40,6 @@ set_api_keymaps('v', '<leader>r', [["hy:%s/<C-r>h//gc<left><left><left>]], {nore
 
 --- Remap pasted over text to void reg
 set_api_keymaps('v', '<leader>p', "\"_dP", {noremap = true})
-
--- selecting multiple non-contiguos lines
--- map the shortcut key to start selecting blocks of code
-set_api_keymaps('v', '<leader>a', [[:<c-u>let @a=""]]..'\n', {silent=true})
-set_api_keymaps('x', '<leader>a', [[:<c-u>let @a=""]]..'\n', {silent=true})
-
--- map the shortcut key to move to the next block of code
-set_api_keymaps('n', '<leader>a', '/<\\_^i\\+><cr>n:call setpos(".", getpos("\'[")+1)<cr>', {silent=true})
-
 
 ------------------------------------------
 --- Shortcuts to plugins -----------------
@@ -72,7 +62,7 @@ set_api_keymaps('n', '<C-l>', ':TmuxNavigateRight<CR>', { noremap = true, silent
 --- Telescope ---------------------------- 
 set_api_keymaps('n', '<leader>tel', ':Telescope<CR>', { noremap = true, silent = true })
 local builtin = require('telescope.builtin')
-set_keymaps('n', '<leader>ff', builtin.find_files, {})
+set_keymaps('n', '<leader>ff', builtin.fd, { noremap = true, silent = true }) 
 set_keymaps('n', '<leader>fg', builtin.live_grep, {})
 set_keymaps('n', '<leader>fb', builtin.buffers, {})
 set_keymaps('n', '<leader>fh', builtin.help_tags, {})
@@ -87,9 +77,7 @@ vim.g.copilot_no_tab_map = true
 set_api_keymaps("i", "<C-K>", 'copilot#Next("<CR>")', { silent = true, expr = true })
 vim.g.copilot_no_tab_map = true
 
----
 --- ChatGPT --------------------------------
----
 set_api_keymaps("n","<leader>cg",":ChatGPT<CR>", { noremap = true, silent = true })
 set_api_keymaps("n","<leader>cga",":ChatGPTActAs<CR>", { noremap = true, silent = true })
 set_api_keymaps("n","<leader>cgi",":ChatGPTEditWithInstructions<CR>", { noremap = true, silent = true })

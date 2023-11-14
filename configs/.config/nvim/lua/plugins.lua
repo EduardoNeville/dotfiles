@@ -240,12 +240,11 @@ return require('packer').startup(function()
     use 'maxmx03/fluoromachine.nvim'
     use "EdenEast/nightfox.nvim"
     use 'shaunsingh/moonlight.nvim'
-    use {
-        "nobbmaestro/nvim-andromeda",
-        requires = { "tjdevries/colorbuddy.nvim", branch = "dev" }
+    use {"nobbmaestro/nvim-andromeda", requires = { "tjdevries/colorbuddy.nvim", branch = "dev" }
     }
     use 'zanglg/nova.nvim'
     use 'jaredgorski/SpaceCamp'
+    use 'nyngwang/nvimgelion'
 
     --- Debugging ------------------------------------------------
     --local debugging = use {

@@ -43,14 +43,17 @@ local config = {
 	check_for_updates = false,
 
     --- https://github.com/tonsky/FiraCode
-	font = wezterm.font('Fira Code', {weight="Regular", stretch='Normal', style='Normal'}),
+    --- font = wezterm.font('Fira Code', {weight="Regular", stretch='Normal', style='Normal'}),
     font_size = 16,
 
 	--- Colour Schemes ------------------
 	--color_scheme = "Catppuccin", -- Machiatto
-	color_scheme = "Tokyo Night Storm",	
+	--color_scheme = "Tokyo Night Storm",	
     --color_scheme = 'Andromeda',
 	--color_scheme = 'Papercolor Light (Gogh)', -- "Aesthetic Night
+    --color_scheme = "Abernathy",	
+    color_scheme = "Aci (Gogh)",
+
 	color_scheme_dirs = { os.getenv("HOME") .. "/.config/wezterm/colors/" },
 	-- Aesthetic Night Colorscheme
 	bold_brightens_ansi_colors = true,
@@ -189,8 +192,11 @@ config.keys = {
     mods = 'CTRL|SHIFT|ALT',
     action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' },
     },
-
 }
+
+config.font = wezterm.font "Consolas"
+
+config.font_fallback = "Fira Code"
 
 return config
 

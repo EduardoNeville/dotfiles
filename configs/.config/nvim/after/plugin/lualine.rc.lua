@@ -27,7 +27,7 @@ end
 lualine.setup {
     options = {
         icons_enabled = true,
-        theme = custom_duskfox, -- custom_nova, -- "nova", -- custom_duskfox, -- "duskfox",
+        theme = custom_duskfox, --custom_duskfox, -- custom_nova, -- "nova", -- custom_duskfox, -- "duskfox",
         section_separators = { left = '', right = '' },
         --  
         --   
