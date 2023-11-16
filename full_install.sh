@@ -80,9 +80,7 @@ link_dotfiles() {
 				# create an array of line items
 				file=(${links[$index]})
                 # Remove previous file
-                rm -rf "${HOME}${file[1]}"
-                # Copy dotfiles into $HOME dir
-                cp ${DOTFILES_DIR}/${file[0]} ${HOME}/${file[1]}
+                rm -rf "${HOME}/${file[1]}"
                 # Create symbolic link
                 ln -fs "${DOTFILES_DIR}/${file[0]}" "${HOME}/${file[1]}"
 			done
