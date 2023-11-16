@@ -80,16 +80,16 @@ link_dotfiles() {
 				# create an array of line items
 				file=(${links[$index]})
 		# Remove previous file
-		rm -rf "${HOME}/${file[1]}"
+		rm -rf "${HOME}${file[1]}"
 		# Create symbolic link
-		ln -fs "${DOTFILES_DIR}/${file[0]}" "${HOME}/${file[1]}"
+		sudo ln -fs "${DOTFILES_DIR}/${file[1]}" "${HOME}${file[1]}"
 			done
 			# set separater back to carriage return & new line break
 			IFS=$'\r\n'
 		done
 		# Reset IFS back
 		IFS=$OIFS
-		source "${HOME}/.bash_profile"
+		source "${HOME}/.zshrc"
 		[[ $? ]] && _success "All files have been copied"
     fi
 }
