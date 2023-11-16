@@ -79,17 +79,18 @@ link_dotfiles() {
 				IFS=$' '
 				# create an array of line items
 				file=(${links[$index]})
-		# Remove previous file
-		rm -rf "${HOME}${file[1]}"
-		# Create symbolic link
-		sudo ln -fs "${DOTFILES_DIR}/${file[1]}" "${HOME}${file[1]}"
+                # Remove previous file
+                rm -rf "${HOME}${file[1]}"
+                # Copy dotfiles into $HOME dir
+                cp ${DOTFILES_DIR}/${file[0]} ${HOME}/${file[1]}
+                # Create symbolic link
+                ln -fs "${DOTFILES_DIR}/${file[0]}" "${HOME}/${file[1]}"
 			done
 			# set separater back to carriage return & new line break
 			IFS=$'\r\n'
 		done
 		# Reset IFS back
 		IFS=$OIFS
-		source "${HOME}/.zshrc"
 		[[ $? ]] && _success "All files have been copied"
     fi
 }
@@ -124,7 +125,7 @@ function backup_new_packages(){
 			if ! type -P 'apt' &> /dev/null; then
 				_error "APT not found while backing up NEW PACKAGES"
 			else
-				_process "→ Backing up new packages"
+				_process "→ APT package downloader in the working..."
 				echo "Not ready"
 			fi
 		;;
@@ -151,7 +152,7 @@ function installing_packages(){
 			if ! type -P 'apt' &> /dev/null; then
 				_error "APT not found while backing up NEW PACKAGES"
 			else
-				_process "→ Backing up new packages"
+				_process "→ APT package downloader in the working..."
 				echo "Not ready"
 			fi
 		;;
@@ -179,7 +180,11 @@ function zsh_plugins(){
 	done
 
 	_process "-> Installing Powerline10k"
-	git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
+	git clone git@github.com:romkatv/powerlevel10k.git  ~/powerlevel10k
+
+    _process "-> Sourcing your zsh config"
+    source ~/.zshrc
+
 }
 
 # ---
@@ -198,6 +203,9 @@ install_nvim_plugins(){
     bat neoVimPlugins.md
 
     _process "-> Installing Copilot"
+
+    rm -rf ~/.config/nvim/pack/github/start/copilot.vim
+
     git clone https://github.com/github/copilot.vim \
    ~/.config/nvim/pack/github/start/copilot.vim
 }
