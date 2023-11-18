@@ -91,7 +91,7 @@ require("mason-null-ls").setup({
     automatic_installation = true,
     automatic_setup = true,
 })
-require("null-ls").setup()
+--require("null-ls").setup()
 --require("mason-null-ls").setup_handlers()
 
 -- COQ autocomplete needed to be set up here

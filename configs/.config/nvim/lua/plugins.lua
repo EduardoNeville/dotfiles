@@ -17,7 +17,7 @@ return require('packer').startup(function()
     use 'neovim/nvim-lspconfig'
     use 'williamboman/mason.nvim'
     use 'williamboman/mason-lspconfig.nvim'
-    use 'jose-elias-alvarez/null-ls.nvim'
+    use 'nvimtools/none-ls.nvim'
     use 'jay-babu/mason-null-ls.nvim'
     use({ "ms-jpq/coq_nvim", branch = "coq" })
     --use ("hrsh7th/cmp-nvim-lsp")
@@ -233,19 +233,6 @@ return require('packer').startup(function()
 
     use 'prettier/vim-prettier'
 
-    --- Colour Schemes ------------------------------------------
-    use 'fcpg/vim-farout'
-    use 'folke/tokyonight.nvim'
-    use {"bluz71/vim-moonfly-colors", as = "moonfly"}
-    use 'maxmx03/fluoromachine.nvim'
-    use "EdenEast/nightfox.nvim"
-    use 'shaunsingh/moonlight.nvim'
-    use {"nobbmaestro/nvim-andromeda", requires = { "tjdevries/colorbuddy.nvim", branch = "dev" }
-    }
-    use 'zanglg/nova.nvim'
-    use 'jaredgorski/SpaceCamp'
-    use 'nyngwang/nvimgelion'
-
     --- Debugging ------------------------------------------------
     --local debugging = use {
     --    use "folke/neodev.nvim",
@@ -287,6 +274,19 @@ return require('packer').startup(function()
 --                        "rcarriga/nvim-notify",
 --                }
 --        })
+    
+    --- Colour Schemes ------------------------------------------
+    use 'fcpg/vim-farout'
+    use 'folke/tokyonight.nvim'
+    use {"bluz71/vim-moonfly-colors", as = "moonfly"}
+    use 'maxmx03/fluoromachine.nvim'
+    use "EdenEast/nightfox.nvim"
+    use 'shaunsingh/moonlight.nvim'
+    use {"nobbmaestro/nvim-andromeda", requires = { "tjdevries/colorbuddy.nvim", branch = "dev" }
+    }
+    use 'zanglg/nova.nvim'
+    use 'jaredgorski/SpaceCamp'
+    use {'nyngwang/nvimgelion'}
 
     --- Colorscheme config ----------------------------------------
     local fm = require 'fluoromachine'
