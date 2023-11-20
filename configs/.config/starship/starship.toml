@@ -3,17 +3,15 @@
 # Configurations
 
 # Format
+
 format = """
-$username\
-$directory\
-$git_branch\
-$git_status
- $character\
+$username$directory$git_branch$git_status
+  $character
 """
 
 right_format = """
 $all\
-$time
+$time \
 """
 
 # General config
@@ -26,7 +24,10 @@ disabled = true
 
 [character]
 success_symbol = '[❯](bold green)'
-error_symbol = "[❯](bold red) "
+error_symbol = '[✘](bold red)'
+vimcmd_symbol = '[❮](bold green)'
+vimcmd_replace_one_symbol = '[❮](bold purple)'
+vimcmd_visual_symbol = '[󱂌](bold green)'
 
 [directory]
 truncation_length=8
@@ -42,15 +43,21 @@ disabled = false
 
 [git_branch]
 symbol = ""
-style = "fg:#8e1eff"
+style = "fg:#f0268f"
 format = '[ $symbol $branch ]($style)'
 disabled = false
 
 [git_status]
-style = "fg:#f0268f"
-modified = '!$count '
+style = "fg:#65ff87"
+ahead ='⇡$count'
+behind ='⇣$count'
+modified = '!$count'
 untracked = '?$count'
-format ='([\[$all_status$count$ahead_behind\]]($style))'
+stashed = '\$$count'
+staged = '+$count'
+deleted = '✘$count'
+conflicted = '=$count'
+format = '([\[$all_status$ahead_behind\]]($style))'
 disabled = false
 
 [time]
@@ -60,77 +67,136 @@ style = "fg:#65ff87"
 format = '([\[$time\]]($style))'
 
 [cmd_duration]
-style = "fg:yellow"
-format = "[ $duration ]($style)"
-
+style = "fg:#f1d751"
+format = '([\[$duration\]]($style))'
 
 # Start languages and tools #
 
+[nix_shell]
+symbol = " "
+style = "fg:#90b7e0"
+format = '([ \[$symbol ($version)\]]($style))'
+disabled = false
+
+[docker_context]
+symbol = "󰡨 "
+style = "fg:#589be9"
+format = '(via [\[$symbol$context\]]($style))'
+disabled = false
+
 [c]
 symbol = ""
-style = "fg:#ffffff bg:#840a2c"
-format = '[ $symbol ($version) ]($style)'
+style = "fg:#840a2c"
+format = '([ \[$symbol ($version)\]]($style))'
 disabled = false
 
 [kubernetes]
-style = "fg:#ffffff bg:#326ce5"
-format = '[ on ﴱ ($user on )($cluster in )$context \($namespace\) ]($style)'
+style = "fg:#326ce5"
+format = '([ \[on ﴱ ($user on )($cluster in )$context \($namespace\)\]]($style))'
 disabled = false
 
 [gcloud]
 symbol = " "
-style = "fg:#ffffff bg:#0f9d58"
-format = '[ on $symbol $account(@$domain)(\($region\)) ]($style) '
+style = "fg:#0f9d58"
+format = '([ \[on $symbol $account(@$domain)(\($region\))\]]($style) )'
 # format = '[ on $symbol account@company.iam.gserviceaccount.com(\($region\)) ]($style) ' # for testing purposes
 disabled = false
 
 [golang]
 symbol = ""
-style = "fg:#ffffff bg:#007d9c"
-format = '[ $symbol ($version) ]($style)'
+style = "fg:#007d9c"
+format = '([ \[$symbol ($version)\]]($style))'
 disabled = false
 
 [java]
 symbol = ""
-style = "fg:#ffffff bg:#007396"
-format = '[ $symbol ($version) ]($style)'
+style = "fg:#cd6f1a"
+format = '([ \[$symbol ($version)\]]($style))'
 disabled = false
 
 [lua]
 symbol = ""
-style = "fg:#ffffff bg:#000080"
-format = '[ $symbol ($version) ]($style)'
+style = "fg:#5582da"
+format = '([ \[$symbol ($version)\]]($style))'
 disabled = false
 
 [nodejs]
 symbol = ""
-style = "fg:#ffffff bg:#5fa04e"
-format = '[ $symbol ($version) ]($style)'
+style = "fg:#5fa04e"
+format = '([ \[$symbol ($version)\]]($style))'
 disabled = false
 
 [package]
-symbol = ""
-style = "fg:#ffffff bg:#cb3837"
-format = '[ $symbol ($version) ]($style)'
+symbol = " "
+style = "fg:#cb3837"
+format = '([ \[$symbol ($version)\]]($style))'
 disabled = false
 
 [php]
 symbol = ''
-style = "fg:#ffffff bg:#4F5B93"
-format = '[ $symbol ($version) ]($style)'
+style = "fg:#4F5B93"
+format = '([ \[$symbol ($version)\]]($style))'
 disabled = false
 
 [python]
 symbol = ''
-style = "fg:#000000 bg:#ffdf76"
-format = '[ $symbol ($version) ]($style)'
+style = "fg:#ffdf76"
+format = '([ \[$symbol ($version)\]]($style))'
 disabled = false
 
 [rust]
 symbol = ""
-style = "fg:#ffffff bg:#a72145"
-format = '[ $symbol ($version) ]($style)'
+style = "fg:#9e6a4b"
+format = '([ \[$symbol ($version)\]]($style))'
+disabled = false
+
+[scala]
+symbol = ""
+style = "fg:#a72145"
+format = '([ \[$symbol ($version)\]]($style))'
 disabled = false
 
 # End languages and tools #
+
+# OS SYMBOLS
+[os.symbols]
+Alpaquita = " "
+Alpine = " "
+Amazon = " "
+Android = " "
+Arch = " "
+Artix = " "
+CentOS = " "
+Debian = " "
+DragonFly = " "
+Emscripten = " "
+EndeavourOS = " "
+Fedora = " "
+FreeBSD = " "
+Garuda = "󰛓 "
+Gentoo = " "
+HardenedBSD = "󰞌 "
+Illumos = "󰈸 "
+Linux = " "
+Mabox = " "
+Macos = " "
+Manjaro = " "
+Mariner = " "
+MidnightBSD = " "
+Mint = " "
+NetBSD = " "
+NixOS = " "
+OpenBSD = "󰈺 "
+openSUSE = " "
+OracleLinux = "󰌷 "
+Pop = " "
+Raspbian = " "
+Redhat = " "
+RedHatEnterprise = " "
+Redox = "󰀘 "
+Solus = "󰠳 "
+SUSE = " "
+Ubuntu = " "
+Unknown = " "
+Windows = "󰍲 "
 
