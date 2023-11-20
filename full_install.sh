@@ -68,7 +68,6 @@ link_dotfiles() {
 		IFS=$'\r\n'
 		links=($(cat "${files}"))
 
-		echo $links
 		# Loop through array of files
 		for index in ${!links[*]}
 		do

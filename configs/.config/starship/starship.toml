@@ -1,0 +1,136 @@
+#                                 
+
+# Configurations
+
+# Format
+format = """
+$username\
+$directory\
+$git_branch\
+$git_status
+ $character\
+"""
+
+right_format = """
+$all\
+$time
+"""
+
+# General config
+
+[username]
+style_user = "fg:#0969da"
+style_root = "fg:#45aeff"
+format = '[\[$user\]]($style)'
+disabled = true 
+
+[character]
+success_symbol = '[❯](bold green)'
+error_symbol = "[❯](bold red) "
+
+[directory]
+truncation_length=8
+style = "fg:#45aeff"
+format = '[ \[$path\]]($style)'
+disabled = false
+
+[directory.substitutions]
+"Documents" = " "
+"Downloads" = " "
+"Music" = " "
+"Pictures" = " "
+
+[git_branch]
+symbol = ""
+style = "fg:#8e1eff"
+format = '[ $symbol $branch ]($style)'
+disabled = false
+
+[git_status]
+style = "fg:#f0268f"
+modified = '!$count '
+untracked = '?$count'
+format ='([\[$all_status$count$ahead_behind\]]($style))'
+disabled = false
+
+[time]
+disabled = false
+time_format = "%T" # Hour:Minute Format
+style = "fg:#65ff87"
+format = '([\[$time\]]($style))'
+
+[cmd_duration]
+style = "fg:yellow"
+format = "[ $duration ]($style)"
+
+
+# Start languages and tools #
+
+[c]
+symbol = ""
+style = "fg:#ffffff bg:#840a2c"
+format = '[ $symbol ($version) ]($style)'
+disabled = false
+
+[kubernetes]
+style = "fg:#ffffff bg:#326ce5"
+format = '[ on ﴱ ($user on )($cluster in )$context \($namespace\) ]($style)'
+disabled = false
+
+[gcloud]
+symbol = " "
+style = "fg:#ffffff bg:#0f9d58"
+format = '[ on $symbol $account(@$domain)(\($region\)) ]($style) '
+# format = '[ on $symbol account@company.iam.gserviceaccount.com(\($region\)) ]($style) ' # for testing purposes
+disabled = false
+
+[golang]
+symbol = ""
+style = "fg:#ffffff bg:#007d9c"
+format = '[ $symbol ($version) ]($style)'
+disabled = false
+
+[java]
+symbol = ""
+style = "fg:#ffffff bg:#007396"
+format = '[ $symbol ($version) ]($style)'
+disabled = false
+
+[lua]
+symbol = ""
+style = "fg:#ffffff bg:#000080"
+format = '[ $symbol ($version) ]($style)'
+disabled = false
+
+[nodejs]
+symbol = ""
+style = "fg:#ffffff bg:#5fa04e"
+format = '[ $symbol ($version) ]($style)'
+disabled = false
+
+[package]
+symbol = ""
+style = "fg:#ffffff bg:#cb3837"
+format = '[ $symbol ($version) ]($style)'
+disabled = false
+
+[php]
+symbol = ''
+style = "fg:#ffffff bg:#4F5B93"
+format = '[ $symbol ($version) ]($style)'
+disabled = false
+
+[python]
+symbol = ''
+style = "fg:#000000 bg:#ffdf76"
+format = '[ $symbol ($version) ]($style)'
+disabled = false
+
+[rust]
+symbol = ""
+style = "fg:#ffffff bg:#a72145"
+format = '[ $symbol ($version) ]($style)'
+disabled = false
+
+# End languages and tools #
+

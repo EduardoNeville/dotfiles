@@ -45,7 +45,7 @@ source $ZSH/plugins/zsh-fzf-history-search/zsh-fzf-history-search.zsh
 
 # ZSH THEMES
 #source $ZSH/themes/spaceship-zsh-theme/spaceship.zsh-theme
-source ~/powerlevel10k/powerlevel10k.zsh-theme
+#source ~/powerlevel10k/powerlevel10k.zsh-theme
 
 ### ---- Powerlevel10k config -------------------------------
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
@@ -248,3 +248,4 @@ export PATH=$PATH:/Users/eduardoneville82/.spicetify
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+eval "$(starship init zsh)"
