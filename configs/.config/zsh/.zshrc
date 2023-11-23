@@ -248,4 +248,7 @@ export PATH=$PATH:/Users/eduardoneville82/.spicetify
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+# Starship 
+export STARSHIP_CONFIG=~/.config/starship/starship.toml
+export STARSHIP_CACHE=~/.starship/cache
 eval "$(starship init zsh)"
