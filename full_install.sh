@@ -163,24 +163,21 @@ function installing_packages(){
 # ---
 function zsh_plugins(){
 	_process "-> Installing ZSH Plugins"
-	zsh_plugins="$DOTFILES_DIR/opt/zsh_plugins"
-    zsh_loc="$DOTFILES_DIR/configs/.config/zsh-conf"
-    # Set the separator to a carriage return & a new line break
-    # read in passed-in file and store as an array
-    IFS=$'\r\n' zsh_clone_names=($(cat "${zsh_plugins}"))
-	
-    for i in "${!zsh_clone_names[@]}"
-    do
-        IFS="/" read user zsh_plugin_name <<< "${zsh_clone_names[$i]}"
-        _process "[$i / ${#zsh_clone_names[@]}] -> Checking if ${zsh_plugin_name} is installed"
-            _process "→ Installing ${zsh_plugin_name}"
-            git clone git@github.com:${zsh_clone_names[$i]}.git ${zsh_loc}/plugins/${zsh_plugin_name}
-	done
 
-	#_process "-> Installing Powerline10k"
-	#git clone git@github.com:romkatv/powerlevel10k.git  ~/powerlevel10k
+    zsh_loc="${DOTFILES_DIR}/configs/.config/zsh-conf"
+
+    rm -rf ${zsh_loc}
+
+    git clone --recursive git@github.com:EduardoNeville/zsh-conf.git ${zsh_loc}
+
+    # Remove previous file
+    rm -rf "${HOME}/.zshrc"
+
+    # Create symbolic link
+    ln -fs "${zsh_loc}/.zshrc" "${HOME}/.zshrc"
 
     _process "-> Sourcing your zsh config"
+
     source ~/.zshrc
 }
 

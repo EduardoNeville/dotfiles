@@ -4,3 +4,6 @@
 
 
 
+[submodule "configs/.config/zsh-conf"]
+	path = configs/.config/zsh-conf
+	url = https://github.com/EduardoNeville/zsh-conf
