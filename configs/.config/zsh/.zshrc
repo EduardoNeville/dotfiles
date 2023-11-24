@@ -169,7 +169,7 @@ alias ls="exa  --icons --tree --level=2 --sort='size' --reverse -a -I '.git|__py
 alias ls3="exa --icons --tree --level=3 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
 alias ls4="exa --icons --tree --level=4 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
 alias lsn="exa --icons --tree --level=2 --sort='name' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
-alias lss="ds -d 2"
+alias lss="ds -m 2 -d 2"
 
 alias lshelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%%
 ls COMMANDS
