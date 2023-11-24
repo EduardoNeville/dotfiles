@@ -2,21 +2,9 @@
         path = config/.config/tmux/plugins/tpm
         url = https://github.com/tmux-plugins/tpm.git
 
-[submodule "fast-syntax-highlighting"]
-        path = config/.config/zsh/plugins/fast-syntax-highlighting
-        url = https://github.com/zdharma/fast-syntax-highlighting.git
-[submodule "zsh-autosuggestions"]
-        path = config/.config/zsh/plugins/zsh-autosuggestions
-        url = https://github.com/zsh-users/zsh-autosuggestions
+[submodule "zsh-conf"]
+        path = config/.config/zsh-conf
+        url = https://github.com/EduardoNeville/zsh-conf
 
-[submodule "fzf-tab"]
-        path = config/.config/zsh/plugins/fzf-tab
-        url = https://github.com/Aloxaf/fzf-tab.git
 
-[submodule "zsh-completions"]
-        path = config/.config/zsh/plugins/zsh-completions
-        url = https://github.com/zsh-users/zsh-completions.git
 
-[submodule "zsh-fzf-history-search"]
-        path = config/.config/zsh/plugins/
-        url = https://github.com/joshskidmore/zsh-fzf-history-search.git
