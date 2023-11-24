@@ -2,9 +2,5 @@
         path = config/.config/tmux/plugins/tpm
         url = https://github.com/tmux-plugins/tpm.git
 
-[submodule "zsh-conf"]
-        path = config/.config/zsh-conf
-        url = https://github.com/EduardoNeville/zsh-conf
-
 
 
