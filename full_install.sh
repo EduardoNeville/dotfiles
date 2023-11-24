@@ -181,7 +181,23 @@ function zsh_plugins(){
 
     _process "-> Sourcing your zsh config"
     source ~/.zshrc
+}
 
+function tmux_plugins(){
+    _process "-> Installing Tmux Plugins"
+
+    # Remove tpm from plugins
+    rm -rf $DOTFILES_DIR/configs/.configs/tmux/plugins/tpm
+    #Clone into plugins tpm
+    git clone https://github.com/tmux-plugins/tpm $DOTFILES_DIR/configs/.configs/tmux/plugins/tpm
+
+    #vim -E -s $DOTFILES_DIR/configs/.configs/tmux/tmux.conf << EOF
+    #:%s/source-file/#source-file/g
+    #:%s/#source-file/source-file/g
+    #:q
+    #EOF
+
+    tmux source $DOTFILES_DIR/configs/.configs/tmux/tmux.conf 
 }
 
 # ---
@@ -197,14 +213,14 @@ install_packer(){
 
 install_nvim_plugins(){
     _process "Installing NeoVim plugins"
-    bat neoVimPlugins.md
+
+    nvim --headless +{luafile %} +PackerCompile +PackerInstall +qa
 
     _process "-> Installing Copilot"
 
     rm -rf ~/.config/nvim/pack/github/start/copilot.vim
 
-    git clone https://github.com/github/copilot.vim \
-   ~/.config/nvim/pack/github/start/copilot.vim
+    git clone https://github.com/github/copilot.vim ~/.config/nvim/pack/github/start/copilot.vim
 }
 
 # Buffer arrays
@@ -241,4 +257,3 @@ precise_install(){
 }
 
 precise_install
-

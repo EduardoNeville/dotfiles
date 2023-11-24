@@ -1,8 +1,12 @@
 ### ---- PATH config ----------------------------------------
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 export PATH="$HOME/.local/bin:$PATH"
+
 ### ZSH HOME
 export ZSH=$HOME/.config/zsh
+
+### ---- Editor ---------------------------------------------
+export EDITOR='nvim'
 
 ### ---- history config -------------------------------------
 export HISTFILE=$ZSH/.zsh_history
