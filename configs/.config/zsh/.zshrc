@@ -55,9 +55,9 @@ source $ZSH/plugins/zsh-fzf-history-search/zsh-fzf-history-search.zsh
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
+#if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+#    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+#fi
 
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -71,12 +71,13 @@ fi
 ## export PATH=$HOME/bin:/usr/local/bin:$PATH
 #
 ## To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+#[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+#
 if command -v pyenv 1>/dev/null 2>&1; then
     eval "$(pyenv init -)"
 fi
 
-ZSH_THEME="powerlevel10k/powerlevel10k"
+#ZSH_THEME="powerlevel10k/powerlevel10k"
 
 ### ----- ChatGPT config ------------------------------------------# ChatGPT OPENAI_API_KEY
 export OPENAI_API_KEY="$(cat $HOME/OPENAI_API_KEY.txt)"
@@ -168,6 +169,7 @@ alias ls="exa  --icons --tree --level=2 --sort='size' --reverse -a -I '.git|__py
 alias ls3="exa --icons --tree --level=3 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
 alias ls4="exa --icons --tree --level=4 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
 alias lsn="exa --icons --tree --level=2 --sort='name' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
+alias lss="ds -d 2"
 
 alias lshelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%%
 ls COMMANDS

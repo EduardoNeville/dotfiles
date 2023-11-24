@@ -5,14 +5,12 @@
 # Format
 
 format = """
-$username$directory$git_branch$git_status
-  $character
+$username$directory$git_branch$git_status $fill
+ $character
 """
 
-right_format = """
-$all\
-$time \
-"""
+right_format = """$all$time"""
+
 
 # General config
 
@@ -27,12 +25,12 @@ success_symbol = '[❯](bold green)'
 error_symbol = '[✘](bold red)'
 vimcmd_symbol = '[❮](bold green)'
 vimcmd_replace_one_symbol = '[❮](bold purple)'
-vimcmd_visual_symbol = '[󱂌](bold green)'
+vimcmd_visual_symbol = '[󰘴 ](bold green)'
 
 [directory]
 truncation_length=8
 style = "fg:#45aeff"
-format = '[ \[$path\]]($style)'
+format = '[\[$path\]]($style)'
 disabled = false
 
 [directory.substitutions]
@@ -40,6 +38,10 @@ disabled = false
 "Downloads" = " "
 "Music" = " "
 "Pictures" = " "
+
+[fill]
+symbol = "·"
+style = "bold fg:#e4e4e4"
 
 [git_branch]
 symbol = ""
@@ -84,9 +86,17 @@ style = "fg:#589be9"
 format = '(via [\[$symbol$context\]]($style))'
 disabled = false
 
+[bun]
+symbol = "󰚅 "
+style = "fg:#da9253"
+version_format = "$raw"
+format = '(via [\[$symbol$context\]]($style))'
+disabled = false
+
 [c]
 symbol = ""
 style = "fg:#840a2c"
+version_format = "$raw"
 format = '([ \[$symbol ($version)\]]($style))'
 disabled = false
 
@@ -105,41 +115,49 @@ disabled = false
 [golang]
 symbol = ""
 style = "fg:#007d9c"
+version_format = "$raw"
 format = '([ \[$symbol ($version)\]]($style))'
 disabled = false
 
 [java]
 symbol = ""
 style = "fg:#cd6f1a"
+version_format = "$raw"
 format = '([ \[$symbol ($version)\]]($style))'
 disabled = false
 
 [lua]
 symbol = ""
 style = "fg:#5582da"
+version_format = "$raw"
 format = '([ \[$symbol ($version)\]]($style))'
 disabled = false
 
 [nodejs]
 symbol = ""
 style = "fg:#5fa04e"
+version_format = "$raw"
 format = '([ \[$symbol ($version)\]]($style))'
 disabled = false
 
 [package]
 symbol = " "
 style = "fg:#cb3837"
+version_format = "$raw"
 format = '([ \[$symbol ($version)\]]($style))'
 disabled = false
 
 [php]
 symbol = ''
 style = "fg:#4F5B93"
+version_format = "$raw"
 format = '([ \[$symbol ($version)\]]($style))'
 disabled = false
 
 [python]
 symbol = ''
+version_format = "$raw"
+pyenv_version_name = true
 style = "fg:#ffdf76"
 format = '([ \[$symbol ($version)\]]($style))'
 disabled = false
@@ -147,12 +165,14 @@ disabled = false
 [rust]
 symbol = ""
 style = "fg:#9e6a4b"
+version_format = "$raw"
 format = '([ \[$symbol ($version)\]]($style))'
 disabled = false
 
 [scala]
 symbol = ""
 style = "fg:#a72145"
+version_format = "$raw"
 format = '([ \[$symbol ($version)\]]($style))'
 disabled = false
 
