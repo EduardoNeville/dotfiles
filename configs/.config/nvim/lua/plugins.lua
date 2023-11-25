@@ -14,30 +14,32 @@ return require('packer').startup(function()
     use 'wbthomason/packer.nvim'
 
     --- LSP configs --------------------------------------
-    use 'neovim/nvim-lspconfig'
-    use 'williamboman/mason.nvim'
-    use 'williamboman/mason-lspconfig.nvim'
+    use {'neovim/nvim-lspconfig', tag ='v0.1.6'}
+    use {'williamboman/mason.nvim', tag = 'v1.8.3'}
+    use {'williamboman/mason-lspconfig.nvim', tag = 'v1.23.0'}
     use 'nvimtools/none-ls.nvim'
-    use 'jay-babu/mason-null-ls.nvim'
-    use({ "ms-jpq/coq_nvim", branch = "coq" })
-    --use ("hrsh7th/cmp-nvim-lsp")
-    use 'mattn/emmet-vim'
-
-    -- Scala metals LSP
-    use({'scalameta/nvim-metals',
-        requires = { "nvim-lua/plenary.nvim" }
-    })
-    use 'nanotee/sqls.nvim'
+    use {'jay-babu/mason-null-ls.nvim', tag = 'v2.1.0'}
+    use ({ "ms-jpq/coq_nvim", branch = "coq"})
 
     --- Coc.nvim ----------------------------------------
-    use {'neoclide/coc.nvim', branch = 'release'}
+    use {'neoclide/coc.nvim', branch = 'release', tag = 'v0.0.82'}
 
     --- Copilot ------------------------------------------
     --- setup up in pack by cloning the repo 
 
     --- UI ------------------------------------------------
+
+    -- Fuzzy Finder
     use {
-        'lukas-reineke/indent-blankline.nvim', -- Indentations
+        'nvim-telescope/telescope.nvim',
+        tag = '0.1.4',
+        requires = { {'nvim-lua/plenary.nvim'} }
+    }
+
+    -- Indentations
+    use {
+        'lukas-reineke/indent-blankline.nvim',
+        tag = 'v3.3.7',
         config = function()
             require("ibl").setup {
                 scope = {enabled = true, show_start = true,},
@@ -45,10 +47,13 @@ return require('packer').startup(function()
             }
         end
     }
-    use 'kyazdani42/nvim-web-devicons' -- File icons
+
+    -- File icons
+    use 'kyazdani42/nvim-web-devicons'
     -- Status line with lualine
     use {
         'nvim-lualine/lualine.nvim',
+        tag = 'compat-nvim-0.6',
         requires = {
             'kyazdani42/nvim-web-devicons',
             opt = true
@@ -57,12 +62,13 @@ return require('packer').startup(function()
     -- Tree directory using nvim-tree
     use {
         'nvim-tree/nvim-tree.lua',
+        tag = 'nightly',
         config = function()
             require("nvim-tree").setup {}
         end
     }
 
-    use {'Djancyp/better-comments.nvim'}
+    -- Colour for #HEX 
     use {'norcalli/nvim-colorizer.lua',
         config = function()
             require("colorizer").setup {}
@@ -83,7 +89,7 @@ return require('packer').startup(function()
     -- WinBar using barbecue
     use({
         "utilyre/barbecue.nvim",
-        tag = "*",
+        tag = "v1.2.0",
         requires = {
             "SmiteshP/nvim-navic",
             "nvim-tree/nvim-web-devicons", -- optional dependency
@@ -93,15 +99,6 @@ return require('packer').startup(function()
             require("barbecue").setup()
         end,
     })
-
-    use {
-        'chentoast/marks.nvim',
-        config = {
-            default_mappings = true,
-            signs = true,
-            mappings = {}
-        }
-    }
 
     -- File navigator using navbuddy
     use {
@@ -117,37 +114,23 @@ return require('packer').startup(function()
 
     use "xiyaowong/transparent.nvim"
 
-    -- Fuzzy Finder
-    use {
-        'nvim-telescope/telescope.nvim',
-        tag = '0.1.4',
-        -- or , branch = '0.1.x',
-        requires = { {'nvim-lua/plenary.nvim'} }
-    }
-
-    use 'BurntSushi/ripgrep'
-
-    use 'mg979/vim-visual-multi'
-
     -- Markdown Preview
     use({
         "iamcco/markdown-preview.nvim",
+        tag = 'v0.0.10',
         run = function() vim.fn["mkdp#util#install"]() end,
     })
 
-    use 'MunifTanjim/nui.nvim'
-    use 'nvim-lua/plenary.nvim'
-
     use({
-      "jackMort/ChatGPT.nvim",
+        "jackMort/ChatGPT.nvim",
         config = function()
             require("chatgpt").setup({
                 -- optional configuration
                 openai_params = {
-                    model="gpt-4"
+                    model="gpt-4-0314"
                 }, 
                 openai_edit_params = {
-                    model="gpt-4"
+                    model="gpt-4-0314"
                 },
             })
         end,
@@ -163,33 +146,19 @@ return require('packer').startup(function()
         config = function() return require("tmux").setup() end
     })
 
-    --use 'luk400/vim-jukit'
-    use 'tpope/vim-fugitive' -- Git
-    --use {
-    --    "folke/which-key.nvim",
-    --    config = function()
-    --        vim.o.timeout = true
-    --        vim.o.timeoutlen = 300
-    --    end
-    --}
-
     --- Syntax highlighting ----------------------------------
     use 'nvim-treesitter/nvim-treesitter-context'
     --use 'nvim-treesitter/nvim-treesitter'
     -- tree-sitter
     use { 'nvim-treesitter/nvim-treesitter' , 
-      run = ':TSUpdate',
-      config = function()
-        require'nvim-treesitter.configs'.setup {
-          highlight = {
-            enable = true,
-            custom_captures = {
-             -- Highlight the @foo.bar capture group with the "Identifier" highlight group.
-             ["foo.bar"] = "Identifier",
-            },
-          },
-        }
-      end,}
+        run = ':TSUpdate',
+        config = function()
+            require'nvim-treesitter.configs'.setup {
+                highlight = {
+                    enable = true,
+                },
+            }
+        end,}
 
     use {
         'cameron-wags/rainbow_csv.nvim',
@@ -281,7 +250,6 @@ return require('packer').startup(function()
     use {"bluz71/vim-moonfly-colors", as = "moonfly"}
     use 'maxmx03/fluoromachine.nvim'
     use "EdenEast/nightfox.nvim"
-    use 'shaunsingh/moonlight.nvim'
     use {"nobbmaestro/nvim-andromeda", requires = { "tjdevries/colorbuddy.nvim", branch = "dev" }
     }
     use 'zanglg/nova.nvim'

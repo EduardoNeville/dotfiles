@@ -28,9 +28,12 @@ vimcmd_replace_one_symbol = '[❮](bold purple)'
 vimcmd_visual_symbol = '[󰘴 ](bold green)'
 
 [directory]
-truncation_length=8
+before_repo_root_style = "fg:#0969da"
+truncation_length = 4
+truncate_to_repo = false
+fish_style_pwd_dir_length = 3
 style = "fg:#45aeff"
-format = '[\[$path\]]($style)'
+format = '\[[$before_repo_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)\]'
 disabled = false
 
 [directory.substitutions]
