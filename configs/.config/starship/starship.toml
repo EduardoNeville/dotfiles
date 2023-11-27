@@ -24,27 +24,28 @@ disabled = true
 success_symbol = '[❯](bold green)'
 error_symbol = '[✘](bold red)'
 vimcmd_symbol = '[❮](bold green)'
-vimcmd_replace_one_symbol = '[❮](bold purple)'
-vimcmd_visual_symbol = '[󰘴 ](bold green)'
+vimcmd_replace_one_symbol = '[ ](bold purple)'
+vimcmd_visual_symbol = '[ ](bold green)'
 
 [directory]
-before_repo_root_style = "fg:#0969da"
-truncation_length = 4
+truncation_length = 4 
 truncate_to_repo = false
-fish_style_pwd_dir_length = 3
-style = "fg:#45aeff"
-format = '\[[$before_repo_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)\]'
+before_repo_root_style="fg:#0969da"
+repo_root_style="fg:#89c0d0"
+style="fg:#45aeff"
+read_only_style="red"
+repo_root_format ='\[[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style)\]'
 disabled = false
 
 [directory.substitutions]
-"Documents" = " "
+"Documents" = "󰈙 "
 "Downloads" = " "
 "Music" = " "
 "Pictures" = " "
 
 [fill]
 symbol = "·"
-style = "bold fg:#e4e4e4"
+style = "fg:#e4e4e4"
 
 [git_branch]
 symbol = ""

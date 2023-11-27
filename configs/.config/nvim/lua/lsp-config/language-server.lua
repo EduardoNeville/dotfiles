@@ -37,7 +37,6 @@ local lsp_servers = {
     clangd = {},
     tsserver = {},
     html = {},
-    lua_ls = {},
     sqlls = {},
     dockerls = {},
     metals = {},
