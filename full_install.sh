@@ -13,7 +13,7 @@
 # Detect the operating system
 # ---------
 if [[ "$(uname)" == "Linux" ]]; then
-    DOTFILES_DIR="/root/dotfiles"  # Linux root directory
+    DOTFILES_DIR="${HOME}/dotfiles"  # Linux root directory
     PACKAGE_MANAGER="apt"
 	--- Linux Install
 	-- Continue here
@@ -178,7 +178,7 @@ function zsh_plugins(){
 
     _process "-> Sourcing your zsh config"
 
-    source ~/.zshrc
+    source $HOME/.zshrc
 }
 
 function tmux_plugins(){
@@ -222,7 +222,7 @@ install_nvim_plugins(){
 }
 
 # Buffer arrays
-dwld_arr=(link_dotfiles install_homebrew backup_new_packages installing_packages zsh_plugins install_packer install_nvim_plugins)
+dwld_arr=(link_dotfiles install_homebrew backup_new_packages installing_packages zsh_plugins install_packer install_nvim_plugins tmux_plugins)
 buf_arr=()
 
 # ---
