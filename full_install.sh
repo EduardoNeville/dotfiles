@@ -158,6 +158,37 @@ function installing_packages(){
 	esac
 }
 
+installing_apt_packages(){
+	# symlink files to the HOME directory.
+	if [[ -f "$DOTFILES_DIR/opt/aptInstall" ]]; then
+		_process "→ Installing apt packages"
+
+		# Set variable for list of files
+		files="$DOTFILES_DIR/opt/aptInstall"
+
+		# Store IFS separator within a temp variable
+		OIFS=$IFS
+		# Set the separator to a carriage return & a new line break
+		# read in passed-in file and store as an array
+		IFS=$'\r\n'
+		links=($(cat "${files}"))
+
+		# Loop through array of files
+		for index in ${!links[*]}
+		do
+			_process "→ Installing apt package ${links[$index]}"
+			# set IFS back to space to split string on
+			IFS=$' '
+			sudo apt install ${links[$index]}
+			# set separater back to carriage return & new line break
+			IFS=$'\r\n'
+		done
+		# Reset IFS back
+		IFS=$OIFS
+		[[ $? ]] && _success "All files have been copied"
+	fi
+}
+
 # ---
 #Installing zsh plugins
 # ---
@@ -222,7 +253,7 @@ install_nvim_plugins(){
 }
 
 # Buffer arrays
-dwld_arr=(link_dotfiles install_homebrew backup_new_packages installing_packages zsh_plugins install_packer install_nvim_plugins tmux_plugins)
+dwld_arr=(link_dotfiles installing_apt_packages install_homebrew backup_new_packages installing_packages zsh_plugins install_packer install_nvim_plugins tmux_plugins)
 buf_arr=()
 
 # ---

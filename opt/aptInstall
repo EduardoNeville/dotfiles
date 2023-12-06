@@ -1,6 +1,4 @@
 vim
-neovim
-nano 
 openssh-server 
 gcc 
 g++ 
@@ -16,4 +14,10 @@ exa
 ripgrep
 diff-so-fancy
 btop
-
+zsh
+neofetch
+curl
+fd-find
+zoxide
+nodejs
+npm
