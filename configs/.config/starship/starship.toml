@@ -33,6 +33,7 @@ truncate_to_repo = false
 before_repo_root_style="fg:#0969da"
 repo_root_style="fg:#89c0d0"
 style="fg:#45aeff"
+read_only="  "
 read_only_style="red"
 repo_root_format ='\[[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style)\]'
 disabled = false
@@ -124,7 +125,7 @@ format = '([ \[$symbol ($version)\]]($style))'
 disabled = false
 
 [java]
-symbol = ""
+symbol = ""
 style = "fg:#cd6f1a"
 version_format = "$raw"
 format = '([ \[$symbol ($version)\]]($style))'

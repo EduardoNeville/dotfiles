@@ -51,6 +51,7 @@ local lsp_servers = {
             },
         },
     },
+    lua_ls = {},
     --rome = {},
     --ruff_lsp = {},
     --eslint = {},
@@ -109,13 +110,15 @@ local coq = require("coq")
 -- manually set up here. Each one is setup() and COQ is
 -- activated for them at the same time.
 for lsp, settings in pairs(lsp_servers) do
-    require("lspconfig")[lsp].setup(coq.lsp_ensure_capabilities({
-        on_attach = function(client, buffer)
-            server_maps({ buffer = buffer })
-            navbuddy.attach(client, buffer)
-        end,
-        settings = settings,
-    }))
+    require("lspconfig")[lsp].setup(
+        coq.lsp_ensure_capabilities({
+            on_attach = function(client, buffer)
+                server_maps({ buffer = buffer })
+                navbuddy.attach(client, buffer)
+            end,
+            settings = settings,
+        })
+    )
 end
 
 

@@ -37,6 +37,13 @@ local wezterm = require("wezterm")
     --end
 
 ---------------------------------------------------------------
+--- Workspace ----------------------------------------------------
+---------------------------------------------------------------
+wezterm.on('update-right-status', function(window, pane)
+  window:set_right_status(window:active_workspace())
+end)
+
+---------------------------------------------------------------
 --- Config ----------------------------------------------------
 ---------------------------------------------------------------
 local config = {
@@ -68,7 +75,7 @@ local config = {
 
 	--- Tab Bar --------
 	hide_tab_bar_if_only_one_tab = true,
-	show_tab_index_in_tab_bar = false,
+	show_tab_index_in_tab_bar = true,
 	tab_bar_at_bottom = true,
 
 	--- Window Info ----
@@ -180,18 +187,28 @@ config.colors = {
         },
     },
 }
+
 config.keys = {
-    	--- Theme Cycler --------------------
+    --- Theme Cycler --------------------
     -- Calling the themeCycler
     --{ key = "t", mods = "CTRL", action = wezterm.action_callback(themeCycler) },
 
-    -- Look up Scheme you switched to
+    -- Debug Pane -----------------------
     { key = "Escape", mods = "CTRL", action = wezterm.action.ShowDebugOverlay },
-    {
-    key = '%',
-    mods = 'CTRL|SHIFT|ALT',
-    action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' },
-    },
+
+    --------------------
+    -- Split Window
+    --------------------
+    
+    -- Split Horizontal == <CTRL-Shift-v>
+    { key = 'v', mods = 'ALT|CTRL', action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' }, },
+
+    -- Split Vertical == <CTRL-Shift-s>
+    { key = 's', mods = 'ALT|CTRL', action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' }, },
+
+    -- Switch Between Windows <CTRL-n> = +1 and <CTRL-p> = -1
+    { key = 'p', mods = 'CTRL', action = wezterm.action.ActivatePaneDirection "Right" },
+    { key = 'n', mods = 'CTRL', action = wezterm.action.ActivatePaneDirection "Left" },
 }
 
 return config

@@ -1,5 +1,6 @@
 configs/.zprofile .zprofile
-configs/.config .config
+configs/.config/nvim .config/nvim
+configs/.config/ncspot .config/ncspot
 configs/.config/zsh-conf/.zshrc .zshrc
 configs/.config/tmux/tmux.conf .tmux.conf
 configs/.config/tmux .tmux

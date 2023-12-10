@@ -200,6 +200,9 @@ return require('packer').startup(function()
     -- Flash and others
     use 'ggandor/lightspeed.nvim'
 
+    -- Harpoon for marks
+    use 'ThePrimeagen/harpoon'
+
     use 'prettier/vim-prettier'
 
     --- Debugging ------------------------------------------------
