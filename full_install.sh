@@ -2,6 +2,7 @@
 # Author: Eduardo Nevile <eduardo.nevillecastro@epfl.ch>
 # Description:
 # Automatically install tools for different OS
+source $(dirname "$0")/scripts/installer.sh
 
 # TODO
 # Link dotfiles [ ]
@@ -15,8 +16,6 @@
 if [[ "$(uname)" == "Linux" ]]; then
     DOTFILES_DIR="${HOME}/dotfiles"  # Linux root directory
     PACKAGE_MANAGER="apt"
-	--- Linux Install
-	-- Continue here
 else
     DOTFILES_DIR="${HOME}/dotfiles"  # macOS
     PACKAGE_MANAGER="brew"
@@ -28,7 +27,6 @@ GITHUB_USER=EduardoNeville
 GITHUB_REPO=dotfiles
 
 _process() {
-    echo "$(date) PROCESSING:  $@" >> $LOG
     printf "$(tput setaf 6) %s...$(tput sgr0)\n" "$@"
 }
 
@@ -56,39 +54,52 @@ function program_exists() {
 link_dotfiles() {
 	 # symlink files to the HOME directory.
 	 if [[ -f "$DOTFILES_DIR/opt/files" ]]; then
-		_process "→ Symlinking dotfiles in /configs"
+		_process "→ Symlinking dotfiles in /configs into .config"
 
-		# Set variable for list of files
-		files="$DOTFILES_DIR/opt/files"
+		DOT_CONF_DIR=${DOTFILES_DIR}/configs
+		CONFIG_DIR=${HOME}/.config
 
-		# Store IFS separator within a temp variable
-		OIFS=$IFS
-		# Set the separator to a carriage return & a new line break
-		# read in passed-in file and store as an array
-		IFS=$'\r\n'
-		links=($(cat "${files}"))
-
-		# Loop through array of files
-		for index in ${!links[*]}
-		do
-			for link in ${links[$index]}
-			do
-				_process "→ Linking ${links[$index]}"
-				# set IFS back to space to split string on
-				IFS=$' '
-				# create an array of line items
-				file=(${links[$index]})
-                # Remove previous file
-                rm -rf "${HOME}/${file[1]}"
-                # Create symbolic link
-                ln -fs "${DOTFILES_DIR}/${file[0]}" "${HOME}/${file[1]}"
-			done
-			# set separater back to carriage return & new line break
-			IFS=$'\r\n'
+		# Loop through all files and directories in `~/dotfiles/configs`
+		for item in "${DOT_CONF_DIR}"/*; do
+			  # Get the base name of the item
+			  basename=$(basename "${item}")
+			  
+			  # Create a symlink in `~/.config`, skip if it already exists
+			  target="${CONFIG_DIR}/${basename}"
+			  if [ ! -e "${target}" ]; then
+				ln -s "${item}" "${target}"
+				echo "Created symlink for ${basename}"
+			  else
+				echo "Symlink for ${basename} already exists, skipped."
+			  fi
 		done
-		# Reset IFS back
-		IFS=$OIFS
-		[[ $? ]] && _success "All files have been copied"
+
+		echo "Symlink for zshrc"
+		ln -s ~/dotfiles/configs/zsh-conf/.zshrc ~/.zshrc
+
+		# Set variable for list of links
+#		listLinks="$DOTFILES_DIR/opt/links"
+#		echo $listLinks
+#
+#		# Store IFS separator within a temp variable
+#		OIFS=$IFS
+#		# Set the separator to a carriage return & a new line break
+#		# read in passed-in file and store as an array
+#		IFS=$'\r\n'
+#		links=($(cat "${listLinks}"))
+#
+#		# Loop through array of links
+#		for index in ${!links[*]}
+#		do
+#			# Set IFS to split string on spaces
+#			IFS=$' '
+#			# Create an array of line items
+#			items=(${links[$index]})
+#			#_installSymLink ${items[0]} ${items[1]} ${items[2]}
+#		done
+#		# Reset IFS back
+#		IFS=$OIFS
+#		[[ $? ]] && _success "All files have been copied"
     fi
 }
 # ---
