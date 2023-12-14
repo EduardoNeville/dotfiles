@@ -1,6 +1,25 @@
 # ----------------------------------------------------------------------------------------
 
 #
+# Nix installer
+#
+_installNix(){
+
+    echo "Installing the nix package manager"
+
+    curl -L https://nixos.org/nix/install | sh -s -- --daemon
+ 
+    echo "Installing nix home-manager"
+    nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
+    nix-channel --update
+
+    nix-shell '<home-manager>' -A install
+
+}
+
+# ----------------------------------------------------------------------------------------
+
+#
 # Creates a symlink between the source and target locations.
 #
 _installSymLink() {

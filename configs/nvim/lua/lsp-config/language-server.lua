@@ -40,18 +40,6 @@ local lsp_servers = {
     sqlls = {},
     dockerls = {},
     metals = {},
-    emmet_ls = {
-        capabilities = vim.lsp.protocol.make_client_capabilities(),
-        filetypes = {"css", "html", "javascript", "javascriptreact", "typescriptreact"},
-        init_options = {
-            html = {
-                options = {
-                    ["bem.enabled"] = true,
-                },
-            },
-        },
-    },
-    lua_ls = {},
     --rome = {},
     --ruff_lsp = {},
     --eslint = {},

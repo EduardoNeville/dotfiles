@@ -252,15 +252,12 @@ install_packer(){
 }
 
 install_nvim_plugins(){
-    _process "Installing NeoVim plugins"
-
-    nvim --headless +{luafile %} +PackerCompile +PackerInstall +qa
 
     _process "-> Installing Copilot"
 
     rm -rf ~/.config/nvim/pack/github/start/copilot.vim
 
-    git clone https://github.com/github/copilot.vim ~/.config/nvim/pack/github/start/copilot.vim
+    git clone https://github.com/github/copilot.vim ~/dotfiles/configs/nvim/pack/github/start/copilot.vim
 }
 
 # Buffer arrays
