@@ -201,7 +201,7 @@ return require('packer').startup(function()
     use 'ggandor/lightspeed.nvim'
 
     -- Harpoon for marks
-    use 'ThePrimeagen/harpoon'
+    use 'kshenoy/vim-signature'
 
     use 'prettier/vim-prettier'
 

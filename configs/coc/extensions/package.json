@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "coc-emmet": ">=1.1.6",
-    "@yaegassy/coc-tailwindcss3": ">=0.5.4",
-    "coc-fzf-preview": ">=2.16.6"
-  },
-  "lastUpdate": 1697366657583
-}
