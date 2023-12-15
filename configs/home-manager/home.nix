@@ -6,8 +6,12 @@
     home.username = "eduardoneville";
     home.homeDirectory = "/home/eduardoneville";
 
+    #xdg.enable = true;
+    #xdg.mime.enable = true;
+
     # target linux
     targets.genericLinux.enable = true;
+
 
     # This value determines the Home Manager release that your configuration is
     # compatible with. This helps avoid breakage when a new Home Manager release
@@ -24,7 +28,7 @@
         # ----
         # Terminal & Shell
         # ----
-        pkgs.wezterm
+        #pkgs.wezterm
         pkgs.starship
         pkgs.zsh
 
@@ -57,6 +61,7 @@
         # ---
         pkgs.tree-sitter
         pkgs.fira-code
+        pkgs.nerdfonts
         pkgs.fira-code-nerdfont
         
         # ---
@@ -72,7 +77,7 @@
         # ---
         # Applications
         # ---
-        pkgs.telegram-desktop
+        #pkgs.telegram-desktop
 
     ];
 
@@ -110,30 +115,30 @@
     programs.home-manager.enable = true;
 
     # wayland setup
-    wayland.windowManager.hyperland.enable = true;
+    #wayland.windowManager.hyperland.enable = true;
 
-    wayland.windowManager.hyprland.settings = {
-        "$mod" = "SUPER";
-        bind =
-          [
-            "$mod, F, exec, firefox"
-            ", Print, exec, grimblast copy area"
-          ]
-          ++ (
-            # workspaces
-            # binds $mod + [shift +] {1..10} to [move to] workspace {1..10}
-            builtins.concatLists (builtins.genList (
-                x: let
-                  ws = let
-                    c = (x + 1) / 10;
-                  in
-                    builtins.toString (x + 1 - (c * 10));
-                in [
-                  "$mod, ${ws}, workspace, ${toString (x + 1)}"
-                  "$mod SHIFT, ${ws}, movetoworkspace, ${toString (x + 1)}"
-                ]
-              )
-              10)
-          );
-    };
+    #wayland.windowManager.hyprland.settings = {
+    #    "$mod" = "SUPER";
+    #    bind =
+    #      [
+    #        "$mod, F, exec, firefox"
+    #        ", Print, exec, grimblast copy area"
+    #      ]
+    #      ++ (
+    #        # workspaces
+    #        # binds $mod + [shift +] {1..10} to [move to] workspace {1..10}
+    #        builtins.concatLists (builtins.genList (
+    #            x: let
+    #              ws = let
+    #                c = (x + 1) / 10;
+    #              in
+    #                builtins.toString (x + 1 - (c * 10));
+    #            in [
+    #              "$mod, ${ws}, workspace, ${toString (x + 1)}"
+    #              "$mod SHIFT, ${ws}, movetoworkspace, ${toString (x + 1)}"
+    #            ]
+    #          )
+    #          10)
+    #      );
+    #};
 }

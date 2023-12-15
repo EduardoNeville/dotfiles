@@ -19,79 +19,27 @@ _installNix(){
 }
 
 #
-# Hyperland installer for Debian
+# Base Applications
 #
-_installHyperland(){
-	sudo apt-get install -y meson wget build-essential ninja-build cmake-extras cmake gettext gettext-base fontconfig libfontconfig-dev libffi-dev libxml2-dev libdrm-dev libxkbcommon-x11-dev libxkbregistry-dev libxkbcommon-dev libpixman-1-dev libudev-dev libseat-dev seatd libxcb-dri3-dev libegl-dev libgles2 libegl1-mesa-dev glslang-tools libinput-bin libinput-dev libxcb-composite0-dev libavutil-dev libavcodec-dev libavformat-dev libxcb-ewmh2 libxcb-ewmh-dev libxcb-present-dev libxcb-icccm4-dev libxcb-render-util0-dev libxcb-res0-dev libxcb-xinput-dev xdg-desktop-portal-wlr libtomlplusplus3 hwdata
-	sudo apt install libpango1.0-dev -y
-	sudo apt install libgbm-dev -y
-	
-	cd configs
-	mkdir HyprSource
-	cd HyprSource
+_installBase(){
 
-	## We get Source
-	wget https://github.com/hyprwm/Hyprland/releases/download/v0.24.1/source-v0.24.1.tar.gz
-	tar -xvf source-v0.24.1.tar.gz
+	sudo apt install git vim curl zsh
 
-	wget https://gitlab.freedesktop.org/wayland/wayland-protocols/-/releases/1.31/downloads/wayland-protocols-1.31.tar.xz
-	tar -xvJf wayland-protocols-1.31.tar.xz
+	# Install wezterm
+	curl -LO https://github.com/wez/wezterm/releases/download/nightly/wezterm-nightly.Debian12.deb
+	sudo apt install -y ./wezterm-nightly.Debian12.deb
+	rm -rf wezterm-nightly.Debian12.deb
 
-	wget https://gitlab.freedesktop.org/wayland/wayland/-/releases/1.22.0/downloads/wayland-1.22.0.tar.xz
-	tar -xvJf wayland-1.22.0.tar.xz
+	# Install Brave
+	sudo apt install curl
 
-	wget https://gitlab.freedesktop.org/emersion/libdisplay-info/-/releases/0.1.1/downloads/libdisplay-info-0.1.1.tar.xz
-	tar -xvJf libdisplay-info-0.1.1.tar.xz
+	sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
 
-	cd wayland-1.22.0
-	mkdir build &&
-	cd    build &&
+	echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main"|sudo tee /etc/apt/sources.list.d/brave-browser-release.list
 
-	meson setup ..            \
-	      --prefix=/usr       \
-	      --buildtype=release \
-	      -Ddocumentation=false &&
-	ninja
-	sudo ninja install
+	sudo apt update
 
-	cd ../..
-	cd wayland-protocols-1.31
-
-	mkdir build &&
-	cd    build &&
-
-	meson setup --prefix=/usr --buildtype=release &&
-	ninja
-
-	sudo ninja install
-
-	cd ../..
-	cd libdisplay-info-0.1.1/
-
-	mkdir build &&
-	cd    build &&
-
-	meson setup --prefix=/usr --buildtype=release &&
-	ninja
-
-	sudo ninja install
-
-	cd ../..
-	chmod a+rw hyprland-source
-
-	cd hyprland-source/
-	sed -i 's/\/usr\/local/\/usr/g' config.mk
-	cd ../
-	git clone https://gitlab.freedesktop.org/emersion/libliftoff.git
-	cd libliftoff
-	meson setup build/
-	ninja -C build/
-	cd build
-	sudo ninja install 
-	cd ../../
-	sudo apt install libsystemd-dev
-	cd hyprland-source
-	sudo make install
+	sudo apt install brave-browser
 }
 
 # ----------------------------------------------------------------------------------------

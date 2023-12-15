@@ -200,7 +200,7 @@ return require('packer').startup(function()
     -- Flash and others
     use 'ggandor/lightspeed.nvim'
 
-    -- Harpoon for marks
+    -- Marks signature
     use 'kshenoy/vim-signature'
 
     use 'prettier/vim-prettier'
