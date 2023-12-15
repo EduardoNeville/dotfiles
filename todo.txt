@@ -4,3 +4,4 @@ https://github.com/nix-community/home-manager/issues/1439
 ^^^^ same issue
 https://discourse.nixos.org/t/home-manager-installed-apps-dont-show-up-in-applications-launcher/8523
 https://www.reddit.com/r/NixOS/comments/isnyfg/getting_applications_installed_with_homemanager/?rdt=57925
+https://www.youtube.com/watch?v=K1D2iTMX3j4
