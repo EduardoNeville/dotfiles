@@ -209,6 +209,7 @@ install(){
     nixPkg=(nix_install)
     aptPkg=(apt_install_pkgs)
     pkg_arr=(macOSarr nixPkg aptPkg)
+
     buf_arr=()
 
     printf "Press one or more to install \n"
@@ -238,9 +239,15 @@ install(){
         fi
 
 
-        if [[ "$ans" == "b" ]]; then 
-            $link_dotfiles
+        if [[ "$ans" == "a" ]]; then 
+		echo $ans
+            link_dotfiles
         fi
+
+	if [[ "$pkg" == "1" ]]; then 
+		_process "-> Install base pkgs for apt"
+		sudo apt install curl vim git
+	fi
 
         for fnc in "${buf_arr[@]}"
         do
@@ -250,22 +257,24 @@ install(){
 
     # Zsh plugin install
     if [[ "$ans" == *"z"* ]]; then 
-        ${zsh_plugins}
+	    echo "$ans"
+	   zsh_plugins
     fi
+    $link_dotfiles
 
     # Link dotfiles
     if [[ "$ans" == *"s"* ]]; then 
-        ${link_dotfiles}
+        link_dotfiles
     fi
 
     # Packer install
     if [[ "$ans" == *"p"* ]]; then 
-        ${install_packer}
+        install_packer
     fi
 
     # Nvim plugins
     if [[ "$ans" == *"n"* ]]; then 
-        ${install_nvim_plugins}
+        install_nvim_plugins
     fi
 }
 

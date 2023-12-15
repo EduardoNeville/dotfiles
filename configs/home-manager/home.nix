@@ -73,6 +73,7 @@
         # Applications
         # ---
         pkgs.telegram-desktop
+
     ];
 
     # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -107,4 +108,7 @@
 
     # Let Home Manager install and manage itself.
     programs.home-manager.enable = true;
+
+    # wayland setup
+    wayland.windowManager.hyperland.enable = true;
 }
