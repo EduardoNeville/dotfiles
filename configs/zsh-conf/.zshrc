@@ -204,18 +204,15 @@ alias ld='lazydocker'
 # --- evals config ----------------------------------
 eval "$(zoxide init zsh)"
 
-#eval $(thefuck --alias)
-
 # --- Help -------------------------------
 alias sclist='ghelp;fzfhelp;lshelp;zhelp'
-export PATH=$PATH:/Users/eduardoneville82/.spicetify
 
 # bun completions
 [ -s "/Users/eduardoneville82/.bun/_bun" ] && source "/Users/eduardoneville82/.bun/_bun"
 
 # bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
+#export BUN_INSTALL="$HOME/.bun"
+#export PATH="$BUN_INSTALL/bin:$PATH"
 # Starship 
 export STARSHIP_CONFIG=~/.config/starship/starship.toml
 export STARSHIP_CACHE=~/.starship/cache
@@ -224,4 +221,6 @@ eval "$(starship init zsh)"
 if [ -e /home/eduardoneville/.nix-profile/etc/profile.d/nix.sh ]; then . /home/eduardoneville/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
 export PYENV_ROOT="$HOME/.pyenv"
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
+if command -v pyenv 1>/dev/null 2>&1; then
+    eval "$(pyenv init -)"
+fi

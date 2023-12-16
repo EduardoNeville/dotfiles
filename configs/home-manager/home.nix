@@ -71,7 +71,7 @@
         pkgs.gcc
         pkgs.gdb
         pkgs.git
-        #pkgs.pyenv
+        pkgs.pyenv
         pkgs.openssh
 
         # ---
