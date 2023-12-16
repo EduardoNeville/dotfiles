@@ -196,6 +196,7 @@ install_nvim_plugins(){
 # ---
 nix_install(){
     _process "-> Installing Nix Package Manager"
+    _installBase
     _installNix
 }
 

@@ -121,16 +121,15 @@ return require('packer').startup(function()
         run = function() vim.fn["mkdp#util#install"]() end,
     })
 
-    use({
-        "jackMort/ChatGPT.nvim",
+    use({"jackMort/ChatGPT.nvim",
         config = function()
             require("chatgpt").setup({
                 -- optional configuration
                 openai_params = {
-                    model="gpt-4-0314"
+                    model="gpt-4-1106-preview"
                 }, 
                 openai_edit_params = {
-                    model="gpt-4-0314"
+                    model="gpt-4-1106-preview"
                 },
             })
         end,

@@ -77,6 +77,7 @@
         # ---
         # Applications
         # ---
+        pkgs.ncspot
         #pkgs.telegram-desktop
 
     ];
