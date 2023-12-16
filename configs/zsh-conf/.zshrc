@@ -49,16 +49,6 @@ source $ZSH/plugins/fast-syntax-highlighting/F-Sy-H.plugin.zsh
 source $ZSH/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $ZSH/plugins/zsh-fzf-history-search/zsh-fzf-history-search.zsh
 
-# ZSH THEMES
-#source $ZSH/themes/spaceship-zsh-theme/spaceship.zsh-theme
-#source ~/powerlevel10k/powerlevel10k.zsh-theme
-
-if command -v pyenv 1>/dev/null 2>&1; then
-    eval "$(pyenv init -)"
-fi
-
-#ZSH_THEME="powerlevel10k/powerlevel10k"
-
 ### ----- ChatGPT config ------------------------------------------# ChatGPT OPENAI_API_KEY
 export OPENAI_API_KEY="$(cat $HOME/OPENAI_API_KEY.txt)"
 
@@ -232,3 +222,6 @@ export STARSHIP_CACHE=~/.starship/cache
 eval "$(starship init zsh)"
 
 if [ -e /home/eduardoneville/.nix-profile/etc/profile.d/nix.sh ]; then . /home/eduardoneville/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"

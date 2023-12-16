@@ -79,7 +79,7 @@ local config = {
 	tab_bar_at_bottom = true,
 
 	--- Window Info ----
-	window_background_opacity = 0.85,
+	window_background_opacity = 0.90,
 	window_decorations = "RESIZE",
 	scrollback_lines = 5000,
 

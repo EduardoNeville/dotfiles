@@ -196,8 +196,37 @@ install_nvim_plugins(){
 # ---
 nix_install(){
     _process "-> Installing Nix Package Manager"
-    _installBase
-    _installNix
+    #_installBase
+    #_installNix
+
+	# symlink files to the HOME directory.
+	if [[ -f "$DOTFILES_DIR/opt/nixPkgs" ]]; then
+		_process "→ Installing nix packages"
+
+		# Set variable for list of files
+		nixPkgs="$DOTFILES_DIR/opt/nixPkgs"
+
+		# Store IFS separator within a temp variable
+		OIFS=$IFS
+		# Set the separator to a carriage return & a new line break
+		# read in passed-in file and store as an array
+		IFS=$'\r\n'
+		pkgs=($(cat "${nixPkgs}"))
+
+		# Loop through pkgs
+		for index in ${!pkgs[*]}
+		do
+			_process "→ Installing nix package ${pkgs[$index]}"
+			# set IFS back to space to split string on
+			nix-env -i ${links[$index]}
+
+			# set separater back to carriage return & new line break
+			IFS=$'\r\n'
+		done
+		# Reset IFS back
+		IFS=$OIFS
+		[[ $? ]] && _success "All files have been copied"
+	fi
 }
 
 
