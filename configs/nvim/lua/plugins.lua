@@ -14,15 +14,50 @@ return require('packer').startup(function()
     use 'wbthomason/packer.nvim'
 
     --- LSP configs --------------------------------------
-    use {'neovim/nvim-lspconfig', tag ='v0.1.6'}
-    use {'williamboman/mason.nvim', tag = 'v1.8.3'}
-    use {'williamboman/mason-lspconfig.nvim', tag = 'v1.23.0'}
-    use 'nvimtools/none-ls.nvim'
-    use {'jay-babu/mason-null-ls.nvim', tag = 'v2.1.0'}
-    use ({ "ms-jpq/coq_nvim", branch = "coq"})
+    -- Added this plugin.
 
+    use {'neovim/nvim-lspconfig'}             -- Required
+    use {'williamboman/mason.nvim'}           -- Optional
+    use {'williamboman/mason-lspconfig.nvim'} -- Optional
+
+    -- Autocompletion
+    use {'hrsh7th/nvim-cmp'}         -- Required
+    use {'hrsh7th/cmp-nvim-lsp'}     -- Required
+    use {'hrsh7th/cmp-buffer'}       -- Optional
+    use {'hrsh7th/cmp-path'}         -- Optional
+    use {'saadparwaiz1/cmp_luasnip'} -- Optional
+    use {'hrsh7th/cmp-nvim-lua'}     -- Optional
+
+    -- Snippets
+    use {'L3MON4D3/LuaSnip'}             -- Required
+    use {'rafamadriz/friendly-snippets'} -- Optional
+    use {
+        'VonHeikemen/lsp-zero.nvim',
+        branch = 'v1.x',
+        dependencies = {
+            -- LSP Support
+            {'neovim/nvim-lspconfig'},             -- Required
+            {'williamboman/mason.nvim'},           -- Optional
+            {'williamboman/mason-lspconfig.nvim'}, -- Optional
+
+            -- Autocompletion
+            {'hrsh7th/nvim-cmp'},         -- Required
+            {'hrsh7th/cmp-nvim-lsp'},     -- Required
+            {'hrsh7th/cmp-buffer'},       -- Optional
+            {'hrsh7th/cmp-path'},         -- Optional
+            {'saadparwaiz1/cmp_luasnip'}, -- Optional
+            {'hrsh7th/cmp-nvim-lua'},     -- Optional
+
+            -- Snippets
+            {'L3MON4D3/LuaSnip'},             -- Required
+            {'rafamadriz/friendly-snippets'}, -- Optional
+        }
+    }
+
+    --- COQ
+    --use ({ "ms-jpq/coq_nvim", branch = "coq"})
     --- Coc.nvim ----------------------------------------
-    use {'neoclide/coc.nvim', branch = 'release', tag = 'v0.0.82'}
+    --use {'neoclide/coc.nvim', branch = 'release', tag = 'v0.0.82'}
 
     --- Copilot ------------------------------------------
     --- setup up in pack by cloning the repo 

@@ -82,7 +82,7 @@ format = '([\[$duration\]]($style))'
 [nix_shell]
 symbol = " "
 style = "fg:#90b7e0"
-format = '([ \[$symbol ($version)\]]($style))'
+format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [docker_context]
@@ -102,12 +102,12 @@ disabled = false
 symbol = ""
 style = "fg:#840a2c"
 version_format = "$raw"
-format = '([ \[$symbol ($version)\]]($style))'
+format = '([\[$symbol($version)\]]($style))'
 disabled = false
 
 [kubernetes]
 style = "fg:#326ce5"
-format = '([ \[on ﴱ ($user on )($cluster in )$context \($namespace\)\]]($style))'
+format = '([\[on ﴱ ($user on )($cluster in )$context \($namespace\)\]]($style))'
 disabled = false
 
 [gcloud]
@@ -121,42 +121,42 @@ disabled = false
 symbol = ""
 style = "fg:#007d9c"
 version_format = "$raw"
-format = '([ \[$symbol ($version)\]]($style))'
+format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [java]
 symbol = ""
 style = "fg:#cd6f1a"
 version_format = "$raw"
-format = '([ \[$symbol ($version)\]]($style))'
+format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [lua]
 symbol = ""
 style = "fg:#5582da"
 version_format = "$raw"
-format = '([ \[$symbol ($version)\]]($style))'
+format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [nodejs]
 symbol = ""
 style = "fg:#5fa04e"
 version_format = "$raw"
-format = '([ \[$symbol ($version)\]]($style))'
+format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [package]
 symbol = " "
 style = "fg:#cb3837"
 version_format = "$raw"
-format = '([ \[$symbol ($version)\]]($style))'
+format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [php]
 symbol = ''
 style = "fg:#4F5B93"
 version_format = "$raw"
-format = '([ \[$symbol ($version)\]]($style))'
+format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [python]
@@ -164,21 +164,21 @@ symbol = ''
 version_format = "$raw"
 pyenv_version_name = true
 style = "fg:#ffdf76"
-format = '([ \[$symbol ($version)\]]($style))'
+format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [rust]
 symbol = ""
 style = "fg:#9e6a4b"
 version_format = "$raw"
-format = '([ \[$symbol ($version)\]]($style))'
+format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [scala]
 symbol = ""
 style = "fg:#a72145"
 version_format = "$raw"
-format = '([ \[$symbol ($version)\]]($style))'
+format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 # End languages and tools #

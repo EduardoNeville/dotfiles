@@ -131,7 +131,7 @@ alias ls="eza  --icons --tree --level=2 --sort='size' --reverse -a -I '.git|__py
 alias ls3="eza --icons --tree --level=3 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
 alias ls4="eza --icons --tree --level=4 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
 alias lsn="eza --icons --tree --level=2 --sort='name' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
-alias lss="du -d 1 -h | sort -h"
+alias lss="ds -m 0.1"
 
 alias lshelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%%
 ls COMMANDS
@@ -218,7 +218,10 @@ export STARSHIP_CONFIG=~/.config/starship/starship.toml
 export STARSHIP_CACHE=~/.starship/cache
 eval "$(starship init zsh)"
 
-if [ -e /home/eduardoneville/.nix-profile/etc/profile.d/nix.sh ]; then . /home/eduardoneville/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+# rust export
+export PATH="$HOME/.cargo/bin:$PATH"
+
+if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
 export PYENV_ROOT="$HOME/.pyenv"
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
 if command -v pyenv 1>/dev/null 2>&1; then

@@ -40,17 +40,17 @@ _installBase(){
 
 	sudo apt install brave-browser
 
-    # Install Telegram
-    echo "Telegram install... \n"
-    sudo apt install telegram-desktop
+	    # Install Telegram
+	    echo "Telegram install... \n"
+	    sudo apt install telegram-desktop
 
-    # Install Whatsapp
-    echo "Whatsapp install... \n"
-    sudo apt install snapd
-    sudo snap install whatsdesk
+	    # Install Whatsapp
+	    echo "Whatsapp install... \n"
+	    sudo apt install snapd
+	    sudo snap install whatsdesk
 
-    # Install Spotify
-    echo "Installing spotify"
+	    # Install Spotify
+	    echo "Installing spotify"
 }
 
 # ----------------------------------------------------------------------------------------

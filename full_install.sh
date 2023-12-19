@@ -218,7 +218,7 @@ nix_install(){
 		do
 			_process "→ Installing nix package ${pkgs[$index]}"
 			# set IFS back to space to split string on
-			nix-env -i ${links[$index]}
+			nix-env -i install ${links[$index]}
 
 			# set separater back to carriage return & new line break
 			IFS=$'\r\n'
@@ -229,6 +229,69 @@ nix_install(){
 	fi
 }
 
+dnfInstall(){
+
+	_process "-> Installing Wezterm"
+	# Installing wezterm
+	sudo dnf copr enable wezfurlong/wezterm-nightly
+	sudo dnf install wezterm
+
+	_process "-> Installing Brave"
+	sudo dnf install dnf-plugins-core
+
+	sudo dnf config-manager --add-repo https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo
+
+	sudo rpm --import https://brave-browser-rpm-release.s3.brave.com/brave-core.asc
+
+	sudo dnf install brave-browser
+
+	_process "-> Installing Telegram"
+
+	sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+	sudo dnf install https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+
+	sudo dnf install telegram
+
+	# symlink files to the HOME directory.
+	if [[ -f "$DOTFILES_DIR/opt/nixPkgs" ]]; then
+		_process "→ Installing nix packages"
+
+		# Set variable for list of files
+		nixPkgs="$DOTFILES_DIR/opt/nixPkgs"
+
+		# Store IFS separator within a temp variable
+		OIFS=$IFS
+		# Set the separator to a carriage return & a new line break
+		# read in passed-in file and store as an array
+		IFS=$'\r\n'
+		pkgs=($(cat "${nixPkgs}"))
+
+		# Loop through pkgs
+		for index in ${!pkgs[*]}
+		do
+			_process "→ Installing nix package ${pkgs[$index]}"
+			# set IFS back to space to split string on
+
+			sudo dnf install ${pkgs[$index]}
+
+			# set separater back to carriage return & new line break
+			IFS=$'\r\n'
+		done
+		# Reset IFS back
+		IFS=$OIFS
+		[[ $? ]] && _success "All files have been copied"
+	fi
+}
+
+pyenvInstall(){
+	git clone https://github.com/pyenv/pyenv.git ~/.pyenv
+
+	# First we install some common development tools like gcc and make, Fedora provides a group of packages for that call Development Tools
+	sudo dnf groupinstall "Development Tools" -y
+
+	# To build Python we need some additional packages
+	sudo dnf install zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel openssl-devel xz xz-devel libffi-devel findutils -y
+}
 
 # ----------------------------------------------------------------------------------------
 # The install
@@ -237,6 +300,7 @@ install(){
     # Package Managers
     macOSarr=(install_homebrew brew_backup_new_packages brew_installing_packages)
     nixPkg=(nix_install)
+    dnfPkg=(dnfInstall pyenvInstall)
     aptPkg=(apt_install_pkgs)
     pkg_arr=(macOSarr nixPkg aptPkg)
 
@@ -248,6 +312,7 @@ install(){
     printf "Press z for $(tput setaf 3)zsh plugins $(tput sgr0) \n"
     printf "Press p for $(tput setaf 4)packer$(tput sgr0) \n"
     printf "Press n for $(tput setaf 5)nvim plugins$(tput sgr0) \n"
+    printf "Press e for $(tput setaf 6)pyenv$(tput sgr0) \n"
     printf "Press a for $(tput setaf 6)all$(tput sgr0) \n"
     read -n 1 ans
     printf "\n"
@@ -256,6 +321,7 @@ install(){
         printf "0-$(tput setaf 3) brew$(tput sgr0) \n"
         printf "1-$(tput setaf 5) nix$(tput sgr0) \n"
         printf "2-$(tput setaf 6) apt$(tput sgr0) \n"
+        printf "3-$(tput setaf 3) dnf$(tput sgr0) \n"
 
         read -n 1 pkg
         printf "\n"
@@ -266,6 +332,8 @@ install(){
             buf_arr=${nixPkg}
         elif [[ "$pkg" == "2" ]]; then
             buf_arr=${aptPkg}
+        elif [[ "$pkg" == "3" ]]; then
+	    buf_arr=${dnfPkg}
         fi
 
 
@@ -295,6 +363,11 @@ install(){
     # Link dotfiles
     if [[ "$ans" == *"s"* ]]; then 
         link_dotfiles
+    fi
+
+    # Pyenv install
+    if [[ "$ans" == *"e"* ]]; then 
+        pyenvInstall
     fi
 
     # Packer install

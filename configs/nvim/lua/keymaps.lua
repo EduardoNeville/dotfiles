@@ -94,5 +94,11 @@ set_keymaps("n", "<leader>q", vim.diagnostic.setloclist)
 set_keymaps("n", "<leader>hov", vim.lsp.buf.hover)
 set_keymaps("n", "<leader>def", vim.lsp.buf.definition)
 
+-- New lsp commands
+set_api_keymaps("n", "<leader>rn", "<cmd>lua vim.lsp.buf.format{async=true}<cr>", { noremap = true, silent = true })
+set_api_keymaps("n", "<leader>la", "<cmd>lua vim.lsp.buf.code_action()<cr>", { noremap = true, silent = true })
+set_api_keymaps("n", "<leader>lr", "<cmd>lua vim.lsp.buf.rename()<cr>", { noremap = true, silent = true })
+set_api_keymaps("n", "<leader>lS", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", { noremap = true, silent = true })
+
 --- Debugger -----------------------------
 

@@ -13,7 +13,7 @@
 #       - Windows Terminal (https://github.com/Microsoft/Terminal | https://aka.ms/terminal) with WSL, or
 #       - $NNN_TERMINAL set to a terminal (it's xterm by default).
 #   - less or $NNN_PAGER
-#   - tree or exa or (GNU) ls
+#   - tree or eza or (GNU) ls
 #   - mediainfo or file
 #   - mktemp
 #   - unzip
@@ -348,8 +348,8 @@ preview_file() {
             ls -F --group-directories-first | head -n "$((lines - 3))" | "$(dirname "$0")"/.iconlookup -l "$cols" -B "$BSTR" -b " "
         #elif exists tree; then
         #    fifo_pager tree --filelimit "$(find . -maxdepth 1 | wc -l)" -L 3 -C -F --dirsfirst --noreport
-        elif exists exa; then
-            exa -G --group-directories-first --colour=always --icons --tree --level=2
+        elif exists eza; then
+            eza -G --group-directories-first --colour=always --icons --tree --level=2
         else
             fifo_pager ls -F --group-directories-first --color=always
         fi
