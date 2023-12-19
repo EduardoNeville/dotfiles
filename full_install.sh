@@ -252,6 +252,11 @@ dnfInstall(){
 
 	sudo dnf install telegram
 
+    _process "-> Installing LazyGit"
+
+    sudo dnf copr enable atim/lazygit -y
+    sudo dnf install lazygit
+
 	# symlink files to the HOME directory.
 	if [[ -f "$DOTFILES_DIR/opt/nixPkgs" ]]; then
 		_process "→ Installing nix packages"
