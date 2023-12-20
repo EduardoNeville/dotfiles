@@ -57,8 +57,8 @@ disabled = false
 
 [git_status]
 style = "fg:#65ff87"
-ahead ='⇡$count'
-behind ='⇣$count'
+ahead ='󰞕 $count'
+behind ='󰞒 $count'
 modified = '!$count'
 untracked = '?$count'
 stashed = '\$$count'
