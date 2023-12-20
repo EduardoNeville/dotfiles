@@ -36,6 +36,7 @@ style="fg:#45aeff"
 read_only="  "
 read_only_style="red"
 repo_root_format ='\[[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style)\]'
+format='\[[$path]($style)[$read_only]($read_only_style)\]'
 disabled = false
 
 [directory.substitutions]

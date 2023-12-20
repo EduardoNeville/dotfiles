@@ -79,8 +79,8 @@ vim.g.copilot_no_tab_map = true
 
 --- ChatGPT --------------------------------
 set_api_keymaps("n","<leader>cg",":ChatGPT<CR>", { noremap = true, silent = true })
-set_api_keymaps("n","<leader>cga",":ChatGPTActAs<CR>", { noremap = true, silent = true })
-set_api_keymaps("n","<leader>cgi",":ChatGPTEditWithInstructions<CR>", { noremap = true, silent = true })
+set_api_keymaps("n","<leader>ca",":ChatGPTActAs<CR>", { noremap = true, silent = true })
+set_api_keymaps("n","<leader>ci",":ChatGPTEditWithInstructions<CR>", { noremap = true, silent = true })
 
 
 --- LSP ---------------------------------- 
