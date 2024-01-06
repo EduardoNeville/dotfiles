@@ -59,7 +59,11 @@ local config = {
     --color_scheme = 'Andromeda',
 	--color_scheme = 'Papercolor Light (Gogh)', -- "Aesthetic Night
     --color_scheme = "Abernathy",	
-    color_scheme = "Aci (Gogh)",
+    --color_scheme = 'Ayu Mirage (Gogh)',
+    color_scheme = 'Ayu Dark (Gogh)',
+    --color_scheme = 'Ayu Light (Gogh)',
+    --color_scheme = 'ayu',
+    --color_scheme = "Aci (Gogh)",
 
 	color_scheme_dirs = { os.getenv("HOME") .. "/.config/wezterm/colors/" },
 	-- Aesthetic Night Colorscheme
@@ -84,38 +88,38 @@ local config = {
 	scrollback_lines = 5000,
 
  	window_padding = {
-		left = 20,
+		left = 0,
         right = 0,
         top = 10,
         bottom = 0,
 	},
+}
 
-	--- Window Frame ---
-	window_frame = {
-		-- The overall background color of the tab bar when
-		-- the window is focused
-		active_titlebar_bg = '#191b28',
+--- Window Frame ---
+config.window_frame = {
+    -- The overall background color of the tab bar when
+    -- the window is focused
+    active_titlebar_bg = '#191b28',
 
-		-- The overall background color of the tab bar when
-		-- the window is not focused
-		inactive_titlebar_bg = '#1f2335',
-		--active_tab_left = {
-		--	chars = "▐▌",
-		--	style = "Bold",
-		--},
-		--active_tab_right = {
-		--	chars = "▐▌",
-		--	style = "Bold",
-		--},
-		--inactive_tab_left = {
-		--	chars = "▐▌",
-		--	style = "Bold",
-		--},
-		--inactive_tab_right = {
-		--	chars = "▐▌",
-		--	style = "Bold",
-		--},
-	},
+    -- The overall background color of the tab bar when
+    -- the window is not focused
+    inactive_titlebar_bg = '#1f2335',
+    --active_tab_left = {
+    --	chars = "▐▌",
+    --	style = "Bold",
+    --},
+    --active_tab_right = {
+    --	chars = "▐▌",
+    --	style = "Bold",
+    --},
+    --inactive_tab_left = {
+    --	chars = "▐▌",
+    --	style = "Bold",
+    --},
+    --inactive_tab_right = {
+    --	chars = "▐▌",
+    --	style = "Bold",
+    --},
 }
 
 config.colors = {

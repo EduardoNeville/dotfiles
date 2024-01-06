@@ -5,7 +5,7 @@
 # Format
 
 format = """
-$username$directory$git_branch$git_status $fill
+$username$directory$git_branch$git_status$fill
  $character
 """
 
@@ -20,10 +20,11 @@ style_root = "fg:#45aeff"
 format = '[\[$user\]]($style)'
 disabled = true 
 
+#  ❯ ❮ ✘
 [character]
-success_symbol = '[❯](bold green)'
-error_symbol = '[✘](bold red)'
-vimcmd_symbol = '[❮](bold green)'
+success_symbol = '[](bold green)'
+error_symbol = '[](bold red)'
+vimcmd_symbol = '[](bold green)'
 vimcmd_replace_one_symbol = '[ ](bold purple)'
 vimcmd_visual_symbol = '[ ](bold green)'
 
@@ -33,7 +34,7 @@ truncate_to_repo = false
 before_repo_root_style="fg:#0969da"
 repo_root_style="fg:#89c0d0"
 style="fg:#45aeff"
-read_only="  "
+read_only=" "
 read_only_style="red"
 repo_root_format ='\[[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style)\]'
 format='\[[$path]($style)[$read_only]($read_only_style)\]'
@@ -89,21 +90,21 @@ disabled = false
 [docker_context]
 symbol = "󰡨 "
 style = "fg:#589be9"
-format = '(via [\[$symbol$context\]]($style))'
+format = '(via [\[$symbol $context\]]($style))'
 disabled = false
 
 [bun]
-symbol = "󰚅 "
+symbol = "󱠶 "
 style = "fg:#da9253"
 version_format = "$raw"
-format = '(via [\[$symbol$context\]]($style))'
+format = '(via [\[$symbol $context\]]($style))'
 disabled = false
 
 [c]
 symbol = ""
-style = "fg:#840a2c"
+style = "fg:#84a930"
 version_format = "$raw"
-format = '([\[$symbol($version)\]]($style))'
+format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [kubernetes]

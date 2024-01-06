@@ -88,8 +88,9 @@ zq -> zoxide query --interactive and cd there \n'"
 # ----- NNN SETUP -------------------------------
 export NNN_PLUG='p:preview-tui;f:fzcd;g:gitroot;c:cdpath;a:autojump'
 export NNN_FIFO='/tmp/nnn.fifo'
-export NNN_USE_EDITOR='nvim'
-export NNN_ICONS=".config/icons-in-terminal"
+#export NNN_OPENER='~/.config/nnn/plugins/nuke'
+#export NNN_USE_EDITOR='nvim'
+alias nnn='nnn -Pp' # preview files with nnn
 
 #{XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd
 #
@@ -227,3 +228,11 @@ export PYENV_ROOT="$HOME/.pyenv"
 if command -v pyenv 1>/dev/null 2>&1; then
     eval "$(pyenv init -)"
 fi
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"

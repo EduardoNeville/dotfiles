@@ -13,7 +13,10 @@ return require('packer').startup(function()
     --- Packer can manage itself
     use 'wbthomason/packer.nvim'
 
-    --- LSP configs --------------------------------------
+---------------------------------------------------------------
+------- LSP configs -------------------------------------------
+---------------------------------------------------------------
+
     -- Added this plugin.
 
     use {'neovim/nvim-lspconfig'}             -- Required
@@ -54,15 +57,12 @@ return require('packer').startup(function()
         }
     }
 
-    --- COQ
-    --use ({ "ms-jpq/coq_nvim", branch = "coq"})
-    --- Coc.nvim ----------------------------------------
-    --use {'neoclide/coc.nvim', branch = 'release', tag = 'v0.0.82'}
-
     --- Copilot ------------------------------------------
-    --- setup up in pack by cloning the repo 
+    -- Cloned separately using full_install.sh
 
-    --- UI ------------------------------------------------
+---------------------------------------------------------------
+------- UI configs -------------------------------------------
+---------------------------------------------------------------
 
     -- Fuzzy Finder
     use {
@@ -110,15 +110,10 @@ return require('packer').startup(function()
         end;
     }
 
+    -- Nnn
     use {
-        "luukvbaal/nnn.nvim",
-        config = function() require("nnn").setup({
-            picker = {
-                cmd = "tmux new-session nnn -Pp",
-                offset = true,
-            },
-            replace_netrw = "picker",
-        }) end
+      "luukvbaal/nnn.nvim",
+      config = function() require("nnn").setup() end
     }
 
     -- WinBar using barbecue
@@ -175,12 +170,10 @@ return require('packer').startup(function()
         }
     })
 
-    use({
-        "aserowy/tmux.nvim",
-        config = function() return require("tmux").setup() end
-    })
+---------------------------------------------------------------
+------- Syntax configs -------------------------------------------
+---------------------------------------------------------------
 
-    --- Syntax highlighting ----------------------------------
     use 'nvim-treesitter/nvim-treesitter-context'
     --use 'nvim-treesitter/nvim-treesitter'
     -- tree-sitter
@@ -215,12 +208,6 @@ return require('packer').startup(function()
         }
     }
 
-    -- Syntax
-    --use {
-    --    'nmac427/guess-indent.nvim',
-    --    config = function() require('guess-indent').setup {} end,
-    --}
-
     use({
         "kylechui/nvim-surround",
         tag = "*", -- Use for stability; omit to use `main` branch for the latest features
@@ -239,59 +226,20 @@ return require('packer').startup(function()
 
     use 'prettier/vim-prettier'
 
-    --- Debugging ------------------------------------------------
-    --local debugging = use {
-    --    use "folke/neodev.nvim",
-    --    --use {
-    --    --  "mfussenegger/nvim-dap",
-    --    --  opt = true,
-    --    --  event = "BufReadPre",
-    --    --  module = {"dap"},
-    --    --  wants = {"nvim-dap-virtual-text", "DAPInstall.nvim", "nvim-dap-ui", "nvim-dap-python"},
-    --    --  requires = {
-    --    --    "Pocco81/DAPInstall.nvim",
-    --    --    "theHamsta/nvim-dap-virtual-text",
-    --    --    "rcarriga/nvim-dap-ui",
-    --    --    "mfussenegger/nvim-dap-python",
-    --    --    "nvim-telescope/telescope-dap.nvim",
-    --    --    { "jbyuki/one-small-step-for-vimkind", module = "osv" },
-    --    --  },
-    --    --  config = function()
-    --    --    require("config.dap").setup()
-    --    --  end,
-    --    --}
-    --}
+---------------------------------------------------------------
+------- Colour Schemes configs --------------------------------
+---------------------------------------------------------------
 
-
-    --- Misc -----------------------------------------------------
-    -- Noice.nvim 
---        use({
---                "folke/noice.nvim",
---                config = function()
---                        require("noice").setup({
---                        -- add any options here
---                  })end,
---                requires = {
---                        -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
---                        "MunifTanjim/nui.nvim",
---                        -- OPTIONAL:
---                        --   `nvim-notify` is only needed, if you want to use the notification view.
---                        --   If not available, we use `mini` as the fallback
---                        "rcarriga/nvim-notify",
---                }
---        })
-    
-    --- Colour Schemes ------------------------------------------
     use 'fcpg/vim-farout'
     use 'folke/tokyonight.nvim'
     use {"bluz71/vim-moonfly-colors", as = "moonfly"}
     use 'maxmx03/fluoromachine.nvim'
     use "EdenEast/nightfox.nvim"
-    use {"nobbmaestro/nvim-andromeda", requires = { "tjdevries/colorbuddy.nvim", branch = "dev" }
-    }
+    use {"nobbmaestro/nvim-andromeda", requires = { "tjdevries/colorbuddy.nvim", branch = "dev" }}
     use 'zanglg/nova.nvim'
     use 'jaredgorski/SpaceCamp'
     use {'nyngwang/nvimgelion'}
+    use 'Shatur/neovim-ayu'
 
     --- Colorscheme config ----------------------------------------
     local fm = require 'fluoromachine'

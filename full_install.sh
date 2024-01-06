@@ -138,6 +138,7 @@ apt_install_pkgs(){
 			# set IFS back to space to split string on
 			IFS=$' '
 			sudo apt install ${links[$index]}
+
 			# set separater back to carriage return & new line break
 			IFS=$'\r\n'
 		done
