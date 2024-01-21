@@ -18,7 +18,6 @@ return require('packer').startup(function()
 ---------------------------------------------------------------
 
     -- Added this plugin.
-
     use {'neovim/nvim-lspconfig'}             -- Required
     use {'williamboman/mason.nvim'}           -- Optional
     use {'williamboman/mason-lspconfig.nvim'} -- Optional
@@ -271,4 +270,5 @@ return require('packer').startup(function()
             end
     }
     vim.cmd.colorscheme('fluoromachine')
+
 end)

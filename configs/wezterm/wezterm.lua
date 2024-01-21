@@ -211,8 +211,10 @@ config.keys = {
     { key = 's', mods = 'ALT|CTRL', action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' }, },
 
     -- Switch Between Windows <CTRL-n> = +1 and <CTRL-p> = -1
-    { key = 'p', mods = 'CTRL', action = wezterm.action.ActivatePaneDirection "Right" },
-    { key = 'n', mods = 'CTRL', action = wezterm.action.ActivatePaneDirection "Left" },
+    { key = 'l', mods = 'CTRL', action = wezterm.action.ActivatePaneDirection "Right" },
+    { key = 'h', mods = 'CTRL', action = wezterm.action.ActivatePaneDirection "Left" },
+    { key = 'k', mods = 'CTRL', action = wezterm.action.ActivatePaneDirection "Up" },
+    { key = 'j', mods = 'CTRL', action = wezterm.action.ActivatePaneDirection "Down" },
 }
 
 return config
