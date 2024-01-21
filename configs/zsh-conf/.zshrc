@@ -118,6 +118,8 @@ alias mdtozar='mdtozar_func'
 # --- SHORTCUTS -----------------
 # -------------------------------
 
+alias xo="xdg-open"
+
 # --- rm shortcuts -------------------------------
 alias del="rm -rf"
 
@@ -140,7 +142,6 @@ ls COMMANDS
 ls  -> eza all files in a tree of depth 2 sorted by size \n
 ls3 -> eza all files in a tree of depth 3 sorted by size \n
 ls4 -> eza all files in a tree of depth 4 sorted by size \n'"
-
 
 # --- fzf shortcuts -------------------------------
 fzf_cd() {

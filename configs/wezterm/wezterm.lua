@@ -208,7 +208,7 @@ config.keys = {
     { key = 'v', mods = 'ALT|CTRL', action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' }, },
 
     -- Split Vertical == <CTRL-Shift-s>
-    { key = 's', mods = 'ALT|CTRL', action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' }, },
+    { key = 's', mods = 'ALT|CTRL', action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' }, },
 
     -- Switch Between Windows <CTRL-n> = +1 and <CTRL-p> = -1
     { key = 'p', mods = 'CTRL', action = wezterm.action.ActivatePaneDirection "Right" },
