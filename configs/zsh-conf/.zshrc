@@ -127,6 +127,9 @@ alias del="rm -rf"
 alias .1="cd .."
 alias .2="cd ../.."
 alias .3="cd ../../.."
+alias .4="cd ../../../.."
+alias .5="cd ../../../../.."
+alias .6="cd ../../../../../.."
 
 # --- ls shortcuts -------------------------------
 alias ls0="eza --icons --tree --level=1 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
@@ -237,3 +240,5 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+export PATH=$PATH:/home/eduardoneville/.spicetify

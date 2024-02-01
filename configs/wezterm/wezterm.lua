@@ -83,14 +83,14 @@ local config = {
 	tab_bar_at_bottom = true,
 
 	--- Window Info ----
-	window_background_opacity = 0.90,
+	window_background_opacity = 0.85,
 	window_decorations = "RESIZE",
 	scrollback_lines = 5000,
 
  	window_padding = {
 		left = 0,
         right = 0,
-        top = 10,
+        top = 0,
         bottom = 0,
 	},
 }

@@ -29,7 +29,7 @@ vimcmd_replace_one_symbol = '[ ](bold purple)'
 vimcmd_visual_symbol = '[ ](bold green)'
 
 [directory]
-truncation_length = 4 
+truncation_length = 8 
 truncate_to_repo = false
 before_repo_root_style="fg:#0969da"
 repo_root_style="fg:#89c0d0"
@@ -53,7 +53,7 @@ style = "fg:#e4e4e4"
 [git_branch]
 symbol = ""
 style = "fg:#f0268f"
-format = '[ $symbol $branch ]($style)'
+format = '[\[$symbol $branch\]]($style)'
 disabled = false
 
 [git_status]

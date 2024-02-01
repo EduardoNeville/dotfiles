@@ -71,11 +71,11 @@ set_keymaps('n', '<leader>fh', builtin.help_tags, {})
 --- Copilot ------------------------------
 --- Copilot change of key
 --- Maps copilot accept to Control + J
-set_api_keymaps('i', '<C-J>', 'copilot#Accept("<CR>")', {silent = true, expr = true, noremap = true})
-vim.g.copilot_no_tab_map = true
---- Maps copilot next to Control + K
-set_api_keymaps("i", "<C-K>", 'copilot#Next("<CR>")', { silent = true, expr = true })
-vim.g.copilot_no_tab_map = true
+--set_api_keymaps('i', '<C-j>', 'copilot#Accept("\<CR>")', {silent = true, expr = true, noremap = true})
+--vim.g.copilot_no_tab_map = true
+----- Maps copilot next to Control + K
+--set_api_keymaps("i", "<C-K>", 'copilot#Next("<CR>")', { silent = true, expr = true })
+--vim.g.copilot_no_tab_map = true
 
 --- ChatGPT --------------------------------
 set_api_keymaps("n","<leader>cg",":ChatGPT<CR>", { noremap = true, silent = true })
