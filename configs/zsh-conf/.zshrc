@@ -6,7 +6,7 @@ export PATH="$HOME/.local/bin:$PATH"
 export ZSH=$HOME/.config/zsh-conf
 
 ### ---- Editor ---------------------------------------------
-export EDITOR='vim'
+export EDITOR='nvim'
 
 ### ---- history config -------------------------------------
 export HISTFILE=$ZSH/.zsh_history
