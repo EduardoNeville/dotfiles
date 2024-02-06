@@ -269,6 +269,6 @@ return require('packer').startup(function()
                 purple = '#9544f7'}
             end
     }
-    vim.cmd.colorscheme('fluoromachine')
-
+    --vim.cmd.colorscheme('fluoromachine')
+    vim.cmd.colorscheme('blue')
 end)
