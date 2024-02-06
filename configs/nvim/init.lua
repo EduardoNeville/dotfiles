@@ -1,6 +1,5 @@
 require('base')
 require('keymaps')
---require('which-keymaps')
+require('colorscheme')
 require('plugins')
 require('lsp-config.language-server')
---require('debug-config.debug-config')
