@@ -19,13 +19,16 @@ static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
 static const char col_gray4[]       = "#dbdfdf";
 static const char col_blue[]        = "#808fbe";
-static const char col_dark_blue[]    = "#0d274f";
+static const char col_dark_blue[]   = "#0d274f";
 static const char col_orange[]      = "#eaac79";
 static const char col_red[]         = "#c15a5e";
 static const char col_green[]       = "#8fa176";
 static const char col_cyan[]        = "#8cb5af";
 static const char col_yellow[]      = "#d8b170";
 static const char col_magenta[]     = "#b183ba";
+static const char col_golden[]      = "#ffd700";
+static const char col_gold_warm[]   = "#f38518";
+static const char col_ivory[]       = "#FFFFF0";
 
 /**
 static const char *colors[][3]      = {
@@ -37,10 +40,8 @@ static const char *colors[][3]      = {
 
 static const char *colors[][3] = {
     /*               fg         bg         border   */
-    [SchemeNorm] = {col_gray3, col_back, col_gray2},
-//    [SchemeBtn] = {col_blue, col_gray1, col_gray2},
-//    [SchemeLt] = {col_gray4, col_back, col_gray2},
-    [SchemeSel] = {col_gray4, col_dark_blue, col_dark_blue},
+    [SchemeNorm] = {col_ivory, col_dark_blue, col_dark_blue},
+    [SchemeSel] =  {col_ivory, col_gold_warm, col_gold_warm},
 };
 
 static const char *tagsel[][2] = {
