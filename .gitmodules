@@ -13,3 +13,6 @@
 [submodule "configs/zsh-conf/plugins/zsh-fzf-history-search"]
 	path = configs/zsh-conf/plugins/zsh-fzf-history-search
 	url = https://github.com/joshskidmore/zsh-fzf-history-search.git
+[submodule "configs/yazi"]
+	path = configs/yazi
+	url = https://github.com/sxyazi/yazi.git
