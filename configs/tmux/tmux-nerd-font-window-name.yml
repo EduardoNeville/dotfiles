@@ -1,0 +1,11 @@
+config:
+  fallback-icon: "󰓥"
+  show-name: true
+
+icons:
+  zsh: ""
+  nvim: ""
+  vim: ""
+  python: ""
+  cmake: ""
+  node: "󰎙"
