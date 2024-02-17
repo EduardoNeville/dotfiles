@@ -6,8 +6,8 @@ static const unsigned int borderpx  = 4;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = {"monospace:size=16"};
-static const char dmenufont[]       = "monospace:size=16";
+static const char *fonts[]          = {"monospace:size=14"};
+static const char dmenufont[]       = "monospace:size=14";
 //static const char col_gray1[]       = "#222222";
 //static const char col_gray2[]       = "#444444";
 //static const char col_gray3[]       = "#bbbbbb";
@@ -19,16 +19,19 @@ static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
 static const char col_gray4[]       = "#dbdfdf";
 static const char col_blue[]        = "#808fbe";
-static const char col_dark_blue[]   = "#0d274f";
+static const char col_navy1[]       = "#0d274f";
+static const char col_navy2[]       = "#21296e";
 static const char col_orange[]      = "#eaac79";
 static const char col_red[]         = "#c15a5e";
 static const char col_green[]       = "#8fa176";
 static const char col_cyan[]        = "#8cb5af";
 static const char col_yellow[]      = "#d8b170";
 static const char col_magenta[]     = "#b183ba";
+static const char col_magenta2[]    = "#ce92d4";
 static const char col_golden[]      = "#ffd700";
 static const char col_gold_warm[]   = "#f38518";
 static const char col_ivory[]       = "#FFFFF0";
+static const char col_rose_gold[]   = "#E0BFB8";
 
 /**
 static const char *colors[][3]      = {
@@ -39,14 +42,14 @@ static const char *colors[][3]      = {
 **/
 
 static const char *colors[][3] = {
-    /*               fg         bg         border   */
-    [SchemeNorm] = {col_ivory, col_dark_blue, col_dark_blue},
-    [SchemeSel] =  {col_ivory, col_gold_warm, col_gold_warm},
+    /*               fg               bg                border   */
+    [SchemeNorm] = {col_magenta2,        col_navy2,        col_navy2},
+    [SchemeSel] =  {col_navy2,        col_magenta2,        col_magenta2},
 };
 
 static const char *tagsel[][2] = {
     {col_green, col_back}, {col_red, col_back}, {col_yellow, col_back},
-    {col_blue, col_back}, {col_magenta, col_back}, {col_cyan, col_back},
+    {col_navy2, col_back}, {col_magenta, col_back}, {col_cyan, col_back},
 };
 
 /* tagging */
@@ -88,7 +91,7 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 
-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_dark_blue, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_blue, NULL };
+static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_navy2, "-nf", col_magenta2, "-sb", col_rose_gold, "-sf", col_navy2, NULL };
 static const char *termcmd[]  = { "wezterm", NULL };
 
 /* Application Launch */
