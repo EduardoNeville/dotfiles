@@ -95,6 +95,23 @@ local config = {
 	},
 }
 
+--- Tab title 
+wezterm.on(
+  'format-tab-title',
+  function(tab, tabs, panes, config, hover, max_width)
+    --local title = tab_title(tab)
+    --local tabName = string.format("%s", tab.tab_title):split('(')[1]
+
+    --if tab.is_active then
+    --  return {
+    --    { Text = tabName},
+    --  }
+    --end
+    local nonActive = string.format("-[ %s ]-", tab.tab_index)
+    return nonActive
+  end
+)
+
 --- Window Frame ---
 config.window_frame = {
     -- The overall background color of the tab bar when
@@ -152,11 +169,11 @@ config.colors = {
 
         -- Inactive tabs are the tabs that do not have focus
         inactive_tab = {
-        bg_color = "#1f2335",
-        fg_color = "#545c7e",
+            bg_color = "#1f2335",
+            fg_color = "#545c7e",
 
-          -- The same options that were listed under the `active_tab` section above
-          -- can also be used for `inactive_tab`.
+              -- The same options that were listed under the `active_tab` section above
+              -- can also be used for `inactive_tab`.
         },
 
         -- You can configure some alternate styling when the mouse pointer
