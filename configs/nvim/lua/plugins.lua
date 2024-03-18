@@ -225,6 +225,13 @@ return require('packer').startup(function()
 
     use 'prettier/vim-prettier'
 
+    -- Guess Indentations
+    -- using packer.nvim
+    use {
+        'nmac427/guess-indent.nvim',
+        config = function() require('guess-indent').setup {} end,
+    }
+
 ---------------------------------------------------------------
 ------- Colour Schemes configs --------------------------------
 ---------------------------------------------------------------
@@ -239,7 +246,9 @@ return require('packer').startup(function()
     use 'jaredgorski/SpaceCamp'
     use {'nyngwang/nvimgelion'}
     use 'Shatur/neovim-ayu'
+    use "samharju/synthweave.nvim"
 
+-- run :colorscheme synthweave or synthweave-transparent when feeling like it
     --- Colorscheme config ----------------------------------------
     --local fm = require 'fluoromachine'
     --fm.setup {

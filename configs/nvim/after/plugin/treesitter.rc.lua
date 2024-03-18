@@ -28,6 +28,7 @@ ts.setup {
         "javascript",
         "typescript",
         "bash",
+        "kotlin"
     },
     autotag = {
         enable = true,

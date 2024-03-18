@@ -60,10 +60,16 @@ local config = {
 	--color_scheme = 'Papercolor Light (Gogh)', -- "Aesthetic Night
     --color_scheme = "Abernathy",	
     --color_scheme = 'Ayu Mirage (Gogh)',
-    color_scheme = 'Ayu Dark (Gogh)',
+    --color_scheme = 'Ayu Dark (Gogh)',
     --color_scheme = 'Ayu Light (Gogh)',
     --color_scheme = 'ayu',
     --color_scheme = "Aci (Gogh)",
+    
+    -- Synthwave
+    color_scheme = "Synthwave (Gogh)",
+    --color_scheme = "Synthwave Alpha (Gogh)",
+    --color_scheme = "SynthwaveAlpha",
+
 
 	color_scheme_dirs = { os.getenv("HOME") .. "/.config/wezterm/colors/" },
 	-- Aesthetic Night Colorscheme

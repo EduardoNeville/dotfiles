@@ -17,6 +17,14 @@ export HISTSIZE=10000
 # How many commands history will save on file.
 export SAVEHIST=10000
 
+# FZF Theme
+export FZF_DEFAULT_OPTS='
+--color=fg:#55a8fb,bg:-1,hl:#b9b1bc
+--color=fg+:#00986c,bg+:#241b30,hl+:#0ae4a4
+--color=info:#aa54f9,prompt:#0ae4a4,pointer:#241b30
+--color=marker:#ff00f6,spinner:#aa54f9,header:#f9f972
+'
+
 # History won't save duplicates.
 setopt HIST_IGNORE_ALL_DUPS
 
@@ -90,7 +98,6 @@ export NNN_PLUG='p:preview-tui;f:fzcd;g:gitroot;c:cdpath;a:autojump'
 export NNN_FIFO='/tmp/nnn.fifo'
 #export NNN_OPENER='~/.config/nnn/plugins/nuke'
 #export NNN_USE_EDITOR='nvim'
-alias nnn='nnn -Pp' # preview files with nnn
 
 #{XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd
 #
@@ -215,9 +222,6 @@ alias sclist='ghelp;fzfhelp;lshelp;zhelp'
 # bun completions
 [ -s "/Users/eduardoneville82/.bun/_bun" ] && source "/Users/eduardoneville82/.bun/_bun"
 
-# bun
-#export BUN_INSTALL="$HOME/.bun"
-#export PATH="$BUN_INSTALL/bin:$PATH"
 # Starship 
 export STARSHIP_CONFIG=~/.config/starship/starship.toml
 export STARSHIP_CACHE=~/.starship/cache
@@ -236,9 +240,3 @@ fi
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
-
-# bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
-
-export PATH=$PATH:/home/eduardoneville/.spicetify

@@ -4,12 +4,9 @@
 
 # Format
 
-format = """
-$username$directory$git_branch$git_status$fill
- $character
-"""
+format = """$username$directory$git_branch$git_status$fill$time$all$character"""
 
-right_format = """$all$time"""
+#right_format = """$all"""
 
 
 # General config
@@ -22,9 +19,9 @@ disabled = true
 
 #  ❯ ❮ ✘
 [character]
-success_symbol = '[](bold green)'
+success_symbol = '[](bold #0ae4a4)'
 error_symbol = '[](bold red)'
-vimcmd_symbol = '[](bold green)'
+vimcmd_symbol = '[](bold #0ae4a4)'
 vimcmd_replace_one_symbol = '[ ](bold purple)'
 vimcmd_visual_symbol = '[ ](bold green)'
 
