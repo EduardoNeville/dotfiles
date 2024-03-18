@@ -20,8 +20,8 @@ export SAVEHIST=10000
 # FZF Theme
 export FZF_DEFAULT_OPTS='
 --color=fg:#55a8fb,bg:-1,hl:#b9b1bc
---color=fg+:#00986c,bg+:#241b30,hl+:#0ae4a4
---color=info:#aa54f9,prompt:#0ae4a4,pointer:#241b30
+--color=fg+:#ffd700,bg+:#241b30,hl+:#0ae4a4
+--color=info:#aa54f9,prompt:#ffd700,pointer:#241b30
 --color=marker:#ff00f6,spinner:#aa54f9,header:#f9f972
 '
 
