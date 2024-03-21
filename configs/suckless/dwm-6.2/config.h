@@ -1,6 +1,8 @@
 /* See LICENSE file for copyright and license details. */
 
+#include <X11/X.h>
 #include <X11/XF86keysym.h>
+
 /* appearance */
 static const unsigned int borderpx  = 4;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
@@ -55,9 +57,11 @@ static const char *colors[][3] = {
 
 };
 
-
 /* tagging */
 static const char *tags[] = { "I", "II", "III", "IV", "V"};
+
+/* include(s) depending on the tags array */
+#include "flextile.h"
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -71,14 +75,19 @@ static const Rule rules[] = {
 
 /* layout(s) */
 static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
-static const int nmaster     = 1;    /* number of clients in master area */
-static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
-
+static const Bool resizehints = True; /* True means respect size hints in tiled resizals */
+static const int layoutaxis[] = {
+	1,    /* layout axis: 1 = x, 2 = y; negative values mirror the layout, setting the master area to the right / bottom instead of left / top */
+	2,    /* master axis: 1 = x (from left to right), 2 = y (from top to bottom), 3 = z (monocle) */
+	2,    /* stack axis:  1 = x (from left to right), 2 = y (from top to bottom), 3 = z (monocle) */
+};
+ 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ "[]=",      tile },    /* first entry is default */
-	{ "><>",      NULL },    /* no layout function means floating behavior */
+	{ "-|=",      tile },
+	{ "-|-",      restack },
 	{ "[M]",      monocle },
+	{ "><>",      NULL },    /* no layout function means floating behavior */
 };
 
 /* key definitions */
@@ -101,9 +110,6 @@ static const char *roficmd[] = { "rofi", "-show", "drun", "-theme", "~/.config/r
 
 /* Application Launch */
 static const char *firecmd[] = {"firefox", NULL};
-static const char *librecmd[] = {"librewolf", NULL};
-static const char *whatscmd[] = {"whatsapp", NULL};
-static const char *telecmd[] = {"telegram-desktop", NULL};
 
 /* Volume Control */
 static const char *up_vol[]   = { "/usr/bin/pactl", "set-sink-volume", "@DEFAULT_SINK@", "+10%",   NULL };
@@ -114,7 +120,7 @@ static const char *mute_vol[] = { "/usr/bin/pactl", "set-sink-mute",   "@DEFAULT
 static const char *brighter[] = { "brightnessctl", "set", "10%+", NULL };
 static const char *dimmer[]   = { "brightnessctl", "set", "10%-", NULL };
 
-
+static const unsigned int mastersplit = 1;	/* number of tiled clients in the master area */
 static Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_p,      spawn,          {.v = roficmd } },
@@ -122,9 +128,6 @@ static Key keys[] = {
 
     /* Application launches */
 	{ MODKEY|ShiftMask,             XK_f,      spawn,          {.v = firecmd } },
-	{ MODKEY|ShiftMask,             XK_l,      spawn,          {.v = librecmd } },
-	{ MODKEY|ShiftMask,             XK_w,      spawn,          {.v = whatscmd } },
-	{ MODKEY|ShiftMask,             XK_t,      spawn,          {.v = telecmd } },
 
     /* ------------------------  */
     /* START SPECIAL KEY CONTROL */
@@ -151,18 +154,18 @@ static Key keys[] = {
     /* END SPECIAL KEY CONTROL  */
     /* ------------------------ */
 
-	{ MODKEY,                       XK_b,      togglebar,      {0} },
+	//{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
-	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
-	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
-	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
-	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
+	{ MODKEY,                       XK_l,      setmfact,       {.f = -0.05} },
+	{ MODKEY,                       XK_h,      setmfact,       {.f = +0.05} },
 	{ MODKEY,                       XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
 	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
+
+	/* Layout Control */
 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
+	{ MODKEY,                       XK_s,      setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
 	{ MODKEY,                       XK_space,  setlayout,      {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
@@ -184,6 +187,12 @@ static Key keys[] = {
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
+	{ MODKEY|ControlMask,           XK_t,      rotatelayoutaxis, {.i = 0} },    /* 0 = layout axis */
+	{ MODKEY|ControlMask,           XK_m,      rotatelayoutaxis, {.i = 1} },    /* 1 = master axis */
+	{ MODKEY|ControlMask, 			XK_n,      rotatelayoutaxis, {.i = 2} },    /* 2 = stack axis */
+	{ MODKEY|ControlMask,           XK_Return, mirrorlayout,     {0} },
+	{ MODKEY|ShiftMask,             XK_h,      shiftmastersplit, {.i = -1} },   /* reduce the number of tiled clients in the master area */
+	{ MODKEY|ShiftMask,           	XK_l,      shiftmastersplit, {.i = +1} },   /* increase the number of tiled clients in the master area */
 };
 
 /* button definitions */

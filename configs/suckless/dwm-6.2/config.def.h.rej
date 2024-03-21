@@ -1,0 +1,14 @@
+--- dwm-5.8.2-0/config.def.h	2010-06-10 22:47:51.660949000 +0200
++++ config.def.h	2010-06-10 22:55:53.094322000 +0200
+@@ -28,6 +31,11 @@ static const Rule rules[] = {
+ /* layout(s) */
+ static const float mfact      = 0.55; /* factor of master area size [0.05..0.95] */
+ static const Bool resizehints = True; /* True means respect size hints in tiled resizals */
++static const int layoutaxis[] = {
++	1,    /* layout axis: 1 = x, 2 = y; negative values mirror the layout, setting the master area to the right / bottom instead of left / top */
++	2,    /* master axis: 1 = x (from left to right), 2 = y (from top to bottom), 3 = z (monocle) */
++	2,    /* stack axis:  1 = x (from left to right), 2 = y (from top to bottom), 3 = z (monocle) */
++};
+ 
+ static const Layout layouts[] = {
+ 	/* symbol     arrange function */

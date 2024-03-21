@@ -71,7 +71,13 @@ set_keymaps('n', '<leader>fh', builtin.help_tags, {})
 --- Copilot ------------------------------
 --- Copilot change of key
 --- Maps copilot accept to Control + J
---set_api_keymaps('i', '<C-j>', 'copilot#Accept("\<CR>")', {silent = true, expr = true, noremap = true})
+set_keymaps('i', '<C-Q>', 'copilot#Accept("\\<CR>")', {
+  expr = true,
+  replace_keycodes = false
+})
+
+vim.g.copilot_no_tab_map = true
+
 --vim.g.copilot_no_tab_map = true
 ----- Maps copilot next to Control + K
 --set_api_keymaps("i", "<C-K>", 'copilot#Next("<CR>")', { silent = true, expr = true })

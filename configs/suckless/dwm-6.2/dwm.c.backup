@@ -639,6 +639,21 @@ createmon(void)
 	m->lt[0] = &layouts[0];
 	m->lt[1] = &layouts[1 % LENGTH(layouts)];
 	strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
+	m->ltaxis[0] = layoutaxis[0];
+	m->ltaxis[1] = layoutaxis[1];
+	m->ltaxis[2] = layoutaxis[2];
+	m->msplit = 1;
+	/* init tags, bars, layouts, axes, msplits and mfacts */
+  m->curtag = m->prevtag = 1;
+  for(i = 0; i < LENGTH(tags) + 1; i++){
+    m->showbars[i] = m->showbar;
+    m->lts[i] = &layouts[0];
+    m->mfacts[i] = m->mfact;
+    m->ltaxes[i][0] = m->ltaxis[0];
+    m->ltaxes[i][1] = m->ltaxis[1];
+    m->ltaxes[i][2] = m->ltaxis[2];
+    m->msplits[i] = m->msplit;
+  }
 	return m;
 }
 

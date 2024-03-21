@@ -45,9 +45,6 @@ if type brew &>/dev/null; then
     compinit -i
 fi
 
-autoload -U compinit; compinit
-
-
 ### ---- Plugins & Themes -----------------------------------
 
 # ZSH PLUGINS
@@ -240,3 +237,9 @@ fi
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+
+autoload -U compinit; compinit -i
+source <(runai completion zsh)
