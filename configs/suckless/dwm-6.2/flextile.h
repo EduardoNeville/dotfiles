@@ -18,12 +18,14 @@ struct Monitor {
 	unsigned int seltags;
 	unsigned int sellt;
 	unsigned int tagset[2];
+	unsigned int nmaster;
 	Bool showbar;
 	Bool showbars[LENGTH(tags) + 1];
 	Bool topbar;
 	Client *clients;
 	Client *sel;
 	Client *stack;
+	Client *tagmarked[32];
 	Monitor *next;
 	Window barwin;
 	const Layout *lt[2];

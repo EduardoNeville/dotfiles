@@ -46,14 +46,11 @@ static const char col_sy_black[] = "#241b30";
 
 
 static const char *colors[][3] = {
-    /*               fg               bg                border   */
-    [SchemeNorm] = { col_sy_celeste,       col_sy_black,        col_sy_black},
-    [SchemeSel] =  { col_sy_black,       col_sy_celeste, 	 col_sy_celeste},
-	[SchemeStatus]  = { col_sy_celeste, col_sy_black,  "#000000"  }, // Statusbar right {text,background,not used but cannot be empty}
-	[SchemeTagsSel]  = { col_sy_black, col_sy_celeste,  "#000000"  }, // Tagbar left selected {text,background,not used but cannot be empty}
-	[SchemeTagsNorm]  = { col_sy_celeste, col_sy_black,  "#000000"  }, // Tagbar left unselected {text,background,not used but cannot be empty}
-	[SchemeInfoSel]  = { col_sy_pink, col_sy_blue,  "#000000"  }, // infobar middle  selected {text,background,not used but cannot be empty}
-	[SchemeInfoNorm]  = { col_sy_pink, col_sy_black,  "#000000"  }, // infobar middle  unselected {text,background,not used but cannot be empty}
+    /*               		 fg               bg              border          */
+    [SchemeNorm] 		 = { col_sy_celeste,  col_sy_black,   col_sy_black    },
+    [SchemeSel] 		 = { col_sy_black,    col_sy_celeste, col_sy_celeste  },
+	[SchemeTabActive]  	 = { col_sy_black,    col_sy_celeste, col_sy_black    },
+	[SchemeTabInactive]  =  { col_sy_celeste, col_sy_black,   col_sy_black    }
 
 };
 
@@ -76,6 +73,20 @@ static const Rule rules[] = {
 /* layout(s) */
 static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
 static const Bool resizehints = True; /* True means respect size hints in tiled resizals */
+static const int nmaster = 1; /* default number of clients in the master area */
+static const int lockfullscreen = 0; /* 1 will force focus on the fullscreen window */
+#include "nmaster.c"
+
+/* Bartabgroups properties */
+#define BARTAB_BORDERS 1       // 0 = off, 1 = on
+#define BARTAB_BOTTOMBORDER 1  // 0 = off, 1 = on
+#define BARTAB_TAGSINDICATOR 1 // 0 = off, 1 = on if >1 client/view tag, 2 = always on
+#define BARTAB_TAGSPX 5        // # pixels for tag grid boxes
+#define BARTAB_TAGSROWS 3      // # rows in tag grid (9 tags, e.g. 3x3)
+static void (*bartabmonfns[])(Monitor *) = { monocle /* , customlayoutfn */ };
+static void (*bartabfloatfns[])(Monitor *) = { NULL /* , customlayoutfn */ };
+
+
 static const int layoutaxis[] = {
 	1,    /* layout axis: 1 = x, 2 = y; negative values mirror the layout, setting the master area to the right / bottom instead of left / top */
 	2,    /* master axis: 1 = x (from left to right), 2 = y (from top to bottom), 3 = z (monocle) */
@@ -93,7 +104,7 @@ static const Layout layouts[] = {
 /* key definitions */
 #define MODKEY Mod4Mask
 #define TAGKEYS(KEY,TAG) \
-	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
+	{ MODKEY,                       KEY,      viewandfocusmaster,           {.ui = 1 << TAG} }, \
 	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
 	{ MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
 	{ MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
@@ -187,12 +198,16 @@ static Key keys[] = {
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
+	/* Switch between master and client column */
+	{ MODKEY|ShiftMask,             XK_w,      focusmaster,   {0} },
+
+	/* flextile */
 	{ MODKEY|ControlMask,           XK_t,      rotatelayoutaxis, {.i = 0} },    /* 0 = layout axis */
 	{ MODKEY|ControlMask,           XK_m,      rotatelayoutaxis, {.i = 1} },    /* 1 = master axis */
 	{ MODKEY|ControlMask, 			XK_n,      rotatelayoutaxis, {.i = 2} },    /* 2 = stack axis */
 	{ MODKEY|ControlMask,           XK_Return, mirrorlayout,     {0} },
-	{ MODKEY|ShiftMask,             XK_h,      shiftmastersplit, {.i = -1} },   /* reduce the number of tiled clients in the master area */
-	{ MODKEY|ShiftMask,           	XK_l,      shiftmastersplit, {.i = +1} },   /* increase the number of tiled clients in the master area */
+	{ MODKEY|ControlMask,           XK_h,      shiftmastersplit, {.i = -1} },   /* reduce the number of tiled clients in the master area */
+	{ MODKEY|ControlMask,           XK_l,      shiftmastersplit, {.i = +1} },   /* increase the number of tiled clients in the master area */
 };
 
 /* button definitions */
