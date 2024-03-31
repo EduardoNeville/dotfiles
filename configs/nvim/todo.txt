@@ -1,4 +1,0 @@
-Plugin Manager -> really understand it 
-
-[ ] nnn fix the nuke shit to open files properly 
-

@@ -33,4 +33,7 @@ ts.setup {
     autotag = {
         enable = true,
     },
+    markdown = {
+        enable = true,
+    },
 }

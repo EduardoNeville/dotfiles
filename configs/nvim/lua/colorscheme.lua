@@ -39,19 +39,24 @@ sw.setup {
             transparent = false,
             overrides = {
                 -- override any group
-                Identifier = { fg = "#f22f52" },
+                Identifier = {
+                    fg = "#f22f52",
+                },
             },
             palette = {
                 -- override palette colors, take a peek at synthweave/palette.lua
                 bg0 = "#040404",
+                bg1 = "#55a8fb",
+                bg2 = "#55a8fb",
+                bg3 = "#55a8fb",
             },
         })
         synthweave.load()
     end,
 }
-
 --- Setup for blue
 vim.cmd.colorscheme('synthweave')
 vim.cmd [[hi Comment guifg=#7ceb9a]]
+vim.cmd [[hi LineNr guifg=#7ceb9a]]
 
 

@@ -48,7 +48,6 @@ local languages = {
         filetypes = { 'javascript', 'typescript', 'html', 'css', 'typescriptreact', 'c', 'json'}
     }
 }
-
 set_tabstop(languages)
 
 ---vim.cmd('autocmd FileType python setlocal tabstop=4 shiftwidth=4')
@@ -65,6 +64,8 @@ set_tabstop(languages)
 vim.opt.foldmethod = 'indent'
 vim.opt.number = true
 vim.opt.showmode = true
+vim.g.markdown_folding = 1
+vim.g.markdown_enable_folding = 1
 
 --- Cursor --------------------------
 vim.opt.cursorline = true

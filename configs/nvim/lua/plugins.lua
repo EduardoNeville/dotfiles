@@ -150,6 +150,11 @@ return require('packer').startup(function()
         run = function() vim.fn["mkdp#util#install"]() end,
     })
 
+    use({
+        -- Config is on the treesitter.rc.lua file
+        "tadmccorkle/markdown.nvim",
+    })
+
     use({"jackMort/ChatGPT.nvim",
         config = function()
             require("chatgpt").setup({
