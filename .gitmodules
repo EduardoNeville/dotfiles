@@ -40,5 +40,6 @@
 [submodule "configs/tmux/plugins/tmux-plugins/tmux-continuum"]
         path = configs/tmux/plugins/tmux-plugins/tmux-continuum
         url = https://github.com/tmux-plugins/tmux-continuum
-
-
+[submodule "configs/suckless"]
+        path = configs/suckless
+        url = https://github.com/EduardoNeville/suckless
