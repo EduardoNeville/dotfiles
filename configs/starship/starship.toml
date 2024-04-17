@@ -106,7 +106,7 @@ disabled = false
 
 [kubernetes]
 style = "fg:#326ce5"
-format = '([\[ﴱ\( $user\)\(󰡉 $cluster\)$context\($namespace\)\]]($style))'
+format = '([\[ﴱ $cluster\($namespace\)\]]($style))'
 disabled = false
 
 [gcloud]

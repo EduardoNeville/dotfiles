@@ -154,8 +154,7 @@ static Key keys[] = {
     { 0,                XF86XK_MonBrightnessUp,   spawn,       {.v = brighter } },
 
     // Screenshots
-    { 0,         XK_Print, spawn, SHCMD("~/.config/suckless/dwm-6.2/scripts/screenshot.sh") },
-    { ShiftMask, XK_Print, spawn, SHCMD("~/.config/suckless/dwm-6.2/scripts/screenshotsel.sh") },
+    { ShiftMask, XK_Print, spawn, SHCMD("flameshot gui") },
 
     // Suspend
     { 0,    XF86XK_PowerOff, spawn, SHCMD("systemctl suspend")},

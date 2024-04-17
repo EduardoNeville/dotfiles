@@ -174,6 +174,11 @@ return require('packer').startup(function()
         }
     })
 
+    use {
+        'wfxr/minimap.vim',
+        run = ':!cargo install --locked code-minimap'
+    }
+
 ---------------------------------------------------------------
 ------- Syntax configs -------------------------------------------
 ---------------------------------------------------------------
@@ -223,7 +228,19 @@ return require('packer').startup(function()
     })
 
     -- Flash and others
-    use 'ggandor/lightspeed.nvim'
+    use 'ggandor/leap.nvim'
+
+
+    -- F movements
+    use {
+      'jinh0/eyeliner.nvim',
+      config = function()
+        require'eyeliner'.setup {
+          highlight_on_key = true,
+          dim = true,
+        }
+      end
+    }
 
     -- Marks signature
     use 'kshenoy/vim-signature'

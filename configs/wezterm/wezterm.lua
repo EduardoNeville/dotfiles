@@ -51,7 +51,7 @@ local config = {
 
     --- https://github.com/tonsky/FiraCode
     --- font = wezterm.font('Fira Code', {weight="Regular", stretch='Normal', style='Normal'}),
-    font_size = 16,
+    font_size = 14,
 
 	--- Colour Schemes ------------------
 	--color_scheme = "Catppuccin", -- Machiatto
@@ -238,6 +238,15 @@ config.keys = {
     { key = 'h', mods = 'CTRL', action = wezterm.action.ActivatePaneDirection "Left" },
     { key = 'k', mods = 'CTRL', action = wezterm.action.ActivatePaneDirection "Up" },
     { key = 'j', mods = 'CTRL', action = wezterm.action.ActivatePaneDirection "Down" },
+
+    -- Increase the size of the pane to the left
+    {key="h", mods="CTRL|SHIFT", action=wezterm.action{AdjustPaneSize={"Left", 2}}},
+    -- Increase the size of the pane to the right
+    {key="l", mods="CTRL|SHIFT", action=wezterm.action{AdjustPaneSize={"Right", 2}}},
+    -- Increase the size of the pane above
+    {key="k", mods="CTRL|SHIFT", action=wezterm.action{AdjustPaneSize={"Up", 2}}},
+    -- Increase the size of the pane below
+    {key="j", mods="CTRL|SHIFT", action=wezterm.action{AdjustPaneSize={"Down", 2}}},
 }
 
 return config
