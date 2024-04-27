@@ -207,6 +207,7 @@ static void updatetitle(Client *c);
 static void updatewindowtype(Client *c);
 static void updatewmhints(Client *c);
 static void view(const Arg *arg);
+static void viewandfocusmaster(const Arg *arg);
 static Client *wintoclient(Window w);
 static Monitor *wintomon(Window w);
 static int xerror(Display *dpy, XErrorEvent *ee);
@@ -973,6 +974,11 @@ focusstack(const Arg *arg)
 		restack(selmon);
 		XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w/2, c->h/2);
 	}
+}
+
+void viewandfocusmaster(const Arg *arg) {
+	view(arg); // Switch to the tag
+	focusmaster(arg); // Custom function to focus the master window
 }
 
 Atom

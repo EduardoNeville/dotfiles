@@ -49,8 +49,14 @@ static const char *colors[][3] = {
     /*               		 fg               bg              border          */
     [SchemeNorm] 		 = { col_sy_celeste,  col_sy_black,   col_sy_black    },
     [SchemeSel] 		 = { col_sy_black,    col_sy_celeste, col_sy_celeste  },
-	[SchemeTabActive]  	 = { col_sy_black,    col_sy_celeste, col_sy_black    },
-	[SchemeTabInactive]  =  { col_sy_celeste, col_sy_black,   col_sy_black    }
+	//[SchemeTabActive]  	 = { col_sy_black,    col_sy_celeste, col_sy_black    },
+	//[SchemeTabInactive]  = { col_sy_celeste,  col_sy_black,   col_sy_black    },
+	[SchemeStatus]  	 = { col_sy_celeste,  col_sy_black,   col_sy_black    }, // Statusbar right {text,background,not used but cannot be empty}
+	[SchemeTagsSel]      = { col_sy_black,    col_sy_celeste, col_sy_black    }, // Tagbar left selected {text,background,not used but cannot be empty}
+	[SchemeTagsNorm]     = { col_sy_celeste,  col_sy_black,   col_sy_black    }, // Tagbar left unselected {text,background,not used but cannot be empty}
+	[SchemeInfoSel]      = { col_sy_black,    col_sy_celeste, col_sy_black    }, // infobar middle  selected {text,background,not used but cannot be empty}
+	[SchemeInfoNorm]     = { col_sy_celeste,  col_sy_black,   col_sy_black    }, // infobar middle  unselected {text,background,not used but cannot be empty}
+
 
 };
 

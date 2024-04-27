@@ -59,7 +59,8 @@
 
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
-enum { SchemeNorm, SchemeSel, SchemeTabActive, SchemeTabInactive }; /* color schemes */
+//enum { SchemeNorm, SchemeSel, SchemeTabActive, SchemeTabInactive }; /* color schemes */
+enum { SchemeNorm, SchemeSel, SchemeStatus, SchemeTagsSel, SchemeTagsNorm, SchemeInfoSel, SchemeInfoNorm }; /* color schemes */
 enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
        NetWMFullscreen, NetActiveWindow, NetWMWindowType,
        NetWMWindowTypeDialog, NetClientList, NetLast }; /* EWMH atoms */
@@ -364,7 +365,7 @@ bartabdraw(Monitor *m, Client *c, int unused, int x, int w, int groupactive) {
 	int i, nclienttags = 0, nviewtags = 0;
 
 	drw_setscheme(drw, scheme[
-		m->sel == c ? SchemeSel : (groupactive ? SchemeTabActive: SchemeTabInactive)
+		m->sel == c ? SchemeSel : (groupactive ? SchemeTagsSel: SchemeTagsNorm)
 	]);
 	drw_text(drw, x, 0, w, bh, lrpad / 2, c->name, 0);
 
@@ -795,7 +796,7 @@ drawbar(Monitor *m)
 
 	/* draw status first so it can be overdrawn by tags later */
 	if (m == selmon) { /* status is only drawn on selected monitor */
-		drw_setscheme(drw, scheme[SchemeNorm]);
+		drw_setscheme(drw, scheme[SchemeStatus]);
 		sw = TEXTW(stext) - lrpad + 2; /* 2px right padding */
 		drw_text(drw, m->ww - sw, 0, sw, bh, 0, stext, 0);
 	}
@@ -808,7 +809,7 @@ drawbar(Monitor *m)
 	x = 0;
 	for (i = 0; i < LENGTH(tags); i++) {
 		w = TEXTW(tags[i]);
-		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
+		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeTagsSel : SchemeTagsNorm]);
 		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
 		if (occ & 1 << i)
 			drw_rect(drw, x + boxs, boxs, boxw, boxw,
@@ -817,7 +818,7 @@ drawbar(Monitor *m)
 		x += w;
 	}
 	w = blw = TEXTW(m->ltsymbol);
-	drw_setscheme(drw, scheme[SchemeNorm]);
+	drw_setscheme(drw, scheme[SchemeTagsNorm]);
 	x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
 
 	// Draw bartabgroups
@@ -825,7 +826,7 @@ drawbar(Monitor *m)
 	if ((w = m->ww - sw - x) > bh) {
 		bartabcalculate(m, x, sw, -1, bartabdraw);
 		if (BARTAB_BOTTOMBORDER) {
-			drw_setscheme(drw, scheme[SchemeTabActive]);
+			drw_setscheme(drw, scheme[m == selmon ? SchemeInfoSel : SchemeInfoNorm]);
 			drw_rect(drw, 0, bh - 1, m->ww, 1, 1, 0);
 		}
 	}
