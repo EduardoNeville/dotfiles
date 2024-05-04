@@ -1,4 +1,5 @@
 local wezterm = require("wezterm")
+local act = wezterm.action
 
 ----------------------------------------------------
 --- Theme Cycler -----------------------------------
@@ -247,6 +248,8 @@ config.keys = {
     {key="k", mods="CTRL|SHIFT", action=wezterm.action{AdjustPaneSize={"Up", 2}}},
     -- Increase the size of the pane below
     {key="j", mods="CTRL|SHIFT", action=wezterm.action{AdjustPaneSize={"Down", 2}}},
+
+    {key='i', mods = 'CTRL|SHIFT', action = act.ShowTabNavigator, },
 }
 
 return config

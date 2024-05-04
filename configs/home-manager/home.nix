@@ -12,6 +12,12 @@
     # target linux
     targets.genericLinux.enable = true;
 
+    # Dwm setup
+    services.xserver.windowManager.dwm.enable = true;
+    services.xserver.windowManager.dwm.package = pkgs.dwm.overrideAttrs {
+        src = ./../suckless/dwm-6.2/dwm;
+    }
+
 
     # This value determines the Home Manager release that your configuration is
     # compatible with. This helps avoid breakage when a new Home Manager release
@@ -25,41 +31,46 @@
     # The home.packages option allows you to install Nix packages into your
     # environment.
     home.packages = [
-        # ----
-        # Terminal & Shell
-        # ----
-        #pkgs.wezterm
-        pkgs.starship
-        pkgs.zsh
 
-        # ---
-        # Text Editors
-        # ---
-        pkgs.vim
-        pkgs.neovim
+        # ----
+        # Minimal install
+        # ----
+        pkgs.bash           # shell
+        pkgs.zsh            # shell
+        pkgs.starship       # prompt
+        pkgs.git            # version control
+        pkgs.gh             # github cli
+        pkgs.vim            # text editor
+        pkgs.neovim         # text editor
+        pkgs.fd             # find replacement
+        pkgs.fzf            # fuzzy finder
+        pkgs.bat            # cat replacement
+        pkgs.eza            # ls replacement
+        pkgs.ripgrep        # grep replacement
+        pkgs.nnn            # file manager
+        pkgs.curl           # http client
+        pkgs.zoxide         # cd replacement
+        pkgs.delta          # diff viewer
+        pkgs.neofetch      # system info
+        pkgs.btop          # system monitor
+
+        # ----
+        # Terminal
+        # ----
+        pkgs.wezterm       # terminal
 
         # ---
         # CLI utils
         # ---
-        pkgs.fd
-        pkgs.fzf
-        pkgs.bat
-        pkgs.eza
-        pkgs.ripgrep
-        pkgs.diff-so-fancy
-        pkgs.nnn
-        pkgs.curl
-        pkgs.zoxide
+        pkgs.gdb            # debugger
+        pkgs.zathura        # pdf viewer
+        pkgs.sioyek         # pdf viewer
+        pkgs.lazygit        # git gui
 
-        # ---
-        # System Info & Display
-        pkgs.neofetch
-        pkgs.btop
-    
         # ---
         # Syntax & fonts
         # ---
-        pkgs.tree-sitter
+        pkgs.tree-sitter   # syntax highlight
         pkgs.fira-code
         pkgs.nerdfonts
         pkgs.fira-code-nerdfont
@@ -69,16 +80,22 @@
         # ---
         pkgs.nodejs
         pkgs.gcc
-        pkgs.gdb
-        pkgs.git
         pkgs.pyenv
         pkgs.openssh
 
         # ---
         # Applications
         # ---
-        pkgs.ncspot
-        #pkgs.telegram-desktop
+        pkgs.telegram-desktop
+        pkgs.discord
+        pkgs.firefox
+
+        # ---
+        # WM Features
+        # ---
+        pkgs.dwm
+        pkgs.dunst
+        pkgs.rofi
 
     ];
 
@@ -114,6 +131,7 @@
 
     # Let Home Manager install and manage itself.
     programs.home-manager.enable = true;
+        pkgs.ncspot        # spotify cli
 
     # wayland setup
     #wayland.windowManager.hyperland.enable = true;
