@@ -8,4 +8,17 @@ lsp.preset('recommended')
 -- (Optional) Configure lua language server for neovim
 lsp.nvim_workspace()
 
+-- using navbuddy for navigation
+local navbuddy = require("nvim-navbuddy")
+
+-- Attach navbuddy to LSP
+lsp.on_attach(
+    function(client, bufnr)
+        navbuddy.attach(client, bufnr)
+    end
+)
+
 lsp.setup()
+
+
+

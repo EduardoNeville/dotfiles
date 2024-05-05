@@ -129,7 +129,6 @@ return require('packer').startup(function()
         end,
     })
 
-    -- File navigator using navbuddy
     use {
         "SmiteshP/nvim-navbuddy",
         requires = {
