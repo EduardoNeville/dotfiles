@@ -150,6 +150,8 @@ ls  -> eza all files in a tree of depth 2 sorted by size \n
 ls3 -> eza all files in a tree of depth 3 sorted by size \n
 ls4 -> eza all files in a tree of depth 4 sorted by size \n'"
 
+export EZA_COLORS="*csv=32:*.md=38;5;141"
+
 # --- fzf shortcuts -------------------------------
 fzf_cd() {
     local dir

@@ -51,7 +51,7 @@ set_api_keymaps('v', '<leader>p', "\"_dP", { noremap = true })
 ------------------------------------------
 
 --- NvimTreeToggle -----------------------
-set_api_keymaps('n', '<leader>nt', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
+--set_api_keymaps('n', '<leader>nt', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
 --- NnnPicker ----------------------------
 set_api_keymaps('n', '<leader>nn', ':NnnPicker<CR>', { noremap = true, silent = true })
 --- Navbuddy -----------------------------
