@@ -55,12 +55,16 @@ return {
                     path = 0 -- 0 = just filename, 1 = relative path, 2 = absolute path
                 } },
                 lualine_x = {
-                    { 'diagnostics', sources = { "nvim_diagnostic" }, symbols = { error = ' ', warn = ' ', info = ' ',
-                      hint = ' ' } },
-                    'encoding',
+                    {
+                        'diagnostics',
+                        sources = { "nvim_diagnostic" },
+                        symbols = { error = ' ', warn = ' ', info = ' ', hint = ' ' } },
+                    --'encoding',
                     'filetype'
                 },
-                lualine_y = { 'progress' },
+                lualine_y = {
+                    --'progress'
+                },
                 lualine_z = { 'location', get_line_count }
             },
             inactive_sections = {
