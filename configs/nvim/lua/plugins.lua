@@ -87,8 +87,8 @@ return {
     -- Markdown Preview
     {
         "iamcco/markdown-preview.nvim",
-        lazy = true,
-        version = 'v0.0.10',
+        cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+        ft = { "markdown" },
         build = function() vim.fn["mkdp#util#install"]() end,
     },
 
@@ -165,7 +165,19 @@ return {
     },
 
     -- Flash and others
-    { "ggandor/leap.nvim" },
+    {
+      "folke/flash.nvim",
+      event = "VeryLazy",
+      ---@type Flash.Config
+      opts = {},
+      -- stylua: ignore
+      keys = {
+        { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+        --{ "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+        --{ "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
+        --{ "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
+      },
+    },
 
 
     -- F movements

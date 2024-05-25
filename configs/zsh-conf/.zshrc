@@ -20,8 +20,8 @@ export SAVEHIST=10000
 # FZF Theme
 export FZF_DEFAULT_OPTS='
 --color=fg:#55a8fb,bg:-1,hl:#b9b1bc
---color=fg+:#ffd700,bg+:#241b30,hl+:#0ae4a4
---color=info:#aa54f9,prompt:#ffd700,pointer:#241b30
+--color=fg+:#55a8fb,bg+:-1,hl+:#0ae4a4
+--color=info:#aa54f9,prompt:#ffd700,pointer:#FFFFFF
 --color=marker:#ff00f6,spinner:#aa54f9,header:#f9f972
 '
 
@@ -155,7 +155,7 @@ export EZA_COLORS="*csv=32:*.md=38;5;141"
 # --- fzf shortcuts -------------------------------
 fzf_cd() {
     local dir
-    dir=$(fd --type d --hidden --exclude .git | fzf-tmux -p 90%,80% --reverse --preview "eza --icons --tree --level=1 --reverse -a {}")
+    dir=$(fd --type d --hidden --exclude .git | fzf --preview="eza --icons --tree --level=1 --reverse -a {}")
     if [ -n "$dir" ]; then
         cd "$dir"
     fi
@@ -163,7 +163,7 @@ fzf_cd() {
 
 fp_cd() {
     local file
-    file=$(fd --type file --hidden --exclude .git | fzf-tmux -p 80%,80%  --reverse --preview "bat --style=numbers --color=always {}")
+    file=$(fd --type file --hidden --exclude .git | fzf --preview="bat --style=numbers --color=always {}")
     echo $file
     if [ -n "$file" ]; then
         nvim "$file"
