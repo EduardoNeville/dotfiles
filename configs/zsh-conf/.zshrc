@@ -153,26 +153,9 @@ ls4 -> eza all files in a tree of depth 4 sorted by size \n'"
 export EZA_COLORS="*csv=32:*.md=38;5;141"
 
 # --- fzf shortcuts -------------------------------
-fzf_cd() {
-    local dir
-    dir=$(fd --type d --hidden --exclude .git | fzf --preview="eza --icons --tree --level=1 --reverse -a {}")
-    if [ -n "$dir" ]; then
-        cd "$dir"
-    fi
-}
-
-fp_cd() {
-    local file
-    file=$(fd --type file --hidden --exclude .git | fzf --preview="bat --style=numbers --color=always {}")
-    echo $file
-    if [ -n "$file" ]; then
-        nvim "$file"
-    fi
-}
-
-alias fp='fp_cd'
+alias fp='nvim $(fzf --preview="bat --style=numbers --color=always {}")'
 #'fd --type file --hidden --exclude .git | fzf-tmux -p 80%,80%  --reverse --preview "bat --style=numbers --color=always {}" | xargs nvim'
-alias fcd='fzf_cd'
+alias fcd='z $(fd --type d --hidden --exclude .git | fzf --preview="eza --icons --tree --level=1 --reverse -a {}")'
 alias fzfhelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%%
 fzf COMMANDS
 %%%%%%%%%%%%%%%%%%%%%%%%%% \n
