@@ -1,8 +1,11 @@
+---------------------------------------------------------------
+------- NVIM plugins ------------------------------------------
+---------------------------------------------------------------
 
 return {
-    ---------------------------------------------------------------
-    ------- LSP configs -------------------------------------------
-    ---------------------------------------------------------------
+---------------------------------------------------------------
+------- LSP configs -------------------------------------------
+---------------------------------------------------------------
     {
         "VonHeikemen/lsp-zero.nvim",
         branch = 'v1.x',
@@ -33,6 +36,15 @@ return {
 ---------------------------------------------------------------
 ------- UI configs -------------------------------------------
 ---------------------------------------------------------------
+
+    {
+      "folke/which-key.nvim",
+      event = "VeryLazy",
+      init = function()
+        vim.o.timeout = true
+        vim.o.timeoutlen = 300
+      end,
+    },
 
     -- Fuzzy Finder
     {
@@ -102,7 +114,7 @@ return {
                 -- lazyional configuration
                 openai_params = {
                     model="gpt-4-1106-preview"
-                }, 
+                },
                 openai_edit_params = {
                     model="gpt-4-1106-preview"
                 },
@@ -119,19 +131,16 @@ return {
 ---------------------------------------------------------------
 ------- Syntax configs -------------------------------------------
 ---------------------------------------------------------------
-
-    { "nvim-treesitter/nvim-treesitter-context" },
-
-    --{ 
-    --    "nvim-treesitter/nvim-treesitter" ,
-    --    config = function()
-    --        require'nvim-treesitter.configs'.setup {
-    --            highlight = {
-    --                enable = true,
-    --            },
-    --        }
-    --    end,
-    --},
+    {
+        "nvim-treesitter/nvim-treesitter" ,
+        config = function()
+            require'nvim-treesitter.configs'.setup {
+                highlight = {
+                    enable = true,
+                },
+            }
+        end,
+    },
 
     {
         "cameron-wags/rainbow_csv.nvim",
@@ -173,9 +182,6 @@ return {
       -- stylua: ignore
       keys = {
         { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
-        --{ "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
-        --{ "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
-        --{ "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
       },
     },
 
@@ -183,6 +189,7 @@ return {
     -- F movements
     {
         "jinh0/eyeliner.nvim",
+        lazy = true,
         config = function()
             require'eyeliner'.setup {
                 highlight_on_key = true,
@@ -194,30 +201,18 @@ return {
     -- Marks signature
 	{ "kshenoy/vim-signature" },
 
-	{ "prettier/vim-prettier" },
-
-    -- Guess Indentations
-    -- using packer.nvim
-    {
-        "nmac427/guess-indent.nvim",
-        config = function()
-            require('guess-indent').setup {}
-        end,
-    },
-
 ---------------------------------------------------------------
 ------- Colour Schemes configs --------------------------------
 ---------------------------------------------------------------
-
-     "fcpg/vim-farout",
-     "folke/tokyonight.nvim",
-     "maxmx03/fluoromachine.nvim",
-     "EdenEast/nightfox.nvim",
-     {"nobbmaestro/nvim-andromeda", dependencies = { "tjdevries/colorbuddy.nvim", branch = "dev" }},
-     "zanglg/nova.nvim",
-     "jaredgorski/SpaceCamp",
-     "nyngwang/nvimgelion",
-     "Shatur/neovim-ayu",
-     "samharju/synthweave.nvim",
+    { "fcpg/vim-farout", event = "VeryLazy" },
+    { "folke/tokyonight.nvim", event = "VeryLazy" },
+    { "maxmx03/fluoromachine.nvim", event = "VeryLazy" },
+    { "EdenEast/nightfox.nvim", event = "VeryLazy"},
+    {"nobbmaestro/nvim-andromeda", event = "VeryLazy",dependencies = { "tjdevries/colorbuddy.nvim", branch = "dev" }},
+    { "zanglg/nova.nvim", event = "VeryLazy" },
+    { "jaredgorski/SpaceCamp", event = "VeryLazy" },
+    { "nyngwang/nvimgelion", event = "VeryLazy" },
+    { "Shatur/neovim-ayu", event = "VeryLazy" },
+    { "samharju/synthweave.nvim" },
 }
 

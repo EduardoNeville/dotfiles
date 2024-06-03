@@ -63,11 +63,12 @@ local config = {
     --color_scheme = 'Ayu Mirage (Gogh)',
     --color_scheme = 'Ayu Dark (Gogh)',
     --color_scheme = 'Ayu Light (Gogh)',
-    --color_scheme = 'ayu',
-    --color_scheme = "Aci (Gogh)",
-    
+    color_scheme = 'Elio (Gogh)',
+    --color_scheme = "Eldritch",
+    --color_scheme = "Scarlet Protocol",
+
     -- Synthwave
-    color_scheme = "Synthwave (Gogh)",
+    --color_scheme = "Synthwave (Gogh)",
     --color_scheme = "Synthwave Alpha (Gogh)",
     --color_scheme = "SynthwaveAlpha",
 

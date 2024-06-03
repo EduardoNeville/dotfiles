@@ -11,12 +11,6 @@ vim.g.mapleader = ' '
 --vim.cmd('nnoremap s <Nop>')
 
 ------------------------------------------
---  Leap
---set_keymaps({'n', 'x', 'o'}, 'g',  '<Plug>(leap-forward)');
---set_keymaps({'n', 'x', 'o'}, 'G',  '<Plug>(leap-backward)');
---set_keymaps({'n', 'x', 'o'}, 'gs', '<Plug>(leap-from-window)');
-
-------------------------------------------
 --- Movements ----------------------------
 ------------------------------------------
 

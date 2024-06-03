@@ -59,9 +59,6 @@ sw.setup {
 vim.cmd.colorscheme('synthweave')
 vim.cmd [[hi Comment guifg=#7ceb9a]]
 vim.cmd [[hi LineNr guifg=#7ceb9a]]
---- Minimap
-vim.cmd [[hi MinimapCursor guifg=#00fbfd]]
-vim.cmd [[hi MinimapRange guifg=#55a8fb]]
 
 
 
