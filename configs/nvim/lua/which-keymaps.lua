@@ -1,5 +1,6 @@
 -- Ensure which-key is installed and loaded
 require("which-key").setup {}
+
 -- <Leader> key is spacebar
 vim.g.mapleader = ' '
 -- Centralized key mappings
@@ -11,7 +12,7 @@ local mappings = {
     ["<M-k>"] = { ":m .-2<CR>==", "Move line up", noremap = true, silent = true },
     ["<M-j>"] = { ":m .+1<CR>==", "Move line down", noremap = true, silent = true },
     -- Insert closing sign after {, (, [, "
-    ["i"] = {
+    i = {
         ["{"] = { '{}<Esc>ha', "Insert {}", noremap = true, silent = true },
         ["("] = { '()<Esc>ha', "Insert ()", noremap = true, silent = true },
         ["["] = { '[]<Esc>ha', "Insert []", noremap = true, silent = true },
@@ -53,6 +54,7 @@ local mappings = {
 }
 
 -- Register all mappings with which-key
-require("which-key").register(mappings, { mode = "n" })
-require("which-key").register(mappings.i, { mode = "i" })
+require("which-key").register(mappings,   { mode = "n" })
+require("which-key").register(mappings.i, { mode = "i", buffer = nil, silent = true, nowait = false })
 require("which-key").register(mappings.v, { mode = "v" })
+

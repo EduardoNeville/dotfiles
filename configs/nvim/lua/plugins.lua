@@ -1,7 +1,6 @@
 ---------------------------------------------------------------
 ------- NVIM plugins ------------------------------------------
 ---------------------------------------------------------------
-
 return {
 
 ---------------------------------------------------------------
@@ -31,6 +30,11 @@ return {
         }
     },
 
+    {
+        "williamboman/mason.nvim",
+        lazy = true,
+    },
+
     --- Copilot ------------------------------------------
     -- Cloned separately using full_install.sh
 
@@ -42,12 +46,14 @@ return {
 
     -- Which-key
     {
-      "folke/which-key.nvim",
-      event = "VeryLazy",
-      init = function()
-        vim.o.timeout = true
-        vim.o.timeoutlen = 300
-      end,
+        "folke/which-key.nvim",
+        event = "VeryLazy",
+        init = function()
+            vim.o.timeout = true
+            vim.o.timeoutlen = 300
+            local presets = require("which-key.plugins.presets")
+            presets.operators["i"] = nil
+        end,
     },
 
     -- Fuzzy Finder

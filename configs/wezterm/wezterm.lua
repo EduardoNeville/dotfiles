@@ -64,6 +64,7 @@ local config = {
     --color_scheme = 'Ayu Dark (Gogh)',
     --color_scheme = 'Ayu Light (Gogh)',
     color_scheme = 'Elio (Gogh)',
+    --color_scheme = 'Matrix (terminal.sexy)',
     --color_scheme = "Eldritch",
     --color_scheme = "Scarlet Protocol",
 
