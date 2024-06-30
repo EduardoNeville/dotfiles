@@ -12,6 +12,7 @@ end
 
 vim.opt.rtp:prepend(lazypath)
 
+-- <Leader> key is spacebar
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
@@ -22,7 +23,7 @@ require("lazy").setup("plugins", {
 })
 
 require('base')
-require('which-keymaps')
+require('keymaps')
 require('colorscheme')
 require('plugins')
 require('lsp-config.language-server')

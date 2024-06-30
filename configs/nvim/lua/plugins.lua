@@ -38,9 +38,15 @@ return {
     --- Copilot ------------------------------------------
     -- Cloned separately using full_install.sh
 
+    {
+        "luk400/vim-jukit",
+        lazy = true,
+    },
+
 ---------------------------------------------------------------
 ------- UI configs -------------------------------------------
 ---------------------------------------------------------------
+
     -- Nvim notify
     { "rcarriga/nvim-notify" },
 
@@ -114,7 +120,10 @@ return {
         build = function() vim.fn["mkdp#util#install"]() end,
     },
 
-    "tadmccorkle/markdown.nvim",
+    {
+        "tadmccorkle/markdown.nvim",
+        event = "VeryLazy",
+    },
 
     {
       "jackMort/ChatGPT.nvim",
@@ -123,10 +132,10 @@ return {
           require("chatgpt").setup({
                 -- lazyional configuration
                 openai_params = {
-                    model="gpt-4-1106-preview"
+                    model="gpt-4o"
                 },
                 openai_edit_params = {
-                    model="gpt-4-1106-preview"
+                    model="gpt-4o"
                 },
           })
         end,
@@ -139,8 +148,9 @@ return {
    },
 
 ---------------------------------------------------------------
-------- Syntax configs -------------------------------------------
+------- Syntax configs ----------------------------------------
 ---------------------------------------------------------------
+
     {
         "nvim-treesitter/nvim-treesitter" ,
         config = function()

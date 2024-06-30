@@ -78,10 +78,9 @@ local config = {
 	-- Aesthetic Night Colorscheme
 	bold_brightens_ansi_colors = true,
 
-
 	--- UI --------------------------------
     --- Underline ------
-    underline_thickness = 5,
+    underline_thickness = 0,
 
 	--- Cursor style ---
 	default_cursor_style = "BlinkingBlock",
@@ -126,7 +125,6 @@ config.window_frame = {
     -- The overall background color of the tab bar when
     -- the window is focused
     active_titlebar_bg = '#191b28',
-
     -- The overall background color of the tab bar when
     -- the window is not focused
     inactive_titlebar_bg = '#1f2335',
@@ -211,7 +209,6 @@ config.colors = {
             bg_color = '#1f2335',
             fg_color = '#7aa2f7',
             italic = true,
-
             -- The same options that were listed under the `active_tab` section above
             -- can also be used for `new_tab_hover`.
         },
@@ -251,6 +248,7 @@ config.keys = {
     -- Increase the size of the pane below
     {key="j", mods="CTRL|SHIFT", action=wezterm.action{AdjustPaneSize={"Down", 2}}},
 
+    -- Show Tab Navigator
     {key='i', mods = 'CTRL|SHIFT', action = act.ShowTabNavigator, },
 }
 

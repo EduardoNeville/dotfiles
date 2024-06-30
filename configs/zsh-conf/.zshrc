@@ -124,9 +124,6 @@ alias mdtozar='mdtozar_func'
 
 alias xo="xdg-open"
 
-# --- rm shortcuts -------------------------------
-alias del="rm -rf"
-
 # --- cd shortcuts -------------------------------
 alias .1="cd .."
 alias .2="cd ../.."

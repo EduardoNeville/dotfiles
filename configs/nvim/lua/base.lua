@@ -3,8 +3,6 @@ local vim = vim
 -- File encoding
 vim.scriptencoding = 'utf-8'
 vim.opt.encoding = 'utf-8'
--- vim.opt.fileencofing = 'utf-8'
--- vim.opt.background_opacity = 0.92
 
 -------------------------------------
 --- Misc ----------------------------
@@ -13,12 +11,12 @@ vim.opt.encoding = 'utf-8'
 --- Line Info -----------------------
 vim.wo.number = true
 vim.wo.relativenumber = true
+vim.opt.colorcolumn = '80'
 
 vim.opt.title = true
 vim.opt.autoindent = true
 vim.opt.hlsearch = true
 vim.opt.showcmd = true
-vim.opt.cmdheight = 1
 vim.opt.laststatus = 2
 vim.opt.expandtab = true
 vim.opt.scrolloff = 10
@@ -33,19 +31,25 @@ function set_tabstop(languages)
         local filetypes = lang.filetypes -- List of filetypes for this language
 
         for _, ft in ipairs(filetypes) do
-            local cmd = string.format("autocmd FileType %s setlocal tabstop=%d shiftwidth=%d", ft, ts, ts)
+            local cmd = string.format(
+                "autocmd FileType %s setlocal tabstop=%d shiftwidth=%d",
+                ft, ts, ts
+            )
             vim.cmd(cmd)
         end
     end
 end
 
--- Example usage
 local languages = {
     {   tabstop = 4,
-        filetypes = {'python', 'lua', 'conf', 'sh', 'cpp', 'zsh', 'vhdl'}
+        filetypes = {
+            'python', 'lua', 'conf', 'sh', 'cpp', 'zsh', 'vhdl'
+        }
     },
     {   tabstop = 2,
-        filetypes = {'javascript', 'typescript', 'html', 'css', 'typescriptreact', 'c', 'json'}
+        filetypes = {
+            'javascript', 'typescript', 'html', 'css', 'typescriptreact', 'c', 'json'
+        }
     }
 }
 set_tabstop(languages)
@@ -68,4 +72,3 @@ vim.opt.termguicolors = true
 
 --- Highlights ----------------------
 vim.opt.wildoptions = 'pum'
-
