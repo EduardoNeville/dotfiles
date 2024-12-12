@@ -2,10 +2,7 @@ local vim = vim
 
 -- Custom background for duskfox
 local custom_duskfox = require'lualine.themes.duskfox'
-local custom_nova = require'lualine.themes.nova'
-local custom_ayu = require'lualine.themes.ayu'
 custom_duskfox.normal.c.bg = "#080062"
-custom_ayu.normal.c.fg = "#7aa2f7"
 
 
 local status, lualine = pcall(require, "lualine")

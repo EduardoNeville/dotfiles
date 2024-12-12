@@ -77,13 +77,13 @@ zstyle ':fzf-tab:*' fzf-bindings 'space:toggle' 'ctrl-a:accept' 'ctrl-A:toggle-a
 
 ### ----- zoxide config ------------------------------------------
 # Preview all past directories stored in zoxide
-zq_cd() {
+zq_func() {
     dir=`zoxide query --interactive`
     if [ -n "${dir}" ]; then
         cd ${dir}
     fi
 }
-alias zq='zq_cd'
+alias zq='zq_func'
 
 alias zhelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%%
 zoxide COMMANDS
@@ -134,7 +134,7 @@ alias .6="cd ../../../../../.."
 
 # --- ls shortcuts -------------------------------
 alias ls0="eza --icons --tree --level=1 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
-alias ls="eza  --icons --tree --level=2 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
+alias lse="eza  --icons --tree --level=2 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
 alias ls3="eza --icons --tree --level=3 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
 alias ls4="eza --icons --tree --level=4 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
 alias lsn="eza --icons --tree --level=2 --sort='name' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
@@ -150,7 +150,12 @@ ls4 -> eza all files in a tree of depth 4 sorted by size \n'"
 export EZA_COLORS="*csv=32:*.md=38;5;141"
 
 # --- fzf shortcuts -------------------------------
-alias fp='nvim $(fzf --preview="bat --style=numbers --color=always {}")'
+fp_func() {
+    file=$(fzf --preview="bat --style=numbers --color=always {}")
+    echo "$file"
+    nvim "$file"
+}
+alias fp='fp_func'
 #'fd --type file --hidden --exclude .git | fzf-tmux -p 80%,80%  --reverse --preview "bat --style=numbers --color=always {}" | xargs nvim'
 alias fcd='z $(fd --type d --hidden --exclude .git | fzf --preview="eza --icons --tree --level=1 --reverse -a {}")'
 alias fzfhelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -224,4 +229,5 @@ export PYENV_ROOT="$HOME/.pyenv"
 eval "$(pyenv init -)"
 
 autoload -U compinit; compinit -i
-source <(runai completion zsh)
+
+export PATH=$PATH:/home/eduardoneville/.spicetify

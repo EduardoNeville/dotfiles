@@ -94,3 +94,4 @@ set_api_keymaps("n", "<leader>la", "<cmd>lua vim.lsp.buf.code_action()<cr>", { n
 set_api_keymaps("n", "<leader>lS", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", { noremap = true, silent = true })
 
 --- Debugger -----------------------------
+

@@ -43,12 +43,13 @@ end
 local languages = {
     {   tabstop = 4,
         filetypes = {
-            'python', 'lua', 'conf', 'sh', 'cpp', 'zsh', 'vhdl'
+            'python', 'lua', 'conf', 'sh', 'cpp', 'zsh', 'vhdl', 'rust', 'verilog'
         }
     },
     {   tabstop = 2,
         filetypes = {
-            'javascript', 'typescript', 'html', 'css', 'typescriptreact', 'c', 'json'
+            'javascript', 'typescript', 'html', 'css', 'typescriptreact',
+            'c', 'json', 'javascriptreact', 'asm', 'riscv_asm'
         }
     }
 }
@@ -72,3 +73,5 @@ vim.opt.termguicolors = true
 
 --- Highlights ----------------------
 vim.opt.wildoptions = 'pum'
+
+
