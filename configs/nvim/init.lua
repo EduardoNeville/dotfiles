@@ -22,9 +22,8 @@ require("lazy").setup("plugins", {
     }
 })
 
+require('colorscheme')
 require('base')
 require('keymaps')
-require('colorscheme')
 require('plugins')
-require('plugins.telescope')
 require('lsp-config.language-server')

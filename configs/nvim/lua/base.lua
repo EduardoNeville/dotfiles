@@ -11,7 +11,7 @@ vim.opt.encoding = 'utf-8'
 --- Line Info -----------------------
 vim.wo.number = true
 vim.wo.relativenumber = true
-vim.opt.colorcolumn = '80'
+--vim.opt.colorcolumn = '80'
 
 vim.opt.title = true
 vim.opt.autoindent = true

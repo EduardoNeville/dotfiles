@@ -16,10 +16,6 @@ sw.setup {
             palette = {
                 -- override palette colors,
                 -- take a peek at synthweave/palette.lua
-                bg0 = "#040404",
-                bg1 = "#55a8fb",
-                bg2 = "#55a8fb",
-                bg3 = "#55a8fb",
             },
         })
         synthweave.load()
