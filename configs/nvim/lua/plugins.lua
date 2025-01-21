@@ -42,12 +42,9 @@ return {
     { 'kristijanhusak/vim-dadbod-ui' },
     { 'kristijanhusak/vim-dadbod-completion' },
 
-    ----- RISC V --------------------------------------------------
-    {
-      "henry-hsieh/riscv-asm-vim",
-      ft = { "riscv_asm" },
-    },
-
+    ----- Debug --------------------------------------------------
+    { "mfussenegger/nvim-dap" },
+    { "rcarriga/nvim-dap-ui", requires = {"mfussenegger/nvim-dap"} },
 
     --- Copilot ---------------------------------------------------
     -- Cloned separately using full_install.sh
@@ -198,6 +195,18 @@ return {
             "nvim-telescope/telescope.nvim"
         }
     },
+    {
+        "zakissimo/smoji.nvim",
+        cmd = "Smoji",
+        keys = {
+            { "<leader><leader>e", "<cmd>Smoji<cr>", desc = "Git[e]moji" },
+            { "<C-e>", "<cmd>Smoji<cr>", desc = "Git[e]moji", mode = "i"},
+            { "<C-e>", "<cmd>Smoji<cr>", desc = "Git[e]moji", mode = "t"},
+        },
+        config = function()
+            require("smoji")
+        end,
+    },
 
     ---------------------------------------------------------------
     ------- Syntax configs ----------------------------------------
@@ -257,7 +266,6 @@ return {
         },
     },
 
-
     -- F movements
     {
         "jinh0/eyeliner.nvim",
@@ -283,3 +291,4 @@ return {
     { "nyngwang/nvimgelion",        event = "VeryLazy" },
     { "paulo-granthon/hyper.nvim",  event = "VeryLazy" },
 }
+
