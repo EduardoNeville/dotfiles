@@ -1,4 +1,5 @@
 vim
+neovim
 openssh-server 
 gcc 
 g++ 
@@ -6,11 +7,10 @@ gdb
 git 
 cmake
 tree-sitter
-nnn
 font-hack-nerd-font
 fzf
 bat
-exa
+eza
 ripgrep
 diff-so-fancy
 btop
@@ -21,4 +21,3 @@ fd-find
 zoxide
 nodejs
 npm
-telegram-desktop
