@@ -178,6 +178,10 @@ version_format = "$raw"
 format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
+[hostname]
+ssh_symbol = "󰱠 "
+format = '(\[$ssh_symbol$hostname\])'
+
 # End languages and tools #
 
 # OS SYMBOLS
