@@ -160,7 +160,6 @@ disabled = false
 
 [python]
 symbol = ''
-version_format = "$raw"
 pyenv_version_name = true
 style = "fg:#ffdf76"
 format = '([\[$symbol ($version)\]]($style))'
@@ -169,8 +168,7 @@ disabled = false
 [rust]
 symbol = ""
 style = "fg:#9e6a4b"
-version_format = "$raw"
-format = '([\[$symbol ($version)\]]($style))'
+format = '([\[$symbol ($numver)\]]($style))'
 disabled = false
 
 [scala]
