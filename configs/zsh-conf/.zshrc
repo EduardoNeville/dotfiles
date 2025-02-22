@@ -200,34 +200,18 @@ alias ld='lazydocker'
 # --- evals config ----------------------------------
 eval "$(zoxide init zsh)"
 
-# --- Help -------------------------------
-alias sclist='ghelp;fzfhelp;lshelp;zhelp'
-
-# bun completions
-[ -s "/Users/eduardoneville82/.bun/_bun" ] && source "/Users/eduardoneville82/.bun/_bun"
-
-# Starship 
-export STARSHIP_CONFIG=~/.config/starship/starship.toml
-export STARSHIP_CACHE=~/.starship/cache
-eval "$(starship init zsh)"
-
 # rust export
 export PATH="$HOME/.cargo/bin:$PATH"
 
-if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
 export PYENV_ROOT="$HOME/.pyenv"
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
 if command -v pyenv 1>/dev/null 2>&1; then
     eval "$(pyenv init -)"
 fi
 
-# bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-
 autoload -U compinit; compinit -i
 
-export PATH=$PATH:/home/eduardoneville/.spicetify
+# Starship 
+export STARSHIP_CONFIG=~/.config/starship/starship.toml
+export STARSHIP_CACHE=~/.starship/cache
+eval "$(starship init zsh)"
