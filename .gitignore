@@ -3,3 +3,5 @@ configs/nvim/plugin/packer_compiled.lua
 configs/zsh-conf/.zsh_history
 configs/btop/btop.log
 configs/wireguard
+
+legatio.md
