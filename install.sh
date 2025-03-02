@@ -242,7 +242,6 @@ dwld_arr=( download_dotfiles link_dotfiles install_homebrew install_formulae ins
 
 buf_arr=()
 precise_install(){
-
     echo " What do you want to install "
     for dwnld in "${dwld_arr[@]}"
     do

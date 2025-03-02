@@ -1,7 +1,5 @@
-coc ~/dotfiles/configs/coc ~/.config/coc
 btop ~/dotfiles/configs/btop ~/.config/btop
 nvim ~/dotfiles/configs/nvim ~/.config/nvim
 wezterm ~/dotfiles/configs/wezterm ~/.config/wezterm
 lazygit ~/dotfiles/configs/lazygit ~/.config/lazygit
 nnn ~/dotfiles/configs/nnn ~/.config/nnn
-neofetch ~/dotfiles/configs/neofetch ~/.config/neofetch

@@ -131,17 +131,20 @@ apt_install_pkgs(){
 		IFS=$'\r\n'
 		links=($(cat "${files}"))
 
-		# Loop through array of files
-		for index in ${!links[*]}
-		do
-			_process "→ Installing apt package ${links[$index]}"
-			# set IFS back to space to split string on
-			IFS=$' '
-			sudo apt install ${links[$index]}
+        # Install them all straight away
+        sudo apt install ${links}
 
-			# set separater back to carriage return & new line break
-			IFS=$'\r\n'
-		done
+		# Loop through array of files
+		#for index in ${!links[*]}
+		#do
+		#	_process "→ Installing apt package ${links[$index]}"
+		#	# set IFS back to space to split string on
+		#	IFS=$' '
+		#	sudo apt install ${links[$index]}
+
+		#	# set separater back to carriage return & new line break
+		#	IFS=$'\r\n'
+		#done
 		# Reset IFS back
 		IFS=$OIFS
 		[[ $? ]] && _success "All files have been copied"

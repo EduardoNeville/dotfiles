@@ -9,13 +9,10 @@ cmake
 tree-sitter
 font-hack-nerd-font
 fzf
-bat
-eza
 ripgrep
 diff-so-fancy
 btop
 zsh
-neofetch
 curl
 fd-find
 zoxide
