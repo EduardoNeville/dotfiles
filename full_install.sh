@@ -21,6 +21,39 @@ _error() { echo "$(tput setaf 1)✗ Error:$(tput sgr0) $1"; }
 # Check if a program exists
 program_exists() { command -v "$1" >/dev/null 2>&1; }
 
+# Install Docker
+install_docker() {
+    _process "Installing Docker"
+
+    if [[ "$PACKAGE_MANAGER" == "brew" ]]; then
+        brew install --cask docker
+        _success "Docker installed via Homebrew"
+        return
+    elif [[ "$PACKAGE_MANAGER" == "apt" ]]; then
+        _process "Setting up Docker's apt repository"
+
+        sudo apt-get update
+        sudo apt-get install -y ca-certificates curl
+
+        sudo install -m 0755 -d /etc/apt/keyrings
+        sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+        sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+        $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+        sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+        sudo apt-get update
+
+        _process "Installing Docker Engine"
+        sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+        _success "Docker installed successfully"
+    else
+        _error "Unsupported OS for Docker installation"
+    fi
+}
+
 # Symlink dotfiles
 link_dotfiles() {
     _process "Symlinking dotfiles"
@@ -130,8 +163,8 @@ install_pyenv() {
 
 # Installation process
 install() {
-    local options=("Package Manager" "Packages" "Link Dotfiles" "Zsh Plugins" "Packer" "Neovim Plugins" "Rust" "Pyenv")
-    local functions=(install_package_manager install_packages link_dotfiles install_zsh_plugins install_lazy_nvim install_nvim_plugins install_rust install_pyenv)
+    local options=("Package Manager" "Packages" "Dotfiles" "Zsh Plugins" "Lazy.nvim" "Neovim Plugins" "Rust" "Pyenv" "Docker")
+    local functions=(install_package_manager install_packages link_dotfiles install_zsh_plugins install_lazy_nvim install_nvim_plugins install_rust install_pyenv install_docker)
 
     echo "Select what to install:"
     for i in "${!options[@]}"; do
@@ -141,7 +174,6 @@ install() {
     read -a choices
 
     for choice in "${choices[@]}"; do 
-        if [[ "$choice" == "1" ]]; then install_packages "Brewfile"; fi
         ${functions[$choice]}
     done
 }
