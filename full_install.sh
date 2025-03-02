@@ -1,5 +1,5 @@
+# Author: Eduardo Nevile <eduadoneville82@gmail.com>
 #!/usr/bin/env bash
-# Author: Eduardo Nevile <eduardo.nevillecastro@epfl.ch>
 # Description:
 # Automatically install tools for different OS
 source $(dirname "$0")/scripts/installer.sh
