@@ -1,423 +1,149 @@
-# Author: Eduardo Nevile <eduadoneville82@gmail.com>
+# Author: Eduardo Neville <eduadoneville82@gmail.com>
 #!/usr/bin/env bash
 # Description:
 # Automatically install tools for different OS
 source $(dirname "$0")/scripts/installer.sh
 
-# TODO
-# Link dotfiles [ ]
-# Zsh exec [ ]
-# Packer and NVIM setup [ ]
-# Brew install of packages [X]
-
-# ---------
-# Detect the operating system
-# ---------
-if [[ "$(uname)" == "Linux" ]]; then
-    DOTFILES_DIR="${HOME}/dotfiles"  # Linux root directory
-    PACKAGE_MANAGER="apt"
-else
-    DOTFILES_DIR="${HOME}/dotfiles"  # macOS
-    PACKAGE_MANAGER="brew"
-fi
-
+DOTFILES_DIR="${HOME}/dotfiles"
+PACKAGE_MANAGER=""
 LOG="${HOME}/Library/Logs/dotfiles.log"
-GITHUB_USER=EduardoNeville
-GITHUB_REPO=dotfiles
 
-_process() {
-    printf "$(tput setaf 6) %s...$(tput sgr0)\n" "$@"
-}
+# Detect the operating system
+case "$(uname)" in
+    "Linux")  PACKAGE_MANAGER="apt"  ;;
+    "Darwin") PACKAGE_MANAGER="brew" ;;
+esac
 
-_success() {
-    local message=$1
-    printf "%s✓ Success:%s\n" "$(tput setaf 2)" "$(tput sgr0) $message"
-}
+_process() { echo "$(tput setaf 6)→ $1...$(tput sgr0)"; }
+_success() { echo "$(tput setaf 2)✓ Success:$(tput sgr0) $1"; }
+_error() { echo "$(tput setaf 1)✗ Error:$(tput sgr0) $1"; }
 
-# Check if program exists 
-function program_exists() {
-    local ret='0'
-    command -v $1 >/dev/null 2>&1 || { local ret='1'; }
+# Check if a program exists
+program_exists() { command -v "$1" >/dev/null 2>&1; }
 
-    # fail on non-zero return value.
-    if [ "$ret" -ne 0 ]; then
-        return 1
-    fi
-
-    return 0
-}
-
-# ---
-# Linking files
-# --
+# Symlink dotfiles
 link_dotfiles() {
-	# symlink files to the HOME directory.
-    _process "→ Symlinking dotfiles in /configs into .config"
+    _process "Symlinking dotfiles"
+    mkdir -p "${HOME}/.config"
 
-    DOT_CONF_DIR=${DOTFILES_DIR}/configs
-    CONFIG_DIR=${HOME}/.config
-
-    # Loop through all files and directories in `~/dotfiles/configs`
-    for item in "${DOT_CONF_DIR}"/*; do
-          # Get the base name of the item
-          basename=$(basename "${item}")
-          
-          # Create a symlink in `~/.config`, skip if it already exists
-          target="${CONFIG_DIR}/${basename}"
-          if [ ! -e "${target}" ]; then
-            ln -s "${item}" "${target}"
-            echo "Created symlink for ${basename}"
-          else
-            echo "Symlink for ${basename} already exists, skipped."
-          fi
+    for item in "${DOTFILES_DIR}/configs"/*; do
+        target="${HOME}/.config/$(basename "$item")"
+        [ ! -e "$target" ] && ln -s "$item" "$target"
     done
 
-    echo "Symlink for zshrc"
-    ln -s ~/dotfiles/configs/zsh-conf/.zshrc ~/.zshrc
-
-    __success "All files have been symlinked"
-}
-# ---
-# Installing Homebrew 
-# ---
-install_homebrew() {
-    _process "→ Installing Homebrew"
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-
-    _process "→ Running brew doctor"
-    brew doctor
-    [[ $? ]] \
-    && _success "Installed Homebrew"
+    ln -sf "${DOTFILES_DIR}/configs/zsh-conf/.zshrc" ~/.zshrc
+    _success "Dotfiles are linked"
 }
 
-# ---
-#Backup packages 
-# ---
-function brew_backup_new_packages(){
-	_process "-> Backing up new packages into $PACKAGE_MANAGER"
-    if ! type -P 'brew' &> /dev/null; then
-        _error "Homebrew not found while backing up NEW PACKAGES"
-    else
-        _process "→ Backing up new packages in $DOTFILES_DIR/opt/Brewfile"
-        brew bundle dump --file="opt/Brewfile" -fv
-    fi
+# Install a package manager
+install_package_manager() {
+    case $PACKAGE_MANAGER in
+        "brew")
+            _process "Installing Homebrew"
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+            brew doctor && _success "Homebrew installed"
+            ;;
+        "apt")
+            _process "Updating APT"
+            sudo apt update && sudo apt upgrade -y
+            _success "APT updated"
+            ;;
+    esac
 }
 
-# ---
-#Installing packages
-# ---
-function brew_installing_packages(){
-	_process "-> Installing up new packages into brew"
-    if ! type -P 'brew' &> /dev/null; then
-        _error "Homebrew not found while installing up NEW PACKAGES"
-    else
-        _process "→ Installing up new packages in $DOTFILES_DIR/opt/Brewfile"
-        brew bundle --file="$DOTFILES_DIR/opt/Brewfile" -v 
-    fi
+# Install packages from a file
+install_packages() {
+    local file="$DOTFILES_DIR/opt/$1"
+    [[ ! -f "$file" ]] && _error "File $file not found" && return
+
+    _process "Installing packages from $file"
+    local packages=($(cat "$file"))
+
+    case $PACKAGE_MANAGER in
+        "brew") brew install "${packages[@]}" ;;
+        "apt") sudo apt install -y "${packages[@]}" ;;
+        "dnf") sudo dnf install -y "${packages[@]}" ;;
+    esac
+
+    _success "Installed packages from $file"
 }
 
-apt_install_pkgs(){
-	# symlink files to the HOME directory.
-	if [[ -f "$DOTFILES_DIR/opt/aptInstall" ]]; then
-		_process "→ Installing apt packages"
-
-		# Set variable for list of files
-		files="$DOTFILES_DIR/opt/aptInstall"
-
-		# Store IFS separator within a temp variable
-		OIFS=$IFS
-		# Set the separator to a carriage return & a new line break
-		# read in passed-in file and store as an array
-		IFS=$'\r\n'
-		links=($(cat "${files}"))
-
-        # Install them all straight away
-        sudo apt install ${links}
-
-		# Loop through array of files
-		#for index in ${!links[*]}
-		#do
-		#	_process "→ Installing apt package ${links[$index]}"
-		#	# set IFS back to space to split string on
-		#	IFS=$' '
-		#	sudo apt install ${links[$index]}
-
-		#	# set separater back to carriage return & new line break
-		#	IFS=$'\r\n'
-		#done
-		# Reset IFS back
-		IFS=$OIFS
-		[[ $? ]] && _success "All files have been copied"
-	fi
+# Install Zsh plugins
+install_zsh_plugins() {
+    _process "Installing ZSH plugins"
+    local zsh_dir="${DOTFILES_DIR}/configs/.config/zsh-conf"
+    rm -rf "${zsh_dir}"
+    git clone --recursive git@github.com:EduardoNeville/zsh-conf.git "${zsh_dir}"
+    ln -fs "${zsh_dir}/.zshrc" "${HOME}/.zshrc"
+    source ~/.zshrc
+    _success "ZSH plugins installed"
 }
 
-# ---
-#Installing zsh plugins
-# ---
-function zsh_plugins(){
-	_process "-> Installing ZSH Plugins"
-
-    zsh_loc="${DOTFILES_DIR}/configs/.config/zsh-conf"
-
-    rm -rf ${zsh_loc}
-
-    git clone --recursive git@github.com:EduardoNeville/zsh-conf.git ${zsh_loc}
-
-    # Remove previous file
-    rm -rf "${HOME}/.zshrc"
-
-    # Create symbolic link
-    ln -fs "${zsh_loc}/.zshrc" "${HOME}/.zshrc"
-
-    _process "-> Sourcing your zsh config"
-
-    source $HOME/.zshrc
-}
-
-# ---
-# Installing packer
-# ---
-
-install_packer(){
-    _process "Installing NeoVim Packer"
-    rm -rf ~/.local/share/nvim/site/pack/packer/start
-    git clone --depth 1 https://github.com/wbthomason/packer.nvim\
-    ~/.local/share/nvim/site/pack/packer/start/packer.nvim
-}
-
-install_nvim_plugins(){
-
-    _process "-> Installing Copilot"
-
-    rm -rf ~/.config/nvim/pack/github/start/copilot.vim
-
-    git clone https://github.com/github/copilot.vim ~/dotfiles/configs/nvim/pack/github/start/copilot.vim
-}
-
-
-# ---
-# Nix Package Manager Install
-# ---
-nix_install(){
-    _process "-> Installing Nix Package Manager"
-    #_installBase
-    #_installNix
-
-	# symlink files to the HOME directory.
-	if [[ -f "$DOTFILES_DIR/opt/nixPkgs" ]]; then
-		_process "→ Installing nix packages"
-
-		# Set variable for list of files
-		nixPkgs="$DOTFILES_DIR/opt/nixPkgs"
-
-		# Store IFS separator within a temp variable
-		OIFS=$IFS
-		# Set the separator to a carriage return & a new line break
-		# read in passed-in file and store as an array
-		IFS=$'\r\n'
-		pkgs=($(cat "${nixPkgs}"))
-
-		# Loop through pkgs
-		for index in ${!pkgs[*]}
-		do
-			_process "→ Installing nix package ${pkgs[$index]}"
-			# set IFS back to space to split string on
-			nix-env -i install ${links[$index]}
-
-			# set separater back to carriage return & new line break
-			IFS=$'\r\n'
-		done
-		# Reset IFS back
-		IFS=$OIFS
-		[[ $? ]] && _success "All files have been copied"
-	fi
-}
-
-dnfInstall(){
-
-	_process "-> Installing Wezterm"
-	# Installing wezterm
-	sudo dnf copr enable wezfurlong/wezterm-nightly
-	sudo dnf install wezterm
-
-	_process "-> Installing Brave"
-	sudo dnf install dnf-plugins-core
-
-	sudo dnf config-manager --add-repo https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo
-
-	sudo rpm --import https://brave-browser-rpm-release.s3.brave.com/brave-core.asc
-
-	sudo dnf install brave-browser
-
-	_process "-> Installing Telegram"
-
-	sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
-	sudo dnf install https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-
-	sudo dnf install telegram
-
-    _process "-> Installing LazyGit"
-
-    sudo dnf copr enable atim/lazygit -y
-    sudo dnf install lazygit
-
-	# symlink files to the HOME directory.
-	if [[ -f "$DOTFILES_DIR/opt/nixPkgs" ]]; then
-		_process "→ Installing nix packages"
-
-		# Set variable for list of files
-		nixPkgs="$DOTFILES_DIR/opt/nixPkgs"
-
-		# Store IFS separator within a temp variable
-		OIFS=$IFS
-		# Set the separator to a carriage return & a new line break
-		# read in passed-in file and store as an array
-		IFS=$'\r\n'
-		pkgs=($(cat "${nixPkgs}"))
-
-		# Loop through pkgs
-		for index in ${!pkgs[*]}
-		do
-			_process "→ Installing nix package ${pkgs[$index]}"
-			# set IFS back to space to split string on
-
-			sudo dnf install ${pkgs[$index]}
-
-			# set separater back to carriage return & new line break
-			IFS=$'\r\n'
-		done
-		# Reset IFS back
-		IFS=$OIFS
-		[[ $? ]] && _success "All files have been copied"
-	fi
-}
-
-pyenvInstall(){
-	git clone https://github.com/pyenv/pyenv.git ~/.pyenv
-
-	# First we install some common development tools like gcc and make, Fedora provides a group of packages for that call Development Tools
-	sudo dnf groupinstall "Development Tools" -y
-
-	# To build Python we need some additional packages
-	sudo dnf install zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel openssl-devel xz xz-devel libffi-devel findutils -y
-}
-
-# ----------------------------------------------------------------------------------------
-# The install
-# ----------------------------------------------------------------------------------------
-install(){
-    # Package Managers
-    macOSarr=(install_homebrew brew_backup_new_packages brew_installing_packages)
-    nixPkg=(nix_install)
-    dnfPkg=(dnfInstall pyenvInstall)
-    aptPkg=(apt_install_pkgs)
-    pkg_arr=(macOSarr nixPkg aptPkg)
-
-    buf_arr=()
-
-    printf "Press one or more to install \n"
-    printf "Press i for install $(tput setaf 1)pkgs $(tput sgr0) \n"
-    printf "Press s for $(tput setaf 2)symlink $(tput sgr0) \n"
-    printf "Press z for $(tput setaf 3)zsh plugins $(tput sgr0) \n"
-    printf "Press p for $(tput setaf 4)packer$(tput sgr0) \n"
-    printf "Press n for $(tput setaf 5)nvim plugins$(tput sgr0) \n"
-    printf "Press e for $(tput setaf 6)pyenv$(tput sgr0) \n"
-    printf "Press a for $(tput setaf 6)all$(tput sgr0) \n"
-    read -n 1 ans
-    printf "\n"
-    if [[ "$ans" == *"i"* ]] || [[ "$ans" == *"a"* ]]; then
-        printf "What is your package manager? \n"
-        printf "0-$(tput setaf 3) brew$(tput sgr0) \n"
-        printf "1-$(tput setaf 5) nix$(tput sgr0) \n"
-        printf "2-$(tput setaf 6) apt$(tput sgr0) \n"
-        printf "3-$(tput setaf 3) dnf$(tput sgr0) \n"
-
-        read -n 1 pkg
-        printf "\n"
-        if [[ "$pkg" == "0" ]]; then
-            buf_arr=${macOSarr}
-            echo "buf_arr: ${buf_arr}"
-        elif [[ "$pkg" == "1" ]]; then
-            buf_arr=${nixPkg}
-        elif [[ "$pkg" == "2" ]]; then
-            buf_arr=${aptPkg}
-        elif [[ "$pkg" == "3" ]]; then
-	    buf_arr=${dnfPkg}
-        fi
-
-
-        if [[ "$ans" == "a" ]]; then 
-		echo $ans
-            link_dotfiles
-        fi
-
-	if [[ "$pkg" == "1" ]]; then 
-		_process "-> Install base pkgs for apt"
-		sudo apt install curl vim git
-	fi
-
-        for fnc in "${buf_arr[@]}"
-        do
-            ${fnc}
-        done
-    fi
-
-    # Zsh plugin install
-    if [[ "$ans" == *"z"* ]]; then 
-	    echo "$ans"
-	   zsh_plugins
-    fi
-    $link_dotfiles
-
-    # Link dotfiles
-    if [[ "$ans" == *"s"* ]]; then 
-        link_dotfiles
-    fi
-
-    # Pyenv install
-    if [[ "$ans" == *"e"* ]]; then 
-        pyenvInstall
-    fi
-
-    # Packer install
-    if [[ "$ans" == *"p"* ]]; then 
-        install_packer
-    fi
-
-    # Nvim plugins
-    if [[ "$ans" == *"n"* ]]; then 
-        install_nvim_plugins
-    fi
-}
-
-# ---
-# What we want to install
-# ---
-precise_install(){
-    echo " What do you want to install "
-    for dwnld in "${dwld_arr[@]}"
-    do
-	echo " $dwnld "
-    done
+# Install Lazy.nvim for Neovim
+install_lazy_nvim() {
+    _process "Installing Lazy.nvim for Neovim"
     
-    for dwnld in "${dwld_arr[@]}"
-    do
-        echo -n " Download $dwnld [y/n]: "
-        read -n 1 ans
-        printf '\n' 
-        if [[ "$ans" == "y" ]]; then
-            buf_arr+=("$dwnld")
-        fi
-    done
+    local lazy_dir="${HOME}/.local/share/nvim/site/pack/lazy/start/lazy.nvim"
+    rm -rf "$lazy_dir"  # Ensure a clean install
 
-    for buff in "${buf_arr[@]}"
-    do
-        $buff
-    done
+    git clone --filter=blob:none --branch=stable https://github.com/folke/lazy.nvim.git "$lazy_dir"
+    
+    _success "Lazy.nvim installed"
+}
 
-    #Clean the buffer
-    buf_arr=()
+# Install Neovim plugins using Lazy.nvim
+install_nvim_plugins() {
+    _process "Running Neovim in headless mode to install plugins"
+
+    # Ensure Neovim is installed
+    if ! program_exists nvim; then
+        _error "Neovim is not installed. Please install it first."
+        return
+    fi
+
+    # Run Neovim headless and trigger plugin installation
+    nvim --headless "+Lazy! sync" +qall
+
+    _success "All Neovim plugins installed via Lazy.nvim"
+}
+
+# Install Rust and Cargo packages
+install_rust() {
+    _process "Installing Rust"
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+    source "$HOME/.cargo/env"
+
+    local cargo_file="$DOTFILES_DIR/opt/cargoPkgs"
+    [[ -f "$cargo_file" ]] && _process "Installing Cargo packages" && cargo install $(cat "$cargo_file") && _success "Cargo packages installed"
+}
+
+# Install Pyenv
+install_pyenv() {
+    _process "Installing Pyenv"
+    git clone https://github.com/pyenv/pyenv.git ~/.pyenv
+    sudo "${PACKAGE_MANAGER}" install -y \
+        zlib-devel bzip2 bzip2-devel readline-devel \
+        sqlite sqlite-devel openssl-devel xz xz-devel libffi-devel
+    _success "Pyenv installed"
+}
+
+# Installation process
+install() {
+    local options=("Package Manager" "Packages" "Link Dotfiles" "Zsh Plugins" "Packer" "Neovim Plugins" "Rust" "Pyenv")
+    local functions=(install_package_manager install_packages link_dotfiles install_zsh_plugins install_lazy_nvim install_nvim_plugins install_rust install_pyenv)
+
+    echo "Select what to install:"
+    for i in "${!options[@]}"; do
+        echo "$i) ${options[$i]}"
+    done
+    echo "Enter multiple numbers separated by spaces (e.g., 0 2 5):"
+    read -a choices
+
+    for choice in "${choices[@]}"; do 
+        if [[ "$choice" == "1" ]]; then install_packages "Brewfile"; fi
+        ${functions[$choice]}
+    done
 }
 
 install
-#precise_install

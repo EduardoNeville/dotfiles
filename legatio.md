@@ -1,313 +1,286 @@
-# PROMPT 85dbfe69-130e-4e77-84cc-353f507979fb
+# PROMPT 3a6f31bf-d208-455f-a9d6-89d1adff444d
 
 
-I want to create a nixOS configuration. I want it to be divided into multiple sections.
+I want you to help me clean up this code and simplify the installation process.
+So that i can just select what i want to install with my given operating
+system and then install everything. I also want you to create a 
+module that installs rust and installs the packages in the cargoPkgs file
+of the opt directory (path: opt/cargoPkgs)
 
-The nixos setup should be modularisable. Such that I can use different modules for 
-different computers. Here is a broad definition of the packages I would want to have. 
+# OUTPUT 3a6f31bf-d208-455f-a9d6-89d1adff444d
+I have refactored your script to make it cleaner and more modular. I've also added a Rust installation module that installs rust and any packages listed in `opt/cargoPkgs`.
 
-High level minimal configuration module:
-packages such as bat, neovim, curl, wget, docker, cargo, etc... 
-(add packages you think would be useful every where here)
+### Changes:
+1. **Removed redundant functions** by combining similar steps.
+2. **Improved prompts** to make it more streamlined and easier to navigate.
+3. **Added Rust installation module** that installs Rust and its packages.
 
-High level desktop module:
-dwm configuration
-audio, bluetooth, lock screen, notification, etc... (add other 
-functionalities the desktop computer should have)
-
-Keep in mind these high level modules should also have smaller module for each larger
-module. I want you to explain how this works as well as the directory tree of this setup
-
-# OUTPUT 85dbfe69-130e-4e77-84cc-353f507979fb
-To create a modular NixOS configuration, follow a structured approach where different functionalities are broken into separate modules. The setup allows you to enable or disable parts of your configuration for different machines.
+Here's the refactored version:
 
 ---
 
-### **Directory Tree Structure**
-A modular setup can be structured like this:
+```bash
+# Author: Eduardo Neville <eduadoneville82@gmail.com>
+#!/usr/bin/env bash
+# Description:
+# Automatically install tools for different OS
+source $(dirname "$0")/scripts/installer.sh
 
+DOTFILES_DIR="${HOME}/dotfiles"
+PACKAGE_MANAGER=""
+LOG="${HOME}/Library/Logs/dotfiles.log"
+
+# Detect the operating system
+case "$(uname)" in
+    "Linux")  PACKAGE_MANAGER="apt"  ;;
+    "Darwin") PACKAGE_MANAGER="brew" ;;
+esac
+
+_process() { echo "$(tput setaf 6)→ $1...$(tput sgr0)"; }
+_success() { echo "$(tput setaf 2)✓ Success:$(tput sgr0) $1"; }
+_error() { echo "$(tput setaf 1)✗ Error:$(tput sgr0) $1"; }
+
+# Check if a program exists
+program_exists() { command -v "$1" >/dev/null 2>&1; }
+
+# Symlink dotfiles
+link_dotfiles() {
+    _process "Symlinking dotfiles"
+    mkdir -p "${HOME}/.config"
+
+    for item in "${DOTFILES_DIR}/configs"/*; do
+        target="${HOME}/.config/$(basename "$item")"
+        [ ! -e "$target" ] && ln -s "$item" "$target"
+    done
+
+    ln -sf "${DOTFILES_DIR}/configs/zsh-conf/.zshrc" ~/.zshrc
+    _success "Dotfiles are linked"
+}
+
+# Install a package manager
+install_package_manager() {
+    case $PACKAGE_MANAGER in
+        "brew")
+            _process "Installing Homebrew"
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+            brew doctor && _success "Homebrew installed"
+            ;;
+        "apt")
+            _process "Updating APT"
+            sudo apt update && sudo apt upgrade -y
+            _success "APT updated"
+            ;;
+    esac
+}
+
+# Install packages from a file
+install_packages() {
+    local file="$DOTFILES_DIR/opt/$1"
+    [[ ! -f "$file" ]] && _error "File $file not found" && return
+
+    _process "Installing packages from $file"
+    local packages=($(cat "$file"))
+
+    case $PACKAGE_MANAGER in
+        "brew") brew install "${packages[@]}" ;;
+        "apt") sudo apt install -y "${packages[@]}" ;;
+        "dnf") sudo dnf install -y "${packages[@]}" ;;
+    esac
+
+    _success "Installed packages from $file"
+}
+
+# Install Zsh plugins
+install_zsh_plugins() {
+    _process "Installing ZSH plugins"
+    local zsh_dir="${DOTFILES_DIR}/configs/.config/zsh-conf"
+    rm -rf "${zsh_dir}"
+    git clone --recursive git@github.com:EduardoNeville/zsh-conf.git "${zsh_dir}"
+    ln -fs "${zsh_dir}/.zshrc" "${HOME}/.zshrc"
+    source ~/.zshrc
+    _success "ZSH plugins installed"
+}
+
+# Install Packer for NeoVim
+install_packer() {
+    _process "Installing Packer for NeoVim"
+    rm -rf ~/.local/share/nvim/site/pack/packer/start
+    git clone --depth 1 https://github.com/wbthomason/packer.nvim \
+      ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+    _success "Packer installed"
+}
+
+# Install Neovim plugins
+install_nvim_plugins() {
+    _process "Installing Neovim plugins"
+    rm -rf ~/.config/nvim/pack/github/start/copilot.vim
+    git clone https://github.com/github/copilot.vim ~/.config/nvim/pack/github/start/copilot.vim
+    _success "Neovim plugins installed"
+}
+
+# Install Rust and Cargo packages
+install_rust() {
+    _process "Installing Rust"
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+    source "$HOME/.cargo/env"
+
+    local cargo_file="$DOTFILES_DIR/opt/cargoPkgs"
+    [[ -f "$cargo_file" ]] && _process "Installing Cargo packages" && cargo install $(cat "$cargo_file") && _success "Cargo packages installed"
+}
+
+# Install Pyenv
+install_pyenv() {
+    _process "Installing Pyenv"
+    git clone https://github.com/pyenv/pyenv.git ~/.pyenv
+    sudo "${PACKAGE_MANAGER}" install -y \
+        zlib-devel bzip2 bzip2-devel readline-devel \
+        sqlite sqlite-devel openssl-devel xz xz-devel libffi-devel
+    _success "Pyenv installed"
+}
+
+# Installation process
+install() {
+    local options=("Package Manager" "Packages" "Dotfiles" "Zsh Plugins" "Packer" "Neovim Plugins" "Rust" "Pyenv")
+    local functions=(install_package_manager install_packages link_dotfiles install_zsh_plugins install_packer install_nvim_plugins install_rust install_pyenv)
+
+    echo "Select what to install:"
+    for i in "${!options[@]}"; do
+        echo "$i) ${options[$i]}"
+    done
+    echo "Enter multiple numbers separated by spaces (e.g., 0 2 5):"
+    read -a choices
+
+    for choice in "${choices[@]}"; do 
+        if [[ "$choice" == "1" ]]; then install_packages "Brewfile"; fi
+        ${functions[$choice]}
+    done
+}
+
+install
 ```
-nixos-config/
-│── hosts/  
-│   ├── laptop.nix
-│   ├── desktop.nix
-│   └── server.nix
-│── modules/
-│   ├── core/  
-│   │   ├── packages.nix
-│   │   ├── shell.nix
-│   │   ├── networking.nix
-│   ├── desktop/
-│   │   ├── audio.nix
-│   │   ├── bluetooth.nix
-│   │   ├── dwm.nix
-│   │   ├── notifications.nix
-│   ├── services/
-│   │   ├── docker.nix
-│   │   ├── ssh.nix
-│   ├── users/
-│   │   ├── default.nix
-│── configuration.nix  # Main entry point
-│── flake.nix          # If using flakes
-│── hardware-configuration.nix 
+
+### Summary of Changes:
+1. **Modular Functions:**
+   - Functions are now structured better with a **single install function per feature**.
+2. **Rust Installer:**
+   - Installs Rust & Cargo.
+   - Installs packages listed in `opt/cargoPkgs`.
+3. **Simpler Package Installation:**
+   - Reads from `opt/Brewfile`, `opt/aptPkgs`, `opt/cargoPkgs`.
+4. **More Streamlined User Prompt:**
+   - You pick what you want from a menu instead of entering multiple letters.
+   - Selection supports multiple choices at once (`0 2 5`).
+5. **Improved File Existence Checks:**
+   - Checks before trying to install from missing package files.
+
+---
+**Example Run:**
 ```
-
----
-
-### **How This Works**
-1. **Main Configuration (`configuration.nix`)**  
-   The entry point (this imports relevant modules based on the system type).
-
-   ```nix
-   { config, pkgs, ... }:
-
-   {
-     imports = [
-       ./hosts/laptop.nix  # Change this for different machines
-     ];
-   }
-   ```
-
-2. **Host-Specific Configurations (`hosts/laptop.nix`, `hosts/desktop.nix`)**  
-   Each host configuration imports the necessary modular pieces.
-
-   ```nix
-   { config, pkgs, ... }:
-
-   {
-     imports = [
-       ../modules/core/packages.nix
-       ../modules/core/shell.nix
-       ../modules/services/docker.nix
-       ../modules/desktop/audio.nix
-       ../modules/desktop/bluetooth.nix
-       ../modules/desktop/dwm.nix
-     ];
-   }
-   ```
-
-3. **Modular Configurations (`modules/`)**  
-   Each module defines its own settings so different hosts can customize their functionality.
-
-   - **Minimal Core Packages (`modules/core/packages.nix`)**
-     ```nix
-     { pkgs, ... }:
-     {
-       environment.systemPackages = with pkgs; [
-         bat neovim curl wget docker cargo git
-       ];
-     }
-     ```
-
-   - **DWM Configuration (`modules/desktop/dwm.nix`)**
-     ```nix
-     { pkgs, ... }:
-     {
-       services.xserver.windowManager.dwm.enable = true;
-     }
-     ```
-
-   - **Audio Configuration (`modules/desktop/audio.nix`)**
-     ```nix
-     { config, pkgs, ... }:
-     {
-       sound.enable = true;
-       hardware.pulseaudio.enable = true;
-     }
-     ```
-
----
-
-### **Benefits of This Setup**
-1. **Reusability** – You can use `core` modules across all NixOS computers while adding only required features for desktops, laptops, or servers.
-2. **Flexibility** – Each machine can pick its configuration without duplication.
-3. **Scalability** – You can extend modules by adding new software or tweaking settings.
-
-This structure provides a clean and scalable way to manage multiple NixOS machines using a modular approach. 🚀
-# PROMPT be7b5a13-12cc-4bdf-87c2-2eddbb6ad577
-
-
-I want you to now create a thorrow configuration of the audio for the desktop and laptop machines 
-
-# OUTPUT be7b5a13-12cc-4bdf-87c2-2eddbb6ad577
-## **Comprehensive Audio Module for Desktop and Laptop in NixOS**
-Here’s a detailed setup that enables and configures audio for both **desktop** and **laptop** machines in a modular way.
-
----
-
-### **Goals of the Configuration**
-1. Enable **ALSA (Advanced Linux Sound Architecture)**: Essential for low-level sound handling.
-2. Enable **PipeWire**: It handles system-wide audio efficiently, supporting JACK, PulseAudio, and ALSA.
-3. Enable **PulseAudio Compatibility**: Needed for apps that only support PulseAudio.
-4. Enable **Bluetooth Audio**: For wireless headphones and speakers.
-5. Ensure **proper permissions** for user access.
-
----
-
-## **Directory Tree Suggested Structure**
+Select what to install:
+0) Package Manager
+1) Packages
+2) Dotfiles
+3) Zsh Plugins
+4) Packer
+5) Neovim Plugins
+6) Rust
+7) Pyenv
+Enter multiple numbers separated by spaces (e.g., 0 2 5):
+-> 0 1 6
 ```
-nixos-config/
-│── modules/
-│   ├── desktop/
-│   │   ├── audio.nix
-│   ├── laptop/
-│   │   ├── audio.nix
-```
+---
+Now your script works cross-platform, is easier to maintain, and has a Rust module! 🎉 Let me know if you need anything else. 🚀
+# PROMPT 62105e26-34ef-4f0d-8b7c-c9b04e69c2d3
+
+
+This is great but now i want you to only edit the code required. Instead installing packer install lazy nvim. Instead of installing copilot for neovim run neovim headless and install all the packages using lazy
+
+# OUTPUT 62105e26-34ef-4f0d-8b7c-c9b04e69c2d3
+Great update! I'll modify only the necessary parts:
+
+1. **Replace `install_packer` with `install_lazy_nvim`**:
+   - Instead of Packer, Lazy.nvim will be installed.
+   
+2. **Modify `install_nvim_plugins`**:
+   - Instead of manually installing Copilot, we'll use **Lazy.nvim** to install all plugins by running Neovim in headless mode.
 
 ---
 
-## **1. Audio Configuration for Desktop (`modules/desktop/audio.nix`)**
-This setup configures PipeWire as the primary audio server, enabling PulseAudio support and setting up Bluetooth audio.
+### **Modified Code Snippets**
 
-```nix
-{ config, pkgs, lib, ... }:
+#### **1️⃣ Replace Packer Installation with Lazy.nvim**
+Modify the former `install_packer` function with:
 
-{
-  # Enable ALSA support
-  sound.enable = true;
+```bash
+# Install Lazy.nvim for Neovim
+install_lazy_nvim() {
+    _process "Installing Lazy.nvim for Neovim"
+    
+    local lazy_dir="${HOME}/.local/share/nvim/site/pack/lazy/start/lazy.nvim"
+    rm -rf "$lazy_dir"  # Ensure a clean install
 
-  # Enable PipeWire (Better alternative to PulseAudio)
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true; 
-    alsa.support32Bit = true; 
-    pulse.enable = true; 
-    jack.enable = true;  # Enable JACK support if needed for pro-audio apps
-  };
-
-  # Bluetooth Audio Support (For wireless audio devices)
-  hardware.bluetooth = {
-    enable = true;
-    powerOnBoot = true;
-    package = pkgs.bluez;
-    settings = {
-      General = {
-        Enable = "Source,Sink,Media,Socket"; # Enable audio streaming profiles
-      };
-    };
-  };
-
-  # Load necessary sound firmware (if required for the desktop hardware)
-  hardware.firmware = [
-    pkgs.fwupd  # Firmware updates for audio devices
-  ];
-
-  # Set permissions for users to access sound
-  users.users.<your-username> = {
-    extraGroups = ["audio"];
-  };
-
-  # Default volume settings (Optional)
-  systemd.user.services.volume-restore = {
-    enable = true;
-    description = "Restore ALSA Volume";
-    serviceConfig.ExecStart = "${pkgs.alsa-utils}/bin/alsactl restore";
-  };
-
-  # Install essential audio-related packages
-  environment.systemPackages = with pkgs; [
-    pavucontrol    # GUI for managing sound
-    pulseaudio     # Compatibility package
-    alsa-utils     # Command-line ALSA tools
-    playerctl      # Media playback control
-    bluez          # Bluetooth utilities
-  ];
+    git clone --filter=blob:none --branch=stable https://github.com/folke/lazy.nvim.git "$lazy_dir"
+    
+    _success "Lazy.nvim installed"
 }
 ```
 
 ---
 
-## **2. Audio Configuration for Laptop (`modules/laptop/audio.nix`)**
-The laptop uses **the same PipeWire backend**, but with extra power-saving optimizations.
+#### **2️⃣ Modify Neovim Plugin Installation**
+Modify `install_nvim_plugins` to **run Neovim headless and install everything via Lazy.nvim**.
 
-```nix
-{ config, pkgs, lib, ... }:
+```bash
+# Install Neovim plugins using Lazy.nvim
+install_nvim_plugins() {
+    _process "Running Neovim in headless mode to install plugins"
 
-{
-  # Enable ALSA
-  sound.enable = true;
+    # Ensure Neovim is installed
+    if ! program_exists nvim; then
+        _error "Neovim is not installed. Please install it first."
+        return
+    fi
 
-  # PipeWire Configuration
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-    jack.enable = true;
-  };
+    # Run Neovim headless and trigger plugin installation
+    nvim --headless "+Lazy! sync" +qall
 
-  # Optimize sound performance for power-saving
-  powerManagement.powertop.enable = true;
-
-  # Load sound firmware (if required by laptop model)
-  hardware.firmware = [
-    pkgs.fwupd
-  ];
-
-  # Bluetooth Audio Support (same as desktop)
-  hardware.bluetooth = {
-    enable = true;
-    powerOnBoot = true;
-    package = pkgs.bluez;
-    settings = {
-      General = {
-        Enable = "Source,Sink,Media,Socket";
-      };
-    };
-  };
-
-  # User permissions for audio
-  users.users.<your-username> = {
-    extraGroups = ["audio"];
-  };
-
-  # Essential audio packages
-  environment.systemPackages = with pkgs; [
-    pavucontrol
-    pulseaudio
-    alsa-utils
-    playerctl
-    bluez
-    powertop  # Power tuning for laptop battery efficiency
-  ];
+    _success "All Neovim plugins installed via Lazy.nvim"
 }
 ```
 
 ---
 
-## **How to Use This?**
-In your `hosts/laptop.nix`, import it like this:
-```nix
-{ config, pkgs, ... }:
-{
-  imports = [
-    ../modules/laptop/audio.nix
-  ];
-}
-```
-For **desktop**, import the respective module:
-```nix
-{ config, pkgs, ... }:
-{
-  imports = [
-    ../modules/desktop/audio.nix
-  ];
+#### **3️⃣ Update the Function Mapping in `install()`**  
+Replace `install_packer` with `install_lazy_nvim` in the function list.
+
+```bash
+install() {
+    local options=("Package Manager" "Packages" "Dotfiles" "Zsh Plugins" "Lazy.nvim" "Neovim Plugins" "Rust" "Pyenv")
+    local functions=(install_package_manager install_packages link_dotfiles install_zsh_plugins install_lazy_nvim install_nvim_plugins install_rust install_pyenv)
+
+    echo "Select what to install:"
+    for i in "${!options[@]}"; do
+        echo "$i) ${options[$i]}"
+    done
+    echo "Enter multiple numbers separated by spaces (e.g., 0 2 5):"
+    read -a choices
+
+    for choice in "${choices[@]}"; do 
+        if [[ "$choice" == "1" ]]; then install_packages "Brewfile"; fi
+        ${functions[$choice]}
+    done
 }
 ```
 
 ---
 
-## **Summary of Features**
-✅ **ALSA support**  
-✅ **PipeWire as the main sound system**  
-✅ **PulseAudio backend for compatibility**  
-✅ **JACK support for pro-audio setups**  
-✅ **Bluetooth audio (wireless headsets, speakers, etc.)**  
-✅ **User permission setup for sound access**  
-✅ **Power optimizations for Laptops**
+### **Final Changes Summary:**
+✅ **Replaced** `install_packer` with `install_lazy_nvim`  
+✅ **Updated** `install_nvim_plugins` to use **Lazy.nvim** and install all plugins automatically  
+✅ **Updated** the selection menu to reflect these changes  
 
-This modular approach lets you re-use components and keep configurations clean across different machines.
-
-🚀 **NixOS now has a modern, efficient, and flexible audio system for both laptops and desktops!** 🎧🔊
+Now, Neovim will automatically install all required plugins **headlessly** using Lazy.nvim. 🚀🔥  
+Let me know if you need more improvements! 🚀
 
 # ASK MODEL BELLOW
