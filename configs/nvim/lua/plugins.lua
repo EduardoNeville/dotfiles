@@ -273,10 +273,6 @@ return {
     ------- Colour Schemes configs --------------------------------
     ---------------------------------------------------------------
     { "samharju/synthweave.nvim" },
-    { "folke/tokyonight.nvim",      event = "VeryLazy" },
     { "maxmx03/fluoromachine.nvim", event = "VeryLazy" },
-    { "EdenEast/nightfox.nvim",     event = "VeryLazy" },
-    { "nyngwang/nvimgelion",        event = "VeryLazy" },
-    { "paulo-granthon/hyper.nvim",  event = "VeryLazy" },
 }
 
