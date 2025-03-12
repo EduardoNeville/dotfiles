@@ -18,20 +18,7 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
-require("lazy").setup({
-  spec = {
-    -- add your plugins here
-  },
-  -- Configure any other settings here. See the documentation for more details.
-  -- colorscheme that will be used when installing plugins.
-  install = {
-        missing = true,
-        colorscheme = { "synthweave" },
-  },
-  -- automatically check for plugin updates
-  checker = { enabled = true },
-})
-
+require("lazy").setup("plugins")
 require('colorscheme')
 require('base')
 require('keymaps')
