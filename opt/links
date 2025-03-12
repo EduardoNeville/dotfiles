@@ -3,3 +3,4 @@ nvim ~/dotfiles/configs/nvim ~/.config/nvim
 wezterm ~/dotfiles/configs/wezterm ~/.config/wezterm
 lazygit ~/dotfiles/configs/lazygit ~/.config/lazygit
 nnn ~/dotfiles/configs/nnn ~/.config/nnn
+zshc ~/dotfiles/configs/zsh-conf/zshrc ~/.zshrc

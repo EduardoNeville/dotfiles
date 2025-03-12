@@ -64,7 +64,7 @@ link_dotfiles() {
         [ ! -e "$target" ] && ln -s "$item" "$target"
     done
 
-    ln -sf "${DOTFILES_DIR}/configs/zsh-conf/.zshrc" ~/.zshrc
+    ln -sf "${DOTFILES_DIR}/configs/zsh-conf/zshrc" ~/.zshrc
     _success "Dotfiles are linked"
 }
 
@@ -163,7 +163,7 @@ install_pyenv() {
 
 # Installation process
 install() {
-    local options=("Package Manager" "Packages" "Dotfiles" "Zsh Plugins" "Lazy.nvim" "Neovim Plugins" "Rust" "Pyenv" "Docker")
+    local options=("Package Manager" "Packages" "Links" "Zsh Plugins" "Lazy.nvim" "Neovim Plugins" "Rust" "Pyenv" "Docker")
     local functions=(install_package_manager install_packages link_dotfiles install_zsh_plugins install_lazy_nvim install_nvim_plugins install_rust install_pyenv install_docker)
 
     echo "Select what to install:"
