@@ -1,0 +1,19 @@
+window {
+  font-family: monospace;
+  font-size: 14px;
+  background: #241b30;
+  color: #00fbfd;
+}
+#input {
+  background: #241b30;
+  color: #00fbfd;
+  border: none;
+}
+#entry {
+  background: #241b30;
+  color: #00fbfd;
+}
+#entry:selected {
+  background: #E0BFB8;
+  color: #241b30;
+}

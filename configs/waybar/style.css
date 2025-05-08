@@ -1,0 +1,29 @@
+* {
+  font-family: monospace;
+  font-size: 14px;
+}
+window#waybar {
+  background: #241b30;
+  color: #00fbfd;
+}
+#workspaces button {
+  padding: 0 5px;
+  background: #241b30;
+  color: #00fbfd;
+  border: none;
+}
+#workspaces button.focused {
+  background: #00fbfd;
+  color: #241b30;
+}
+#battery, #memory, #clock {
+  padding: 0 10px;
+  background: #241b30;
+  color: #00fbfd;
+}
+#battery.warning {
+  color: #ff00f6;
+}
+#battery.critical {
+  color: #ff0000;
+}

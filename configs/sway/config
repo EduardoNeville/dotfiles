@@ -1,0 +1,107 @@
+# General settings
+set $mod Mod4
+set $term wezterm
+set $menu wofi --show drun --style ~/.config/wofi/current.css
+set $firefox firefox
+set $flameshot flameshot gui
+
+# Appearance
+font pango:monospace 14
+client.focused           #00fbfd #00fbfd #241b30 #00fbfd #00fbfd
+client.focused_inactive  #241b30 #241b30 #00fbfd #241b30 #241b30
+client.unfocused         #241b30 #241b30 #00fbfd #241b30 #241b30
+client.urgent            #ff00f6 #ff00f6 #241b30 #ff00f6 #ff00f6
+floating_modifier $mod
+
+# Border settings
+default_border pixel 4
+default_floating_border pixel 4
+smart_borders on
+gaps inner 4
+gaps outer 0
+
+# Workspaces (tags)
+set $ws1 "I"
+set $ws2 "II"
+set $ws3 "III"
+set $ws4 "IV"
+set $ws5 "V"
+
+# Output settings (adjust for your monitor)
+output * bg #241b30 solid_color
+output * adaptive_sync on
+
+# Input settings (adjust for your keyboard)
+input * xkb_layout us
+
+# Keybindings
+bindsym $mod+p exec $menu
+bindsym $mod+Shift+Return exec $term
+bindsym $mod+Shift+f exec $firefox
+bindsym XF86AudioLowerVolume exec wpctl set-volume @DEFAULT_SINK@ 0.1-
+bindsym XF86AudioMute exec wpctl set-mute @DEFAULT_SINK@ toggle
+bindsym XF86AudioRaiseVolume exec wpctl set-volume @DEFAULT_SINK@ 0.1+
+bindsym XF86MonBrightnessDown exec brightnessctl set 10%-
+bindsym XF86MonBrightnessUp exec brightnessctl set 10%+
+bindsym Shift+Print exec $flameshot
+bindsym XF86PowerOff exec systemctl suspend
+
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+h resize shrink width 5 px or 5 ppt
+bindsym $mod+l resize grow width 5 px or 5 ppt
+bindsym $mod+Return swap container with id focused
+bindsym $mod+Tab focus right
+bindsym $mod+Shift+c kill
+bindsym $mod+t layout splith
+bindsym $mod+s layout splitv
+bindsym $mod+m layout tabbed
+bindsym $mod+space layout toggle split
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+0 workspace number 0
+bindsym $mod+Shift+0 move container to workspace number 0
+bindsym $mod+comma focus output left
+bindsym $mod+period focus output right
+bindsym $mod+Shift+comma move container to output left
+bindsym $mod+Shift+period move container to output right
+bindsym $mod+Shift+q exit
+bindsym $mod+Shift+w focus parent
+
+# Workspace keybindings
+bindsym $mod+1 workspace $ws1
+bindsym $mod+2 workspace $ws2
+bindsym $mod+3 workspace $ws3
+bindsym $mod+4 workspace $ws4
+bindsym $mod+5 workspace $ws5
+bindsym $mod+Shift+1 move container to workspace $ws1
+bindsym $mod+Shift+2 move container to workspace $ws2
+bindsym $mod+Shift+3 move container to workspace $ws3
+bindsym $mod+Shift+4 move container to workspace $ws4
+bindsym $mod+Shift+5 move container to workspace $ws5
+bindsym $mod+Control+1 workspace $ws1; focus parent
+bindsym $mod+Control+2 workspace $ws2; focus parent
+bindsym $mod+Control+3 workspace $ws3; focus parent
+bindsym $mod+Control+4 workspace $ws4; focus parent
+bindsym $mod+Control+5 workspace $ws5; focus parent
+bindsym $mod+Control+Shift+1 move container to workspace $ws1; workspace $ws1
+bindsym $mod+Control+Shift+2 move container to workspace $ws2; workspace $ws2
+bindsym $mod+Control+Shift+3 move container to workspace $ws3; workspace $ws3
+bindsym $mod+Control+Shift+4 move container to workspace $ws4; workspace $ws4
+bindsym $mod+Control+Shift+5 move container to workspace $ws5; workspace $ws5
+
+# Layout controls (approximating flextile)
+bindsym $mod+Control+t split h
+bindsym $mod+Control+m split v
+bindsym $mod+Control+n layout tabbed
+bindsym $mod+Control+Return layout toggle all
+bindsym $mod+Control+h split h; focus left
+bindsym $mod+Control+l split h; focus right
+
+# Window rules
+for_window [app_id="gimp"] floating enable
+for_window [app_id="firefox"] move to workspace $ws5
+
+# Bar (Waybar)
+bar {
+    swaybar_command waybar
+}

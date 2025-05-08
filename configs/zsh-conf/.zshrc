@@ -138,7 +138,7 @@ alias lse="eza  --icons --tree --level=2 --sort='size' --reverse -a -I '.git|__p
 alias ls3="eza --icons --tree --level=3 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
 alias ls4="eza --icons --tree --level=4 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
 alias lsn="eza --icons --tree --level=2 --sort='name' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
-alias lss="dust -d 2 -z 5MB -briC"
+alias lss="dust -d 2 -z 5MB -brC"
 
 alias lshelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%%
 ls COMMANDS
@@ -149,20 +149,9 @@ ls4 -> eza all files in a tree of depth 4 sorted by size \n'"
 
 export EZA_COLORS="*csv=32:*.md=38;5;141"
 
-# --- fzf shortcuts -------------------------------
-fp_func() {
-    file=$(fzf --preview="bat --style=numbers --color=always {}")
-    echo "$file"
-    nvim "$file"
-}
-alias fp='fp_func'
-#'fd --type file --hidden --exclude .git | fzf-tmux -p 80%,80%  --reverse --preview "bat --style=numbers --color=always {}" | xargs nvim'
-alias fcd='z $(fd --type d --hidden --exclude .git | fzf --preview="eza --icons --tree --level=1 --reverse -a {}")'
-alias fzfhelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%%
-fzf COMMANDS
-%%%%%%%%%%%%%%%%%%%%%%%%%% \n
-fp -> fzf files with bat and open in nvim \n
-fcd -> cd from current dir \n"
+# --- tv shortcuts -------------------------------
+alias fp='file=$(tv); [ -n "$file" ] && echo "$file"; nvim "$file"'
+alias fcd='dir=$(tv dirs); [ -n "$dir" ] && echo "$dir"; z "$dir" || :'
 
 # --- Tmux shortcuts -------------------------------
 alias tmux="TERM=xterm-256color tmux"
@@ -215,3 +204,7 @@ autoload -U compinit; compinit -i
 export STARSHIP_CONFIG=~/.config/starship/starship.toml
 export STARSHIP_CACHE=~/.starship/cache
 eval "$(starship init zsh)"
+
+export WASMTIME_HOME="$HOME/.wasmtime"
+
+export PATH="$WASMTIME_HOME/bin:$PATH"

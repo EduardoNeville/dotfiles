@@ -1,0 +1,33 @@
+{
+  "layer": "top",
+  "modules-left": ["sway/workspaces"],
+  "modules-center": [],
+  "modules-right": ["battery", "memory", "clock"],
+  "sway/workspaces": {
+    "format": "{name}",
+    "all-outputs": true,
+    "persistent_workspaces": {
+      "I": [],
+      "II": [],
+      "III": [],
+      "IV": [],
+      "V": []
+    }
+  },
+  "battery": {
+    "format": "[B:{percentage}%|R:{time}]",
+    "format-charging": "[B:{percentage}%|R:{time}]",
+    "format-plugged": "[B:{percentage}%|Plugged]",
+    "states": {
+      "warning": 30,
+      "critical": 15
+    },
+    "bat": "DisplayDevice"
+  },
+  "memory": {
+    "format": "[R:{used:0.1f}G]"
+  },
+  "clock": {
+    "format": "[{:%Y-%m-%d %H:%M}]"
+  }
+}
