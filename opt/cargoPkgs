@@ -2,6 +2,9 @@ csvlens
 eza
 bat
 starship
-dust
+du-dust
 jless
 dysk
+zoxide --locked
+television --locked
+fd-find

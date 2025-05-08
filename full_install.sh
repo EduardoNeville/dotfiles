@@ -9,9 +9,18 @@ PACKAGE_MANAGER=""
 LOG="${HOME}/Library/Logs/dotfiles.log"
 
 # Detect the operating system
-case "$(uname)" in
-    "Linux")  PACKAGE_MANAGER="apt"  ;;
+if command -v hostnamectl >/dev/null 2>&1; then
+    OS=$(hostnamectl | grep "Operating System" | awk -F": " '{print $2}' | awk '{print $1}')
+else
+    OS=$(uname)
+fi
+
+case "$OS" in
+    "Ubuntu"|"Debian") PACKAGE_MANAGER="apt" ;;
+    "Fedora"|"CentOS"|"Red") PACKAGE_MANAGER="dnf" ;;
+    "Arch") PACKAGE_MANAGER="pacman" ;;
     "Darwin") PACKAGE_MANAGER="brew" ;;
+    *) PACKAGE_MANAGER="unknown" ;;
 esac
 
 _process() { echo "$(tput setaf 6)→ $1...$(tput sgr0)"; }
@@ -61,10 +70,10 @@ link_dotfiles() {
 
     for item in "${DOTFILES_DIR}/configs"/*; do
         target="${HOME}/.config/$(basename "$item")"
-        [ ! -e "$target" ] && ln -s "$item" "$target"
+        [ ! -e "$target" ] && ln -rs "$item" "$target"
     done
 
-    ln -sf "${DOTFILES_DIR}/configs/zsh-conf/zshrc" ~/.zshrc
+    ln -sf "${DOTFILES_DIR}/configs/zsh-conf/.zshrc" ~/.zshrc
     _success "Dotfiles are linked"
 }
 
@@ -86,7 +95,7 @@ install_package_manager() {
 
 # Install packages from a file
 install_packages() {
-    local file="$DOTFILES_DIR/opt/$1"
+    local file="$DOTFILES_DIR/opt/${PACKAGE_MANAGER}Pkgs"
     [[ ! -f "$file" ]] && _error "File $file not found" && return
 
     _process "Installing packages from $file"

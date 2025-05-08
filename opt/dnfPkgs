@@ -7,14 +7,12 @@ gdb
 git 
 cmake
 tree-sitter
-font-hack-nerd-font
 fzf
 ripgrep
 diff-so-fancy
 btop
 zsh
 curl
-fd-find
 nodejs
 npm
 nnn
