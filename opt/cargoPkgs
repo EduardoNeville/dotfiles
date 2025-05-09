@@ -5,6 +5,6 @@ starship
 du-dust
 jless
 dysk
-zoxide --locked
-television --locked
+zoxide
+television
 fd-find
