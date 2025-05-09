@@ -82,7 +82,7 @@ install_package_manager() {
     case $PACKAGE_MANAGER in
         "brew")
             _process "Installing Homebrew"
-            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+            /bin/bash-c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
             brew doctor && _success "Homebrew installed"
             ;;
         "apt")
@@ -170,10 +170,41 @@ install_pyenv() {
     _success "Pyenv installed"
 }
 
+# Install Wezterm
+install_wezterm() {
+    _process "Installing Wezterm"
+    case "$PACKAGE_MANAGER" in 
+        "brew")  
+            _process "brew install"
+            brew install --cask wezterm
+            ;;
+        "apt")
+            _process "apt install"
+            curl -fsSL https://apt.fury.io/wez/gpg.key | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
+            echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list
+            sudo chmod 644 /usr/share/keyrings/wezterm-fury.gpg
+            sudo apt update
+            sudo apt install wezterm
+            ;;
+        "dnf")
+            _process "apt install"
+            sudo dnf copr enable wezfurlong/wezterm-nightly
+            sudo dnf install wezterm
+            ;;
+        *) _process "Package Manager: $PACKAGE_MANAGER"
+    esac
+
+    if [[ "$PACKAGE_MANAGER" != "unknown" ]]; then
+        _success "Wezterm successfully installed"
+    else 
+        _error "Unable to install Wezterm"
+    fi
+}
+
 # Installation process
 install() {
-    local options=("Package Manager" "Packages" "Links" "Zsh Plugins" "Lazy.nvim" "Neovim Plugins" "Rust" "Pyenv" "Docker")
-    local functions=(install_package_manager install_packages link_dotfiles install_zsh_plugins install_lazy_nvim install_nvim_plugins install_rust install_pyenv install_docker)
+    local options=("Package Manager" "Packages" "Links" "Zsh Plugins" "Lazy.nvim" "Neovim Plugins" "Rust" "Pyenv" "Docker" "Wezterm")
+    local functions=(install_package_manager install_packages link_dotfiles install_zsh_plugins install_lazy_nvim install_nvim_plugins install_rust install_pyenv install_docker install_wezterm)
 
     echo "Select what to install:"
     for i in "${!options[@]}"; do
