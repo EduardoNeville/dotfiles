@@ -167,6 +167,7 @@ install_pyenv() {
     sudo "${PACKAGE_MANAGER}" install -y \
         zlib-devel bzip2 bzip2-devel readline-devel \
         sqlite sqlite-devel openssl-devel xz xz-devel libffi-devel
+    source ~/.zshrc
     _success "Pyenv installed"
 }
 
@@ -187,7 +188,7 @@ install_wezterm() {
             sudo apt install wezterm
             ;;
         "dnf")
-            _process "apt install"
+            _process "dnf install"
             sudo dnf copr enable wezfurlong/wezterm-nightly
             sudo dnf install wezterm
             ;;
@@ -201,10 +202,32 @@ install_wezterm() {
     fi
 }
 
+install_sioyek() {
+    _process "Installing sioyek"
+    case "$PACKAGE_MANAGER" in
+        "brew")
+            _process "brew install"
+            ;;
+        "apt")
+            _process "apt install"
+            ;;
+        "dnf")
+            _process "dnf install"
+            sudo dnf install qt5-qtbase-devel qt5-qtbase-static qt5-qt3d-devel harfbuzz-devel
+            git clone --recursive https://github.com/ahrm/sioyek
+            cd sioyek
+            ./build_linux.sh
+            ;;
+        *) _process "Package Manager: $PACKAGE_MANAGER"
+    esac
+
+    _success "Sioyek installed!"
+}
+
 # Installation process
 install() {
-    local options=("Package Manager" "Packages" "Links" "Zsh Plugins" "Lazy.nvim" "Neovim Plugins" "Rust" "Pyenv" "Docker" "Wezterm")
-    local functions=(install_package_manager install_packages link_dotfiles install_zsh_plugins install_lazy_nvim install_nvim_plugins install_rust install_pyenv install_docker install_wezterm)
+    local options=("Package Manager" "Packages" "Links" "Zsh Plugins" "Lazy.nvim" "Neovim Plugins" "Rust" "Pyenv" "Docker" "Wezterm" "Sioyek")
+    local functions=(install_package_manager install_packages link_dotfiles install_zsh_plugins install_lazy_nvim install_nvim_plugins install_rust install_pyenv install_docker install_wezterm install_sioyek)
 
     echo "Select what to install:"
     for i in "${!options[@]}"; do

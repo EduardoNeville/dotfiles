@@ -92,7 +92,7 @@ local config = {
 
 	--- Window Info ----
 	window_background_opacity = 0.85,
-	window_decorations = "RESIZE",
+	window_decorations = "NONE",
 	scrollback_lines = 5000,
 
  	window_padding = {

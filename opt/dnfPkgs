@@ -16,3 +16,6 @@ curl
 nodejs
 npm
 nnn
+pandoc
+pdflatex
+bat
