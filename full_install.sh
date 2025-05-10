@@ -70,7 +70,7 @@ link_dotfiles() {
 
     for item in "${DOTFILES_DIR}/configs"/*; do
         target="${HOME}/.config/$(basename "$item")"
-        [ ! -e "$target" ] && ln -rs "$item" "$target"
+        [ ! -e "$target" ] && ln -sv "$item" "$target"
     done
 
     ln -sf "${DOTFILES_DIR}/configs/zsh-conf/.zshrc" ~/.zshrc
