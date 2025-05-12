@@ -250,6 +250,11 @@ config.keys = {
 
     -- Show Tab Navigator
     {key='i', mods = 'CTRL|SHIFT', action = act.ShowTabNavigator, },
+
+    -- Rotate panes Clockwise 
+    -- eg.
+    -- | 1 | 2 | 3 | => | 3 | 1 | 2 |
+    { key = 'b', mods = 'CTRL|SHIFT', action = act.RotatePanes 'Clockwise' },
 }
 
 return config
