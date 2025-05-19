@@ -156,8 +156,10 @@ install_rust() {
 
     source "$HOME/.cargo/env"
 
+    cargo install cargo-binstall
+
     local cargo_file="$DOTFILES_DIR/opt/cargoPkgs"
-    [[ -f "$cargo_file" ]] && _process "Installing Cargo packages" && cargo install $(cat "$cargo_file") && _success "Cargo packages installed"
+    [[ -f "$cargo_file" ]] && _process "Installing Cargo packages" && cargo binstall $(cat "$cargo_file") && _success "Cargo packages installed"
 }
 
 # Install Pyenv

@@ -167,7 +167,7 @@ alias gl='git log'
 alias gst='git status'
 alias gss='git stash'
 alias gco='git checkout'
-alias lg='lazygit'
+alias gt='gitui'
 alias ghelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%%
 github COMMANDS
 %%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -181,7 +181,7 @@ gl -> git log \n
 gst -> git status \n
 gss -> git stash \n
 gco -> git checkout\n
-lg -> lazygit\n'"
+gt -> git tui\n'"
 
 # --- Docker ----------------------------------
 alias ld='lazydocker'
