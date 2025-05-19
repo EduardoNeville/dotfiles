@@ -8,7 +8,6 @@ git
 cmake
 tree-sitter
 fzf
-ripgrep
 diff-so-fancy
 btop
 zsh
@@ -18,4 +17,3 @@ npm
 nnn
 pandoc
 pdflatex
-bat
