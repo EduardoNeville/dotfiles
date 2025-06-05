@@ -226,10 +226,16 @@ install_sioyek() {
     _success "Sioyek installed!"
 }
 
+install_fedora_server() {
+    _process "Installing Base Fedora Server"
+    bash ${HOME}/dotfiles/scripts/base_fedora_install.sh
+    _sucess "Full install - Base Fedora Server"
+}
+
 # Installation process
 install() {
-    local options=("Package Manager" "Packages" "Links" "Zsh Plugins" "Lazy.nvim" "Neovim Plugins" "Rust" "Pyenv" "Docker" "Wezterm" "Sioyek")
-    local functions=(install_package_manager install_packages link_dotfiles install_zsh_plugins install_lazy_nvim install_nvim_plugins install_rust install_pyenv install_docker install_wezterm install_sioyek)
+    local options=("Package Manager" "Packages" "Links" "Zsh Plugins" "Lazy.nvim" "Neovim Plugins" "Rust" "Pyenv" "Docker" "Wezterm" "Sioyek" "Fedora Server Install")
+    local functions=(install_package_manager install_packages link_dotfiles install_zsh_plugins install_lazy_nvim install_nvim_plugins install_rust install_pyenv install_docker install_wezterm install_sioyek install_fedora_server)
 
     echo "Select what to install:"
     for i in "${!options[@]}"; do
