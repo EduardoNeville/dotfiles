@@ -1,16 +1,15 @@
 #!/usr/bin/env bash
 # Author: Eduardo Neville <eduadoneville82@gmail.com>
-# Description: Install tools for Fedora Server with dwm setup
-source ${HOME}/dotfiles/scripts/base_fedora_install.sh
+# Description: Install tools for Void Linux with dwm setup
 
 DOTFILES_DIR="${HOME}/dotfiles"
-PACKAGE_MANAGER="dnf"
-LOG="${HOME}/Library/Logs/dotfiles.log"
+PACKAGE_MANAGER="xbps-install"
+LOG="${HOME}/void_install.log"
 
-# Confirm Fedora OS
+# Confirm Void Linux OS
 OS=$(hostnamectl | grep "Operating System" | awk -F": " '{print $2}' | awk '{print $1}')
-if [[ "$OS" != "Fedora" ]]; then
-    echo "This script is tailored for Fedora Server. Exiting."
+if [[ "$OS" != "Void" ]]; then
+    echo "This script is tailored for Void Linux. Exiting."
     exit 1
 fi
 
@@ -24,15 +23,14 @@ program_exists() { command -v "$1" >/dev/null 2>&1; }
 # Install base dependencies
 install_base() {
     _process "Installing base X11 and development tools"
-    sudo dnf groupinstall -y "X Window System"
-    sudo dnf install -y @development-tools git
+    sudo xbps-install -y xorg base-devel git libX11-devel libXinerama-devel libXft-devel
     _success "Base dependencies installed"
 }
 
-# Install packages from Fedora repositories
+# Install packages from Void repositories
 install_packages() {
-    _process "Installing packages from Fedora repositories"
-    sudo dnf install -y flameshot slim bluez pipewire dunst upower NetworkManager rofi feh picom brightnessctl slock
+    _process "Installing packages from Void repositories"
+    sudo xbps-install -y flameshot slim bluez pipewire dunst upower NetworkManager rofi feh picom brightnessctl slock alsa-utils
     _success "Packages installed"
 }
 
@@ -104,7 +102,6 @@ configure_slim() {
 configure_rofi() {
     _process "Configuring rofi"
     mkdir -p ~/.config/rofi
-    # Assuming current.rasi is in ~/dotfiles/configs/rofi/current.rasi
     [ -f "${DOTFILES_DIR}/configs/rofi/current.rasi" ] && cp "${DOTFILES_DIR}/configs/rofi/current.rasi" ~/.config/rofi/current.rasi
     _success "rofi configured"
 }
@@ -118,19 +115,28 @@ feh --bg-scale /path/to/wallpaper.jpg &
 picom &
 dunst &
 slstatus &
+pipewire &
 exec dwm
 EOL
     chmod +x ~/.xinitrc
     _success ".xinitrc configured"
 }
 
+# Add user to necessary groups
+add_user_to_groups() {
+    _process "Adding user to necessary groups"
+    sudo usermod -aG audio $USER
+    sudo usermod -aG bluetooth $USER
+    sudo usermod -aG video $USER
+    _success "User added to groups"
+}
+
 # Enable services
 enable_services() {
     _process "Enabling system services"
-    sudo systemctl enable NetworkManager
-    sudo systemctl enable bluetooth
-    sudo systemctl enable slim
-    systemctl --user enable pipewire
+    sudo ln -s /etc/sv/NetworkManager /var/service/
+    sudo ln -s /etc/sv/bluetoothd /var/service/
+    sudo ln -s /etc/sv/slim /var/service/
     _success "Services enabled"
 }
 
@@ -146,6 +152,7 @@ install() {
     configure_slim
     configure_rofi
     configure_xinitrc
+    add_user_to_groups
     enable_services
     _success "Installation and configuration complete. Reboot to test."
 }

@@ -1,5 +1,5 @@
-# Author: Eduardo Neville <eduadoneville82@gmail.com>
 #!/usr/bin/env bash
+# Author: Eduardo Neville <eduadoneville82@gmail.com>
 # Description:
 # Automatically install tools for different OS
 source $(dirname "$0")/scripts/installer.sh
@@ -20,6 +20,7 @@ case "$OS" in
     "Fedora"|"CentOS"|"Red") PACKAGE_MANAGER="dnf" ;;
     "Arch") PACKAGE_MANAGER="pacman" ;;
     "Darwin") PACKAGE_MANAGER="brew" ;;
+    "Void") PACKAGE_MANAGER="xbps" ;;  # Added support for Void Linux
     *) PACKAGE_MANAGER="unknown" ;;
 esac
 
@@ -37,27 +38,31 @@ install_docker() {
     if [[ "$PACKAGE_MANAGER" == "brew" ]]; then
         brew install --cask docker
         _success "Docker installed via Homebrew"
-        return
     elif [[ "$PACKAGE_MANAGER" == "apt" ]]; then
         _process "Setting up Docker's apt repository"
-
         sudo apt-get update
         sudo apt-get install -y ca-certificates curl
-
         sudo install -m 0755 -d /etc/apt/keyrings
         sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
         sudo chmod a+r /etc/apt/keyrings/docker.asc
-
         echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
         $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
         sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-
         sudo apt-get update
-
         _process "Installing Docker Engine"
         sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
         _success "Docker installed successfully"
+    elif [[ "$PACKAGE_MANAGER" == "dnf" ]]; then
+        sudo dnf -y install dnf-plugins-core
+        sudo dnf-3 config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+        sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+        sudo systemctl enable --now docker
+        _success "Docker installed successfully"
+    elif [[ "$PACKAGE_MANAGER" == "xbps" ]]; then  # Added support for Void Linux
+        sudo xbps-install -y docker
+        sudo ln -s /etc/sv/docker /var/service/
+        sudo usermod -aG docker ${USER}
+        _success "Docker installed and service enabled on Void Linux"
     else
         _error "Unsupported OS for Docker installation"
     fi
@@ -74,23 +79,49 @@ link_dotfiles() {
     done
 
     ln -sf "${DOTFILES_DIR}/configs/zsh-conf/.zshrc" ~/.zshrc
+
+    # Default to zsh
+    chsh -s $(which zsh)
+
     _success "Dotfiles are linked"
 }
 
 # Install a package manager
 install_package_manager() {
+    if [[ "$PACKAGE_MANAGER" == "brew" ]]; then
+        if ! command -v brew >/dev/null 2>&1; then
+            _process "Installing Homebrew"
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+            brew doctor && _success "Homebrew installed"
+        else
+            _process "Homebrew is already installed"
+        fi
+    fi
+
+    _process "Updating and upgrading system"
     case $PACKAGE_MANAGER in
         "brew")
-            _process "Installing Homebrew"
-            /bin/bash-c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-            brew doctor && _success "Homebrew installed"
+            brew update
+            brew upgrade
             ;;
         "apt")
-            _process "Updating APT"
-            sudo apt update && sudo apt upgrade -y
-            _success "APT updated"
+            sudo apt update
+            sudo apt upgrade -y
+            ;;
+        "dnf")
+            sudo dnf upgrade -y
+            ;;
+        "pacman")
+            sudo pacman -Syu --noconfirm
+            ;;
+        "xbps")  # Added support for Void Linux
+            sudo xbps-install -Su
+            ;;
+        *)
+            _error "Unsupported package manager for updating"
             ;;
     esac
+    _success "System updated and upgraded"
 }
 
 # Install packages from a file
@@ -102,9 +133,25 @@ install_packages() {
     local packages=($(cat "$file"))
 
     case $PACKAGE_MANAGER in
-        "brew") brew install "${packages[@]}" ;;
-        "apt") sudo apt install -y "${packages[@]}" ;;
-        "dnf") sudo dnf install -y "${packages[@]}" ;;
+        "brew")
+            brew install "${packages[@]}"
+            ;;
+        "apt")
+            sudo apt update
+            sudo apt install -y "${packages[@]}"
+            ;;
+        "dnf")
+            sudo dnf makecache
+            sudo dnf install -y "${packages[@]}"
+            ;;
+        "pacman")
+            sudo pacman -Sy
+            sudo pacman -S --noconfirm "${packages[@]}"
+            ;;
+        "xbps")  # Added support for Void Linux
+            sudo xbps-install -S
+            sudo xbps-install -y "${packages[@]}"
+            ;;
     esac
 
     _success "Installed packages from $file"
@@ -118,6 +165,9 @@ install_zsh_plugins() {
     git clone --recursive git@github.com:EduardoNeville/zsh-conf.git "${zsh_dir}"
     ln -fs "${zsh_dir}/.zshrc" "${HOME}/.zshrc"
     source ~/.zshrc
+
+    # Default to zsh
+    chsh -s $(which zsh)
     _success "ZSH plugins installed"
 }
 
@@ -178,64 +228,86 @@ install_wezterm() {
     _process "Installing Wezterm"
     case "$PACKAGE_MANAGER" in 
         "brew")  
-            _process "brew install"
             brew install --cask wezterm
             ;;
         "apt")
-            _process "apt install"
             curl -fsSL https://apt.fury.io/wez/gpg.key | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
             echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list
             sudo chmod 644 /usr/share/keyrings/wezterm-fury.gpg
             sudo apt update
-            sudo apt install wezterm
+            sudo apt install -y wezterm
             ;;
         "dnf")
-            _process "dnf install"
             sudo dnf copr enable wezfurlong/wezterm-nightly
-            sudo dnf install wezterm
+            sudo dnf install -y wezterm
             ;;
-        *) _process "Package Manager: $PACKAGE_MANAGER"
+        "xbps")  # Added support for Void Linux
+            sudo xbps-install -y wezterm
+            ;;
+        *)
+            _error "Unable to install Wezterm"
+            ;;
     esac
 
     if [[ "$PACKAGE_MANAGER" != "unknown" ]]; then
         _success "Wezterm successfully installed"
-    else 
-        _error "Unable to install Wezterm"
     fi
 }
 
+# Install Sioyek
 install_sioyek() {
     _process "Installing sioyek"
     case "$PACKAGE_MANAGER" in
         "brew")
-            _process "brew install"
+            # Brew installation steps (not implemented)
+            _error "Sioyek installation via brew not supported yet"
             ;;
         "apt")
-            _process "apt install"
+            # Apt installation steps (not implemented)
+            _error "Sioyek installation via apt not supported yet"
             ;;
         "dnf")
-            _process "dnf install"
-            sudo dnf install qt5-qtbase-devel qt5-qtbase-static qt5-qt3d-devel harfbuzz-devel
+            sudo dnf install -y qt5-qtbase-devel qt5-qtbase-static qt5-qt3d-devel harfbuzz-devel
             git clone --recursive https://github.com/ahrm/sioyek
             cd sioyek
             ./build_linux.sh
+            cd ..
             ;;
-        *) _process "Package Manager: $PACKAGE_MANAGER"
+        "xbps")  # Added support for Void Linux
+            sudo xbps-install -y qt5-devel harfbuzz-devel git
+            git clone --recursive https://github.com/ahrm/sioyek
+            cd sioyek
+            ./build_linux.sh
+            cd ..
+            ;;
+        *)
+            _error "Unable to install sioyek"
+            ;;
     esac
 
-    _success "Sioyek installed!"
+    if [[ "$PACKAGE_MANAGER" != "unknown" ]]; then
+        _success "Sioyek installed!"
+    fi
 }
 
+# Install Fedora Server
 install_fedora_server() {
     _process "Installing Base Fedora Server"
     bash ${HOME}/dotfiles/scripts/base_fedora_install.sh
-    _sucess "Full install - Base Fedora Server"
+    _success "Full install - Base Fedora Server"
+}
+
+# Install Void Base
+install_void_base() {
+    _process "Installing Base Fedora Server"
+    bash ${HOME}/dotfiles/scripts/base_void_install.sh
+    _success "Full install - Base Fedora Server"
 }
 
 # Installation process
 install() {
-    local options=("Package Manager" "Packages" "Links" "Zsh Plugins" "Lazy.nvim" "Neovim Plugins" "Rust" "Pyenv" "Docker" "Wezterm" "Sioyek" "Fedora Server Install")
-    local functions=(install_package_manager install_packages link_dotfiles install_zsh_plugins install_lazy_nvim install_nvim_plugins install_rust install_pyenv install_docker install_wezterm install_sioyek install_fedora_server)
+    local options=("Package Manager" "Packages" "Links" "Zsh Plugins" "Lazy.nvim" "Neovim Plugins" "Rust" "Pyenv" "Docker" "Wezterm" "Sioyek" "Fedora Server Install" "Void base Install")
+    local functions=(install_package_manager install_packages link_dotfiles install_zsh_plugins install_lazy_nvim install_nvim_plugins install_rust install_pyenv install_docker install_wezterm install_sioyek install_fedora_server install_void_base)
 
     echo "Select what to install:"
     for i in "${!options[@]}"; do
