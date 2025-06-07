@@ -274,11 +274,7 @@ install_sioyek() {
             cd ..
             ;;
         "xbps")  # Added support for Void Linux
-            sudo xbps-install -y qt5-devel harfbuzz-devel git
-            git clone --recursive https://github.com/ahrm/sioyek
-            cd sioyek
-            ./build_linux.sh
-            cd ..
+            sudo xbps-install -y sioyek
             ;;
         *)
             _error "Unable to install sioyek"
