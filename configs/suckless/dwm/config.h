@@ -128,6 +128,9 @@ static const char *roficmd[] = { "rofi", "-show", "drun", "-theme", "~/.config/r
 /* Application Launch */
 static const char *firecmd[] = {"firefox", NULL};
 
+/* Clip Menu */
+static const char *clipmenucmd[] = { "sh", "-c", "CM_LAUNCHER=rofi clipmenu -i -fn 'monospace:size=14' -nb '#241b30' -nf '#00fbfd' -sb '#E0BFB8' -sf '#241b30'", NULL };
+
 /* Volume Control */
 static const char *up_vol[]   = { "/usr/bin/pactl", "set-sink-volume", "@DEFAULT_SINK@", "+10%",   NULL };
 static const char *down_vol[] = { "/usr/bin/pactl", "set-sink-volume", "@DEFAULT_SINK@", "-10%",   NULL };
@@ -145,6 +148,9 @@ static Key keys[] = {
 
     /* Application launches */
 	{ MODKEY|ShiftMask,             XK_f,      spawn,          {.v = firecmd } },
+
+    /* Clip Menu */
+	{ MODKEY|ShiftMask,             XK_v,      spawn,          {.v = clipmenucmd } },
 
     /* ------------------------  */
     /* START SPECIAL KEY CONTROL */

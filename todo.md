@@ -1,6 +1,7 @@
--[X] bluetooth gui
--[X] audio gui
--[ ] copy
--[ ] backups
--[ ] firefox bookmarks & passwords
+- [X] bluetooth gui
+- [X] audio gui
+- [X] slock
+- [X] clipmenu
+- [ ] backups
+- [ ] firefox bookmarks & passwords
 
