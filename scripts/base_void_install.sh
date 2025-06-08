@@ -6,13 +6,6 @@ DOTFILES_DIR="${HOME}/dotfiles"
 PACKAGE_MANAGER="xbps-install"
 LOG="${HOME}/void_install.log"
 
-# Confirm Void Linux OS
-OS=$(hostnamectl | grep "Operating System" | awk -F": " '{print $2}' | awk '{print $1}')
-if [[ "$OS" != "Void" ]]; then
-    echo "This script is tailored for Void Linux. Exiting."
-    exit 1
-fi
-
 _process() { echo "$(tput setaf 6)→ $1...$(tput sgr0)"; }
 _success() { echo "$(tput setaf 2)✓ Success:$(tput sgr0) $1"; }
 _error() { echo "$(tput setaf 1)✗ Error:$(tput sgr0) $1"; }
@@ -37,9 +30,7 @@ install_packages() {
 # Install dwm from source
 install_dwm() {
     _process "Installing dwm from source"
-    git clone https://git.suckless.org/dwm ~/dwm
-    cd ~/dwm
-    [ -f "${DOTFILES_DIR}/configs/suckless/dwm-6.2/config.h" ] && cp "${DOTFILES_DIR}/configs/suckless/dwm-6.2/config.h" .
+    cd $DOTFILES_DIR/configs/suckless/dwm/
     make
     sudo make install
     cd -
@@ -49,8 +40,7 @@ install_dwm() {
 # Install slstatus from source
 install_slstatus() {
     _process "Installing slstatus from source"
-    git clone https://git.suckless.org/slstatus ~/slstatus
-    cd ~/slstatus
+    cd $DOTFILES_DIR/configs/suckless/slstatus/
     make
     sudo make install
     cd -
@@ -60,28 +50,8 @@ install_slstatus() {
 # Configure dunst
 configure_dunst() {
     _process "Configuring dunst"
-    mkdir -p ~/.config/dunst
-    cp /etc/dunst/dunstrc ~/.config/dunst/dunstrc
-    echo '[global]\n    geometry = "300x5-10+10"' >> ~/.config/dunst/dunstrc
+    cp $DOTFILES_DIR/configs/dunst ~/.config/dunst
     _success "dunst configured"
-}
-
-# Configure slstatus
-configure_slstatus() {
-    _process "Configuring slstatus"
-    cd ~/slstatus
-    cat > config.h << EOL
-static const struct arg args[] = {
-    { cpu_perc, "CPU: %s%% ", NULL },
-    { ram_perc, "RAM: %s%% ", NULL },
-    { datetime, "%s", "%Y-%m-%d %H:%M:%S" },
-};
-EOL
-    make clean
-    make
-    sudo make install
-    cd -
-    _success "slstatus configured"
 }
 
 # Configure slock (minimal, using default package)
@@ -101,24 +71,14 @@ configure_slim() {
 # Configure rofi
 configure_rofi() {
     _process "Configuring rofi"
-    mkdir -p ~/.config/rofi
-    [ -f "${DOTFILES_DIR}/configs/rofi/current.rasi" ] && cp "${DOTFILES_DIR}/configs/rofi/current.rasi" ~/.config/rofi/current.rasi
+    cp $DOTFILES_DIR/configs/rofi ~/.config/rofi
     _success "rofi configured"
 }
 
 # Configure .xinitrc
 configure_xinitrc() {
     _process "Configuring .xinitrc"
-    cat > ~/.xinitrc << EOL
-#!/bin/sh
-feh --bg-scale /path/to/wallpaper.jpg &
-picom &
-dunst &
-slstatus &
-pipewire &
-exec dwm
-EOL
-    chmod +x ~/.xinitrc
+    cp $DOTFILES_DIR/configs/.xinitrc ~/.xinitrc
     _success ".xinitrc configured"
 }
 
@@ -147,7 +107,6 @@ install() {
     install_dwm
     install_slstatus
     configure_dunst
-    configure_slstatus
     configure_slock
     configure_slim
     configure_rofi

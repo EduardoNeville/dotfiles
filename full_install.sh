@@ -1,5 +1,5 @@
-#!/usr/bin/env bash
 # Author: Eduardo Neville <eduadoneville82@gmail.com>
+#!/usr/bin/env bash
 # Description:
 # Automatically install tools for different OS
 source $(dirname "$0")/scripts/installer.sh
@@ -12,7 +12,7 @@ LOG="${HOME}/Library/Logs/dotfiles.log"
 if command -v hostnamectl >/dev/null 2>&1; then
     OS=$(hostnamectl | grep "Operating System" | awk -F": " '{print $2}' | awk '{print $1}')
 else
-    OS=$(uname)
+    OS=Void
 fi
 
 case "$OS" in
@@ -160,9 +160,7 @@ install_packages() {
 # Install Zsh plugins
 install_zsh_plugins() {
     _process "Installing ZSH plugins"
-    local zsh_dir="${DOTFILES_DIR}/configs/.config/zsh-conf"
-    rm -rf "${zsh_dir}"
-    git clone --recursive git@github.com:EduardoNeville/zsh-conf.git "${zsh_dir}"
+    local zsh_dir="${DOTFILES_DIR}/configs/zsh-conf"
     ln -fs "${zsh_dir}/.zshrc" "${HOME}/.zshrc"
     source ~/.zshrc
 
