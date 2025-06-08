@@ -50,7 +50,7 @@ install_slstatus() {
 # Configure dunst
 configure_dunst() {
     _process "Configuring dunst"
-    cp $DOTFILES_DIR/configs/dunst ~/.config/dunst
+    ln -s $DOTFILES_DIR/configs/dunst ~/.config/dunst
     _success "dunst configured"
 }
 
@@ -98,6 +98,28 @@ enable_services() {
     sudo ln -s /etc/sv/bluetoothd /var/service/
     sudo ln -s /etc/sv/slim /var/service/
     _success "Services enabled"
+}
+
+# Audio Pipewire Configuration Installing
+install_audio() {
+    sudo xbps-install -S pipewire wireplumber alsa-pipewire libspa-bluetooth helvum pavucontrol rtkit
+
+    # Install dbus
+    sudo xbps-install -S dbus
+    sudo ln -s /etc/sv/dbus /var/service/
+    sudo sv start dbus
+
+    # Install RTKit
+    sudo xbps-install -S rtkit
+    sudo ln -s /etc/sv/rtkit /var/service/
+    sudo sv start rtkit
+    
+    eval $(dbus-launch --sh-syntax)
+
+    # Copy configure 
+    mkdir -p ~/.config/pipewire
+    cp -r /usr/share/pipewire/* ~/.config/pipewire/
+
 }
 
 # Main installation process
