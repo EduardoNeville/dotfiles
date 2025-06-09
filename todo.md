@@ -2,6 +2,6 @@
 - [X] audio gui
 - [X] slock
 - [X] clipmenu
-- [ ] backups
-- [ ] firefox bookmarks & passwords
+- [X] backups
+- [X] firefox bookmarks & passwords
 
