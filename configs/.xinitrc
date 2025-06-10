@@ -20,7 +20,7 @@ DUNST_DIR=/home/eduardoneville/dotfiles/configs/dunst/
 clipmenud &
 
 # Background
-feh --bg-scale /home/eduardoneville/dotfiles/assets/hands_of_god.png &
+feh --bg-scale /home/eduardoneville/dotfiles/assets/plain_void_wp.png &
 
 # Keyboard
 setxkbmap ch fr
