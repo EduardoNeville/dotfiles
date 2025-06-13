@@ -11,16 +11,15 @@ wireplumber &
 
 # Notification script
 dunst &
-DUNST_DIR=/home/eduardoneville/dotfiles/configs/dunst/
-./$DUNST_DIR/dunst_audio &
-./$DUNST_DIR/dunst_battery &
-./$DUNST_DIR/dunst_bluetooth &
+dunst_audio &
+dunst_battery &
+dunst_bluetooth &
 
 # ClipMenu
 clipmenud &
 
 # Background
-feh --bg-scale /home/eduardoneville/dotfiles/assets/plain_void_wp.png &
+feh --bg-scale /home/eduardoneville/dotfiles/assets/plain_ascii_void.png &
 
 # Keyboard
 setxkbmap ch fr
