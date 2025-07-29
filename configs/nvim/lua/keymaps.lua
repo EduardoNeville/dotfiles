@@ -23,17 +23,6 @@ set_api_keymaps('v', '<M-k>', ":'<,'>m '<-2<CR>gv=gv", { noremap = true, silent 
 set_api_keymaps('n', '<M-j>', ":m .+1<CR>==", { noremap = true, silent = true })
 set_api_keymaps('v', '<M-j>', ":'>m '>+1<CR>gv=gv", { noremap = true, silent = true })
 
---- Insert closing sign after {, (, [, " --------
----
---- Map { to insert {} and move the cursor inside the braces in insert mode
-set_api_keymaps('i', '{', '{}<Esc>ha', { noremap = true, silent = true })
---- Map ( to insert () and move the cursor inside the parentheses in insert mode
-set_api_keymaps('i', '(', '()<Esc>ha', { noremap = true, silent = true })
---- Map [ to insert [] and move the cursor inside the brackets in insert mode
-set_api_keymaps('i', '[', '[]<Esc>ha', { noremap = true, silent = true })
---- Map " to insert "" and move the cursor inside the brackets in insert mode
-set_api_keymaps('i', '"', '""<Esc>ha', { noremap = true, silent = true })
-
 --- Replace all instances of a highlighted word in block ----------
 set_api_keymaps('v', '<leader>r', [["hy:%s/<C-r>h//gc<left><left><left>]], { noremap = true })
 

@@ -42,22 +42,28 @@ static const char col_sy_pink[] = "#ff00f6";
 static const char col_sy_purple[] = "#aa54f9";
 static const char col_sy_blue[] = "#55a8fb";
 static const char col_sy_celeste[] = "#00fbfd";
-static const char col_sy_black[] = "#241b30";
+
+static const char col_void_black[] = "#1c1f26";
+static const char col_void_gray[] = "#505151";
+static const char col_void_green[] = "#4EE54F";
+
+
+static const char col_primary[] = col_void_gray;
+static const char col_secondary[] = col_void_black;
+static const char col_accent[] = col_void_green;
 
 
 static const char *colors[][3] = {
     /*               		 fg               bg              border          */
-    [SchemeNorm] 		 = { col_sy_blue,  col_sy_black,   col_sy_black    },
-    [SchemeSel] 		 = { col_sy_black,    col_sy_blue, col_sy_blue  },
-	//[SchemeTabActive]  	 = { col_sy_black,    col_sy_blue, col_sy_black    },
-	//[SchemeTabInactive]  = { col_sy_blue,  col_sy_black,   col_sy_black    },
-	[SchemeStatus]  	 = { col_sy_blue,  col_sy_black,   col_sy_black    }, // Statusbar right {text,background,not used but cannot be empty}
-	[SchemeTagsSel]      = { col_sy_black,    col_sy_blue, col_sy_black    }, // Tagbar left selected {text,background,not used but cannot be empty}
-	[SchemeTagsNorm]     = { col_sy_blue,  col_sy_black,   col_sy_black    }, // Tagbar left unselected {text,background,not used but cannot be empty}
-	[SchemeInfoSel]      = { col_sy_black,    col_sy_blue, col_sy_black    }, // infobar middle  selected {text,background,not used but cannot be empty}
-	[SchemeInfoNorm]     = { col_sy_blue,  col_sy_black,   col_sy_black    }, // infobar middle  unselected {text,background,not used but cannot be empty}
-
-
+    [SchemeNorm] 		 = { col_primary,  col_secondary,   col_accent    },
+    [SchemeSel] 		 = { col_secondary,    col_primary, col_secondary  },
+	//[SchemeTabActive]  	 = { col_secondary,    col_primary, col_secondary    },
+	//[SchemeTabInactive]  = { col_primary,  col_secondary,   col_secondary    },
+	[SchemeStatus]  	 = { col_primary,  col_secondary,   col_secondary    }, // Statusbar right {text,background,not used but cannot be empty}
+	[SchemeTagsSel]      = { col_accent,    col_primary, col_secondary    }, // Tagbar left selected {text,background,not used but cannot be empty}
+	[SchemeTagsNorm]     = { col_primary,  col_secondary,   col_secondary    }, // Tagbar left unselected {text,background,not used but cannot be empty}
+	[SchemeInfoSel]      = { col_accent,    col_primary, col_secondary    }, // infobar middle  selected {text,background,not used but cannot be empty}
+	[SchemeInfoNorm]     = { col_primary,  col_secondary,   col_secondary    }, // infobar middle  unselected {text,background,not used but cannot be empty}
 };
 
 /* tagging */
@@ -121,7 +127,7 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 
-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_sy_black, "-nf", col_sy_celeste, "-sb", col_rose_gold, "-sf", col_sy_black, NULL };
+static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_primary, "-nf", col_secondary, "-sb", col_rose_gold, "-sf", col_accent, NULL };
 static const char *termcmd[]  = { "wezterm", NULL };
 static const char *roficmd[] = { "rofi", "-show", "drun", "-theme", "~/.config/rofi/current.rasi"};
 
@@ -130,11 +136,6 @@ static const char *firecmd[] = {"firefox", NULL};
 
 /* Clip Menu */
 static const char *clipmenucmd[] = { "sh", "-c", "CM_LAUNCHER=rofi clipmenu -i -fn 'monospace:size=14' -nb '#241b30' -nf '#00fbfd' -sb '#E0BFB8' -sf '#241b30'", NULL };
-
-/* Volume Control */
-static const char *up_vol[]   = { "/usr/bin/pactl", "set-sink-volume", "@DEFAULT_SINK@", "+10%",   NULL };
-static const char *down_vol[] = { "/usr/bin/pactl", "set-sink-volume", "@DEFAULT_SINK@", "-10%",   NULL };
-static const char *mute_vol[] = { "/usr/bin/pactl", "set-sink-mute",   "@DEFAULT_SINK@", "toggle", NULL };
 
 /* Light Control */
 static const char *brighter[] = { "brightnessctl", "set", "10%+", NULL };
@@ -157,9 +158,9 @@ static Key keys[] = {
     /* ------------------------  */
 
     // Volume
-    { 0,                       XF86XK_AudioLowerVolume, spawn, {.v = down_vol } },
-	{ 0,                       XF86XK_AudioMute, spawn,        {.v = mute_vol } },
-	{ 0,                       XF86XK_AudioRaiseVolume, spawn, {.v = up_vol   } },
+	{ 0,                       XF86XK_AudioMute,        spawn, SHCMD("~/dotfiles/configs/dunst/dunst_audio toggle")},
+    { 0,                       XF86XK_AudioLowerVolume, spawn, SHCMD("~/dotfiles/configs/dunst/dunst_audio -5%")},
+	{ 0,                       XF86XK_AudioRaiseVolume, spawn, SHCMD("~/dotfiles/configs/dunst/dunst_audio +5%")},
 
     // Light
     { 0,                XF86XK_MonBrightnessDown, spawn,       {.v = dimmer } },

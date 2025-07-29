@@ -1,36 +1,28 @@
--- lsp-config.lua
+local lspconfig       = require("lspconfig")
+local mason_lspconfig = require("mason-lspconfig")
 
--- Learn the keybindings, see :help lsp-zero-keybindings
--- Learn to configure LSP servers, see :help lsp-zero-api-showcase
-local lsp = require('lsp-zero')
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-lsp.preset('recommended')
+local servers = {
+  lua_ls        = {},
+  rust_analyzer = {},
+  clangd        = {},
+  eslint        = {},
+  pyright       = {},
+  ruff          = {},
+}
 
--- (Optional) Configure lua language server for neovim
-lsp.nvim_workspace()
+-- install all of them
+mason_lspconfig.setup {
+  ensure_installed = vim.tbl_keys(servers),
 
--- using navbuddy for navigation
-local navbuddy = require("nvim-navbuddy")
-
--- Attach navbuddy to LSP
-lsp.on_attach(
-    function(client, bufnr)
-        navbuddy.attach(client, bufnr)
-    end
-)
-
-lsp.setup()
-
-local rt = require("rust-tools")
-
-rt.setup({
-  server = {
-    on_attach = function(_, bufnr)
-      -- Hover actions
-      vim.keymap.set("n", "<C-space>", rt.hover_actions.hover_actions, { buffer = bufnr })
-      -- Code action groups
-      vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
-      navbuddy.attach(_, bufnr)
+  -- NEW api (v2.0+)
+  handlers = {
+    function(server_name)         -- default handler called for each server
+      lspconfig[server_name].setup {
+        capabilities = capabilities,
+        settings     = servers[server_name],
+      }
     end,
   },
-})
+}

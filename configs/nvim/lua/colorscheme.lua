@@ -23,7 +23,7 @@ sw.setup {
 }
 
 --- Setup for blue
-vim.cmd.colorscheme('synthweave')
+vim.cmd.colorscheme('synthweave-transparent')
 vim.cmd.highlight('Comment guifg=#7ceb9a')
 vim.cmd.highlight('LineNr guifg=#7ceb9a')
 

@@ -18,9 +18,10 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
+vim.g.lazy_rocks = { enabled = false }
+
 require("lazy").setup("plugins")
-require('colorscheme')
 require('base')
 require('keymaps')
-require('plugins')
-require('lsp-config.language-server')
+require('colorscheme')
+

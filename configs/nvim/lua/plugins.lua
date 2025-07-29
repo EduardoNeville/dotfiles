@@ -5,42 +5,86 @@ return {
     ---------------------------------------------------------------
     ------- LSP configs -------------------------------------------
     ---------------------------------------------------------------
+    --{
+    --    "VonHeikemen/lsp-zero.nvim",
+    --    branch = 'v1.x',
+    --    lazy = false,
+    --    dependencies = {
+    --        -- LSP Support
+    --        { 'neovim/nvim-lspconfig' },                        -- Required
+    --        { 'williamboman/mason.nvim',           lazy = true }, -- Optional
+    --        { 'williamboman/mason-lspconfig.nvim', lazy = true }, -- Optional
+
+    --        -- Autocompletion
+    --        { 'hrsh7th/nvim-cmp',                  lazy = false }, -- Required
+    --        { 'hrsh7th/cmp-nvim-lsp',              lazy = false }, -- Required
+    --        { 'hrsh7th/cmp-buffer',                lazy = true }, -- Optional
+    --        { 'hrsh7th/cmp-path',                  lazy = true }, -- Optional
+    --        { 'saadparwaiz1/cmp_luasnip',          lazy = true }, -- Optional
+    --        { 'hrsh7th/cmp-nvim-lua',              lazy = true }, -- Optional
+
+    --        -- Snippets
+    --        { 'L3MON4D3/LuaSnip',                  lazy = false }, -- Required
+    --        { 'rafamadriz/friendly-snippets',      lazy = true }, -- Optional
+    --    }
+    --},
+
+    ---------------------------------------------------------------
+    -- LSP + Mason -----------------------------------------------
+    ---------------------------------------------------------------
     {
-        "VonHeikemen/lsp-zero.nvim",
-        branch = 'v1.x',
-        lazy = false,
-        dependencies = {
-            -- LSP Support
-            { 'neovim/nvim-lspconfig' },                        -- Required
-            { 'williamboman/mason.nvim',           lazy = true }, -- Optional
-            { 'williamboman/mason-lspconfig.nvim', lazy = true }, -- Optional
-
-            -- Autocompletion
-            { 'hrsh7th/nvim-cmp',                  lazy = false }, -- Required
-            { 'hrsh7th/cmp-nvim-lsp',              lazy = false }, -- Required
-            { 'hrsh7th/cmp-buffer',                lazy = true }, -- Optional
-            { 'hrsh7th/cmp-path',                  lazy = true }, -- Optional
-            { 'saadparwaiz1/cmp_luasnip',          lazy = true }, -- Optional
-            { 'hrsh7th/cmp-nvim-lua',              lazy = true }, -- Optional
-
-            -- Snippets
-            { 'L3MON4D3/LuaSnip',                  lazy = false }, -- Required
-            { 'rafamadriz/friendly-snippets',      lazy = true }, -- Optional
-        }
+      "williamboman/mason.nvim",
+      build = ":MasonUpdate",      -- optional: auto-update registries
+      config = true,               -- use default config
     },
 
     {
-        "williamboman/mason.nvim",
-        lazy = true,
+      "williamboman/mason-lspconfig.nvim",
+      dependencies = "mason.nvim", -- make sure Mason is loaded first
+      config = true,               -- use default config
     },
 
-    ---- Rust tools -----------------------------------------------
-    { 'simrat39/rust-tools.nvim' },
+    {
+      "neovim/nvim-lspconfig",
+      dependencies = {
+        "mason.nvim",
+        "mason-lspconfig.nvim",
 
-    ---- Database management (Dadbod ecosystem) -------------------
-    { 'tpope/vim-dadbod' },
-    { 'kristijanhusak/vim-dadbod-ui' },
-    { 'kristijanhusak/vim-dadbod-completion' },
+        -- optional UI helpers
+        "SmiteshP/nvim-navic",
+        "SmiteshP/nvim-navbuddy",
+        "MunifTanjim/nui.nvim",
+      },
+      config = function()
+        require("lsp-config.language-server")  -- <-- now mason-lspconfig IS loaded
+      end,
+    },
+
+    ---------------------------------------------------------------
+    -- Completion stack -------------------------------------------
+    ---------------------------------------------------------------
+    { "L3MON4D3/LuaSnip", build = "make install_jsregexp" },
+    { "rafamadriz/friendly-snippets", lazy = true },
+
+    {
+      "hrsh7th/nvim-cmp",
+      dependencies = {
+        "hrsh7th/cmp-nvim-lsp",
+        "hrsh7th/cmp-path",
+        "hrsh7th/cmp-buffer",
+        "saadparwaiz1/cmp_luasnip",
+        "L3MON4D3/LuaSnip",
+        "windwp/nvim-autopairs",
+      },
+      config = function()
+        require("lsp-config.cmp-setup")               -- loads the plugin itself
+        require("cmp_nvim_lsp")      -- capability helper
+      end,
+    },
+
+    { "hrsh7th/cmp-cmdline", lazy = true },     -- optional
+    { "windwp/nvim-autopairs",  opts = {}, event = "InsertEnter" },
+
 
     ----- Debug --------------------------------------------------
     { "mfussenegger/nvim-dap" },
@@ -165,7 +209,7 @@ return {
     },
 
     {
-        "SmiteshP/nvim-navbuddy",
+        "hasansujon786/nvim-navbuddy",
         lazy = true,
         dependencies = {
             "neovim/nvim-lspconfig",
