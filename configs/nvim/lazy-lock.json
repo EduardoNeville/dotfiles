@@ -1,6 +1,5 @@
 {
   "ChatGPT.nvim": { "branch": "main", "commit": "5b6d296eefc75331e2ff9f0adcffbd7d27862dd6" },
-  "Comment.nvim": { "branch": "master", "commit": "e30b7f2008e52442154b66f7c519bfd2f1e32acb" },
   "LuaSnip": { "branch": "master", "commit": "3d5bced1b9ae69fa3f9b1942e28af5dbc537f946" },
   "barbecue": { "branch": "main", "commit": "cd7e7da622d68136e13721865b4d919efd6325ed" },
   "cmp-buffer": { "branch": "main", "commit": "b74fab3656eea9de20a9b8116afa3cfc4ec09657" },
@@ -27,7 +26,7 @@
   "nvim-dap": { "branch": "master", "commit": "5dd4d50f2e6a2eaf9e57fad023d294ef371bda35" },
   "nvim-dap-ui": { "branch": "master", "commit": "cf91d5e2d07c72903d052f5207511bf7ecdb7122" },
   "nvim-lspconfig": { "branch": "master", "commit": "177be29e7b9c084c9200ee4033eb66e04ac536ec" },
-  "nvim-navbuddy": { "branch": "master", "commit": "18802efb91bcfafc54aed513ef97da1dfeae4059" },
+  "nvim-navbuddy": { "branch": "master", "commit": "a34786c77a528519f6b8a142db7609f6e387842d" },
   "nvim-navic": { "branch": "master", "commit": "f887d794a0f4594882814d7780980a949200a238" },
   "nvim-notify": { "branch": "master", "commit": "397c7c1184745fca649e5104de659e6392ef5a4d" },
   "nvim-surround": { "branch": "main", "commit": "7a7a78a52219a3312c1fcabf880cea07a7956a5f" },

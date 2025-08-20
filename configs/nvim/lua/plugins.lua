@@ -52,7 +52,14 @@ return {
 
         -- optional UI helpers
         "SmiteshP/nvim-navic",
-        "SmiteshP/nvim-navbuddy",
+        {
+            "SmiteshP/nvim-navbuddy",
+            dependencies = {
+                "SmiteshP/nvim-navic",
+                "MunifTanjim/nui.nvim"
+            },
+            opts = { lsp = { auto_attach = true } }
+        },
         "MunifTanjim/nui.nvim",
       },
       config = function()
@@ -206,18 +213,6 @@ return {
       -- dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if you prefer nvim-web-devicons
       -- Lazy loading is not recommended because it is very tricky to make it work correctly in all situations.
       lazy = false,
-    },
-
-    {
-        "hasansujon786/nvim-navbuddy",
-        lazy = true,
-        dependencies = {
-            "neovim/nvim-lspconfig",
-            "SmiteshP/nvim-navic",
-            "MunifTanjim/nui.nvim",
-            "numToStr/Comment.nvim",        -- Optional
-            "nvim-telescope/telescope.nvim" -- Optional
-        }
     },
 
     { "xiyaowong/transparent.nvim" },

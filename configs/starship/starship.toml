@@ -149,7 +149,7 @@ symbol = " "
 style = "fg:#cb3837"
 version_format = "$raw"
 format = '([\[$symbol ($version)\]]($style))'
-disabled = false
+disabled = true
 
 [php]
 symbol = ''
@@ -160,9 +160,10 @@ disabled = false
 
 [python]
 symbol = ''
-pyenv_version_name = true
 style = "fg:#ffdf76"
+version_format = "$raw"
 format = '([\[$symbol ($version)\]]($style))'
+detect_files = ['pyproject.toml']
 disabled = false
 
 [rust]

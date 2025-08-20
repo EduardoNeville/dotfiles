@@ -1,5 +1,6 @@
 local lspconfig       = require("lspconfig")
 local mason_lspconfig = require("mason-lspconfig")
+local navbuddy = require("nvim-navbuddy")
 
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
@@ -22,6 +23,9 @@ mason_lspconfig.setup {
       lspconfig[server_name].setup {
         capabilities = capabilities,
         settings     = servers[server_name],
+        on_attach    = function (client, bufnr)
+            navbuddy.attach(client, bufnr)
+        end
       }
     end,
   },
