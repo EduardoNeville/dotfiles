@@ -169,7 +169,8 @@ disabled = false
 [rust]
 symbol = ""
 style = "fg:#9e6a4b"
-format = '([\[$symbol ($numver)\]]($style))'
+version_format = "$raw"
+format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [scala]
