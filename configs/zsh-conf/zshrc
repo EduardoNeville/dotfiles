@@ -56,6 +56,7 @@ source $ZSH/plugins/zsh-fzf-history-search/zsh-fzf-history-search.zsh
 
 ### ----- ChatGPT config ------------------------------------------# ChatGPT OPENAI_API_KEY
 export OPENAI_API_KEY="$(cat $HOME/OPENAI_API_KEY.txt)"
+export ANTHROPIC_API_KEY="$(cat $HOME/ANTHROPIC_API_KEY.txt)"
 
 ### ----- fzf-tab config ------------------------------------------
 # disable sort when completing `git checkout`
@@ -133,12 +134,12 @@ alias .5="cd ../../../../.."
 alias .6="cd ../../../../../.."
 
 # --- ls shortcuts -------------------------------
-alias ls0="eza --icons --tree --level=1 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
-alias lse="eza  --icons --tree --level=2 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
-alias ls3="eza --icons --tree --level=3 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
-alias ls4="eza --icons --tree --level=4 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
-alias lsn="eza --icons --tree --level=2 --sort='name' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
-alias lss="dust -d 2 -z 5MB -briC"
+alias ls0="eza --icons --tree --level=1 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv'"
+alias lse="eza --icons --tree --level=2 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv'"
+alias ls3="eza --icons --tree --level=3 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv'"
+alias ls4="eza --icons --tree --level=4 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv'"
+alias lsn="eza --icons --tree --level=2 --sort='name' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv'"
+alias lss="dust -d 2 -z 5MB -brC"
 
 alias lshelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%%
 ls COMMANDS
@@ -149,20 +150,9 @@ ls4 -> eza all files in a tree of depth 4 sorted by size \n'"
 
 export EZA_COLORS="*csv=32:*.md=38;5;141"
 
-# --- fzf shortcuts -------------------------------
-fp_func() {
-    file=$(fzf --preview="bat --style=numbers --color=always {}")
-    echo "$file"
-    nvim "$file"
-}
-alias fp='fp_func'
-#'fd --type file --hidden --exclude .git | fzf-tmux -p 80%,80%  --reverse --preview "bat --style=numbers --color=always {}" | xargs nvim'
-alias fcd='z $(fd --type d --hidden --exclude .git | fzf --preview="eza --icons --tree --level=1 --reverse -a {}")'
-alias fzfhelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%%
-fzf COMMANDS
-%%%%%%%%%%%%%%%%%%%%%%%%%% \n
-fp -> fzf files with bat and open in nvim \n
-fcd -> cd from current dir \n"
+# --- tv shortcuts -------------------------------
+alias fp='file=$(tv); [ -n "$file" ] && echo "$file"; nvim "$file"'
+alias fcd='dir=$(tv dirs); [ -n "$dir" ] && echo "$dir"; z "$dir" || :'
 
 # --- Tmux shortcuts -------------------------------
 alias tmux="TERM=xterm-256color tmux"
@@ -178,7 +168,7 @@ alias gl='git log'
 alias gst='git status'
 alias gss='git stash'
 alias gco='git checkout'
-alias lg='lazygit'
+alias gt='gitui'
 alias ghelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%%
 github COMMANDS
 %%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -192,7 +182,7 @@ gl -> git log \n
 gst -> git status \n
 gss -> git stash \n
 gco -> git checkout\n
-lg -> lazygit\n'"
+gt -> git tui\n'"
 
 # --- Docker ----------------------------------
 alias ld='lazydocker'
@@ -215,3 +205,20 @@ autoload -U compinit; compinit -i
 export STARSHIP_CONFIG=~/.config/starship/starship.toml
 export STARSHIP_CACHE=~/.starship/cache
 eval "$(starship init zsh)"
+
+export WASMTIME_HOME="$HOME/.wasmtime"
+
+# AUDIO
+export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+
+# ClipMenu
+export CM_LAUNCHER=rofi
+
+export PATH="$WASMTIME_HOME/bin:$PATH"
+
+
+export PATH=$PATH:/opt/texlive/2025/bin/x86_64-linux
+export PATH="/home/eduardoneville/.savvy/bin:$PATH"
+eval "$(savvy init zsh)"
+export PATH=~/.npm-global/bin:$PATH
+export PATH="$HOME/.local/bin:$PATH"
