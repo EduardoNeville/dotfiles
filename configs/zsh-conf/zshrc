@@ -54,9 +54,10 @@ source $ZSH/plugins/fast-syntax-highlighting/F-Sy-H.plugin.zsh
 source $ZSH/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $ZSH/plugins/zsh-fzf-history-search/zsh-fzf-history-search.zsh
 
-### ----- ChatGPT config ------------------------------------------# ChatGPT OPENAI_API_KEY
+### ---- LLM config ------------------------------------------
 export OPENAI_API_KEY="$(cat $HOME/OPENAI_API_KEY.txt)"
 export ANTHROPIC_API_KEY="$(cat $HOME/ANTHROPIC_API_KEY.txt)"
+export GROK_API_KEY="$(cat $HOME/GROK_API_KEY.txt)"
 
 ### ----- fzf-tab config ------------------------------------------
 # disable sort when completing `git checkout`
@@ -193,12 +194,6 @@ eval "$(zoxide init zsh)"
 # rust export
 export PATH="$HOME/.cargo/bin:$PATH"
 
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-if command -v pyenv 1>/dev/null 2>&1; then
-    eval "$(pyenv init -)"
-fi
-
 autoload -U compinit; compinit -i
 
 # Starship 
@@ -206,7 +201,8 @@ export STARSHIP_CONFIG=~/.config/starship/starship.toml
 export STARSHIP_CACHE=~/.starship/cache
 eval "$(starship init zsh)"
 
-export WASMTIME_HOME="$HOME/.wasmtime"
+# Python local environment check
+[[ -f .venv/bin/activate ]] && source .venv/bin/activate && [[ -n "$VIRTUAL_ENV" ]] || true
 
 # AUDIO
 export XDG_RUNTIME_DIR="/run/user/$(id -u)"
@@ -214,11 +210,21 @@ export XDG_RUNTIME_DIR="/run/user/$(id -u)"
 # ClipMenu
 export CM_LAUNCHER=rofi
 
+# WASM
+export WASMTIME_HOME="$HOME/.wasmtime"
 export PATH="$WASMTIME_HOME/bin:$PATH"
 
-
 export PATH=$PATH:/opt/texlive/2025/bin/x86_64-linux
-export PATH="/home/eduardoneville/.savvy/bin:$PATH"
-eval "$(savvy init zsh)"
 export PATH=~/.npm-global/bin:$PATH
 export PATH="$HOME/.local/bin:$PATH"
+
+# bun completions
+[ -s "/home/eduardoneville/.bun/_bun" ] && source "/home/eduardoneville/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

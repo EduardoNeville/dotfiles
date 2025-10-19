@@ -255,6 +255,10 @@ config.keys = {
     -- eg.
     -- | 1 | 2 | 3 | => | 3 | 1 | 2 |
     { key = 'b', mods = 'CTRL|SHIFT', action = act.RotatePanes 'Clockwise' },
+
+
+    -- Claude integration
+    { key = 'c', mods = 'CTRL|SHIFT', action = wezterm.action{SendString="\x1b\r"}},
 }
 
 return config
