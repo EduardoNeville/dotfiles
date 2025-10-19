@@ -1,8 +1,8 @@
 vim
 neovim
 openssh
-gcc 
-git 
+gcc
+git
 cmake
 tree-sitter
 fzf
@@ -14,3 +14,12 @@ npm
 nnn
 pandoc
 texlive
+ntfs-3g
+exfat-utils
+udisks2
+udiskie
+gvfs
+gvfs-mtp
+gvfs-afc
+gvfs-gphoto2
+usbmuxd

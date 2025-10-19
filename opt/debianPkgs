@@ -1,0 +1,330 @@
+# Core System & Development
+build-essential
+gcc
+g++
+gdb
+make
+cmake
+ninja-build
+meson
+pkg-config
+autoconf
+automake
+libtool
+git
+git-lfs
+curl
+wget
+rsync
+ca-certificates
+
+# Shells & Terminal Tools
+zsh
+zsh-syntax-highlighting
+zsh-autosuggestions
+bash-completion
+tmux
+screen
+
+# Text Editors
+vim
+neovim
+tree-sitter-cli
+
+# X11 & Display Server
+xorg
+xinit
+xserver-xorg-core
+xserver-xorg-input-all
+xserver-xorg-video-all
+x11-xserver-utils
+x11-utils
+x11-apps
+xauth
+xclip
+xsel
+xdotool
+xbindkeys
+
+# Window Manager Dependencies (for dwm/i3/sway)
+libx11-dev
+libxinerama-dev
+libxft-dev
+libxrandr-dev
+libimlib2-dev
+libxext-dev
+
+# i3 Window Manager
+i3-wm
+i3status
+i3lock
+i3blocks
+
+# Sway (Wayland)
+sway
+swaylock
+swayidle
+swaybg
+wl-clipboard
+grim
+slurp
+
+# Status Bars
+waybar
+
+# Compositor & Effects
+picom
+
+# Application Launchers
+rofi
+dmenu
+
+# Notifications
+dunst
+libnotify-bin
+
+# File Managers
+thunar
+thunar-archive-plugin
+ranger
+nnn
+mc
+
+# Terminal Emulators
+alacritty
+kitty
+rxvt-unicode
+
+# Audio
+pipewire
+wireplumber
+pipewire-audio-client-libraries
+pipewire-pulse
+pipewire-alsa
+pavucontrol
+alsa-utils
+bluetooth
+bluez
+bluez-tools
+blueman
+
+# Networking
+network-manager
+network-manager-gnome
+network-manager-openvpn
+openvpn
+wireguard
+wireguard-tools
+nmap
+dnsutils
+iw
+wireless-tools
+wpasupplicant
+iproute2
+net-tools
+traceroute
+tcpdump
+ethtool
+
+# Web Browsers
+firefox-esr
+chromium
+
+# Communication
+signal-desktop
+telegram-desktop
+
+# Multimedia
+ffmpeg
+vlc
+mpv
+obs-studio
+v4l-utils
+
+# Image Viewers & Editors
+feh
+sxiv
+imagemagick
+gimp
+inkscape
+
+# Screenshots
+flameshot
+scrot
+maim
+
+# Document Viewers
+zathura
+zathura-pdf-mupdf
+mupdf
+mupdf-tools
+
+# Office
+libreoffice
+libreoffice-gtk3
+
+# PDF & LaTeX
+texlive
+texlive-latex-extra
+texlive-fonts-recommended
+texlive-fonts-extra
+texlive-xetex
+pandoc
+
+# File Systems & Storage
+btrfs-progs
+e2fsprogs
+xfsprogs
+dosfstools
+ntfs-3g
+exfat-fuse
+exfatprogs
+f2fs-tools
+gparted
+parted
+lvm2
+cryptsetup
+cryptsetup-initramfs
+udisks2
+udiskie
+
+# Media Device Support (MTP, iOS, Cameras)
+gvfs
+gvfs-backends
+gvfs-fuse
+libmtp-runtime
+usbmuxd
+
+# Compression & Archives
+zip
+unzip
+p7zip-full
+rar
+unrar
+tar
+gzip
+bzip2
+xz-utils
+
+# System Monitoring
+htop
+btop
+iotop
+sysstat
+lm-sensors
+smartmontools
+neofetch
+
+# Power Management
+tlp
+tlp-rdw
+powertop
+
+# Hardware Control
+brightnessctl
+acpi
+acpid
+
+# Fonts
+fonts-dejavu
+fonts-dejavu-core
+fonts-liberation
+fonts-liberation2
+fonts-noto
+fonts-noto-color-emoji
+fonts-roboto
+fonts-font-awesome
+fonts-hack
+fonts-firacode
+fonts-inconsolata
+fonts-ubuntu
+
+# Programming Languages
+python3
+python3-pip
+python3-venv
+python3-dev
+nodejs
+npm
+default-jdk
+openjdk-17-jdk
+golang
+rustc
+cargo
+
+# Version Control & Tools
+subversion
+mercurial
+tig
+
+# Container & Virtualization
+docker.io
+docker-compose
+qemu-system
+qemu-utils
+libvirt-daemon-system
+libvirt-clients
+virt-manager
+bridge-utils
+
+# Security & Encryption
+gnupg
+gnupg2
+gpg
+pass
+keepassxc
+openssh-client
+openssh-server
+openssl
+
+# Development Libraries
+libssl-dev
+libreadline-dev
+libsqlite3-dev
+libncurses-dev
+libffi-dev
+libbz2-dev
+liblzma-dev
+zlib1g-dev
+libxml2-dev
+libxmlsec1-dev
+
+# Graphics Libraries
+mesa-utils
+libgl1-mesa-dri
+libglx-mesa0
+libglu1-mesa
+vulkan-tools
+mesa-vulkan-drivers
+libvulkan1
+
+# GTK & Qt
+libgtk-3-0
+libgtk-4-1
+libqt5core5a
+libqt5gui5
+libqt5widgets5
+qt5-qmake
+qtbase5-dev
+
+# Clipboard & Utilities
+clipit
+xsel
+
+# Color Temperature
+redshift
+redshift-gtk
+
+# Misc Utilities
+tree
+fzf
+ripgrep
+fd-find
+bat
+trash-cli
+ncdu
+ag
+jq
+yq
+httpie
+stow
