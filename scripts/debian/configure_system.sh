@@ -51,7 +51,7 @@ link_dotfiles() {
 link_zsh_config() {
     _process "Linking ZSH configuration"
 
-    local zshrc="${DOTFILES_DIR}/configs/zsh-conf/.zshrc"
+    local zshrc="${DOTFILES_DIR}/configs/zsh-conf/zshrc"
 
     if [ -f "$zshrc" ]; then
         # Backup existing .zshrc

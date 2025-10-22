@@ -23,145 +23,24 @@ zsh
 zsh-syntax-highlighting
 zsh-autosuggestions
 bash-completion
-tmux
-screen
 
 # Text Editors
 vim
 neovim
 tree-sitter-cli
 
-# X11 & Display Server
-xorg
-xinit
-xserver-xorg-core
-xserver-xorg-input-all
-xserver-xorg-video-all
-x11-xserver-utils
-x11-utils
-x11-apps
-xauth
-xclip
-xsel
-xdotool
-xbindkeys
-
-# Window Manager Dependencies (for dwm/i3/sway)
-libx11-dev
-libxinerama-dev
-libxft-dev
-libxrandr-dev
-libimlib2-dev
-libxext-dev
-
-# i3 Window Manager
-i3-wm
-i3status
-i3lock
-i3blocks
-
-# Sway (Wayland)
-sway
-swaylock
-swayidle
-swaybg
-wl-clipboard
-grim
-slurp
-
-# Status Bars
-waybar
-
-# Compositor & Effects
-picom
-
-# Application Launchers
-rofi
-dmenu
-
-# Notifications
-dunst
-libnotify-bin
-
-# File Managers
-thunar
-thunar-archive-plugin
-ranger
+# Terminal Utils
 nnn
-mc
-
-# Terminal Emulators
-alacritty
-kitty
-rxvt-unicode
-
-# Audio
-pipewire
-wireplumber
-pipewire-audio-client-libraries
-pipewire-pulse
-pipewire-alsa
-pavucontrol
-alsa-utils
-bluetooth
-bluez
-bluez-tools
-blueman
-
-# Networking
-network-manager
-network-manager-gnome
-network-manager-openvpn
-openvpn
-wireguard
-wireguard-tools
-nmap
-dnsutils
-iw
-wireless-tools
-wpasupplicant
-iproute2
-net-tools
-traceroute
-tcpdump
-ethtool
-
-# Web Browsers
-firefox-esr
-chromium
-
-# Communication
-signal-desktop
-telegram-desktop
 
 # Multimedia
 ffmpeg
 vlc
-mpv
 obs-studio
-v4l-utils
-
-# Image Viewers & Editors
-feh
-sxiv
-imagemagick
-gimp
-inkscape
-
-# Screenshots
-flameshot
-scrot
-maim
 
 # Document Viewers
 zathura
-zathura-pdf-mupdf
 mupdf
 mupdf-tools
-
-# Office
-libreoffice
-libreoffice-gtk3
 
 # PDF & LaTeX
 texlive
@@ -199,21 +78,18 @@ usbmuxd
 zip
 unzip
 p7zip-full
-rar
-unrar
 tar
 gzip
 bzip2
 xz-utils
 
 # System Monitoring
-htop
 btop
 iotop
 sysstat
 lm-sensors
 smartmontools
-neofetch
+fastfetch
 
 # Power Management
 tlp
@@ -237,7 +113,6 @@ fonts-font-awesome
 fonts-hack
 fonts-firacode
 fonts-inconsolata
-fonts-ubuntu
 
 # Programming Languages
 python3
@@ -247,15 +122,7 @@ python3-dev
 nodejs
 npm
 default-jdk
-openjdk-17-jdk
 golang
-rustc
-cargo
-
-# Version Control & Tools
-subversion
-mercurial
-tig
 
 # Container & Virtualization
 docker.io
@@ -298,15 +165,6 @@ vulkan-tools
 mesa-vulkan-drivers
 libvulkan1
 
-# GTK & Qt
-libgtk-3-0
-libgtk-4-1
-libqt5core5a
-libqt5gui5
-libqt5widgets5
-qt5-qmake
-qtbase5-dev
-
 # Clipboard & Utilities
 clipit
 xsel
@@ -323,7 +181,6 @@ fd-find
 bat
 trash-cli
 ncdu
-ag
 jq
 yq
 httpie

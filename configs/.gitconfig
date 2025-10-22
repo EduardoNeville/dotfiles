@@ -10,3 +10,6 @@
 
 [merge]
     conflictstyle = zdiff3
+[user]
+	email = eduardoneville82@gmail.com
+	name = EduardoNeville

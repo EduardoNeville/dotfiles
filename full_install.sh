@@ -328,6 +328,27 @@ install_nodejs() {
 }
 
 # ============================================================================
+# Wezterm
+# ============================================================================
+
+install_wezterm() {
+    _header "Wezterm Installation"
+
+    if [ -f "${DOTFILES_DIR}/scripts/${OS}/install_wezterm.sh" ]; then
+        bash "${DOTFILES_DIR}/scripts/${OS}/install_wezterm.sh"
+    elif [ -f "${DOTFILES_DIR}/scripts/debian/install_wezterm.sh" ]; then
+        bash "${DOTFILES_DIR}/scripts/debian/install_wezterm.sh"
+    else
+        _process "Installing Wezterm (fallback debian method)"
+	curl -fsSL https://apt.fury.io/wez/gpg.key | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
+	echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list
+	sudo chmod 644 /usr/share/keyrings/wezterm-fury.gpg
+	sudo apt update
+	sudo apt install -y wezterm
+    fi
+}
+
+# ============================================================================
 # Suckless Tools (dwm, slstatus, etc.)
 # ============================================================================
 
@@ -406,10 +427,11 @@ interactive_install() {
     echo "  4) Docker"
     echo "  5) Rust & Cargo tools"
     echo "  6) Node.js & NPM"
-    echo "  7) Suckless tools (dwm, slstatus, etc.)"
-    echo "  8) Audio system (PipeWire)"
-    echo "  9) GitHub setup & authentication"
-    echo " 10) System configuration & dotfiles linking"
+    echo "  7) Wezterm"
+    echo "  8) Suckless tools (dwm, slstatus, etc.)"
+    echo "  9) Audio system (PipeWire)"
+    echo " 10) GitHub setup & authentication"
+    echo " 11) System configuration & dotfiles linking"
     echo ""
     echo "  0) Exit"
     echo ""
@@ -436,15 +458,18 @@ interactive_install() {
                 install_nodejs
                 ;;
             7)
-                install_suckless
+                install_wezterm
                 ;;
             8)
-                setup_audio
+                install_suckless
                 ;;
             9)
-                setup_github
+                setup_audio
                 ;;
             10)
+                setup_github
+                ;;
+            11)
                 configure_system
                 ;;
             0)
@@ -479,6 +504,7 @@ full_install() {
     install_docker
     install_rust
     install_nodejs
+    install_wezterm
 
     # Desktop environment (if on Linux with X11/Wayland)
     if [[ "$OS" != "macos" ]] && [[ -n "$DISPLAY" || -n "$WAYLAND_DISPLAY" ]]; then
