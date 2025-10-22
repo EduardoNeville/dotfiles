@@ -19,7 +19,7 @@ mason_lspconfig.setup {
 
   -- NEW api (v2.0+)
   handlers = {
-    function(server_name)         -- default handler called for each server
+    function(server_name)
       lspconfig[server_name].setup {
         capabilities = capabilities,
         settings     = servers[server_name],

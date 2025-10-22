@@ -3,7 +3,7 @@
 # Quick script to check compressed backup status and space
 # Usage: ./backup-info.sh [backup_location]
 
-DEFAULT_BACKUP_DEST="/mnt/HD_Eduardo/system-backup"
+DEFAULT_BACKUP_DEST="/mnt/HD_Eduardo/lenovo-t480-backup"
 BACKUP_DEST="${1:-$DEFAULT_BACKUP_DEST}"
 
 # Colors

@@ -7,7 +7,7 @@
 set -e  # Exit on error
 
 # Configuration
-DEFAULT_BACKUP_DEST="/mnt/HD_Eduardo/system-backup"
+DEFAULT_BACKUP_DEST="/mnt/HD_Eduardo/lenovo-t480-backup"
 BACKUP_DEST_BASE="${1:-$DEFAULT_BACKUP_DEST}"
 COMPRESSION_LEVEL="${2:-9}"  # 1-9, where 9 is maximum compression (default)
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
