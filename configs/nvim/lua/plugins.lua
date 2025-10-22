@@ -34,37 +34,30 @@ return {
     ---------------------------------------------------------------
     {
       "williamboman/mason.nvim",
-      build = ":MasonUpdate",      -- optional: auto-update registries
-      config = true,               -- use default config
-    },
-
-    {
-      "williamboman/mason-lspconfig.nvim",
-      dependencies = "mason.nvim", -- make sure Mason is loaded first
-      config = true,               -- use default config
+      build = ":MasonUpdate",
+      config = true,
     },
 
     {
       "neovim/nvim-lspconfig",
       dependencies = {
         "mason.nvim",
-        "mason-lspconfig.nvim",
-
-        -- optional UI helpers
         "SmiteshP/nvim-navic",
-        {
-            "SmiteshP/nvim-navbuddy",
-            dependencies = {
-                "SmiteshP/nvim-navic",
-                "MunifTanjim/nui.nvim"
-            },
-            opts = { lsp = { auto_attach = true } }
-        },
+        "SmiteshP/nvim-navbuddy",
         "MunifTanjim/nui.nvim",
       },
       config = function()
-        require("lsp-config.language-server")  -- <-- now mason-lspconfig IS loaded
+        require("lsp-config.language-server")
       end,
+    },
+
+    {
+      "SmiteshP/nvim-navbuddy",
+      dependencies = {
+        "SmiteshP/nvim-navic",
+        "MunifTanjim/nui.nvim"
+      },
+      opts = { lsp = { auto_attach = false } }
     },
 
     ---------------------------------------------------------------

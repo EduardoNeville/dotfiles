@@ -1,32 +1,35 @@
-local lspconfig       = require("lspconfig")
-local mason_lspconfig = require("mason-lspconfig")
-local navbuddy = require("nvim-navbuddy")
+local lspconfig = require("lspconfig")
+local navbuddy  = require("nvim-navbuddy")
 
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
+-- Common on_attach function for all servers
+local on_attach = function(client, bufnr)
+  navbuddy.attach(client, bufnr)
+end
+
+-- Define servers to setup
 local servers = {
-  lua_ls        = {},
-  rust_analyzer = {},
-  clangd        = {},
-  eslint        = {},
-  pyright       = {},
-  ruff          = {},
-}
-
--- install all of them
-mason_lspconfig.setup {
-  ensure_installed = vim.tbl_keys(servers),
-
-  -- NEW api (v2.0+)
-  handlers = {
-    function(server_name)
-      lspconfig[server_name].setup {
-        capabilities = capabilities,
-        settings     = servers[server_name],
-        on_attach    = function (client, bufnr)
-            navbuddy.attach(client, bufnr)
-        end
+  lua_ls = {
+    settings = {
+      Lua = {
+        diagnostics = {
+          globals = { "vim" }
+        }
       }
-    end,
+    }
   },
+  rust_analyzer = {},
+  clangd = {},
+  eslint = {},
+  pyright = {},
+  ruff = {},
 }
+
+-- Setup each server manually
+for server, config in pairs(servers) do
+  lspconfig[server].setup(vim.tbl_deep_extend("force", {
+    capabilities = capabilities,
+    on_attach = on_attach,
+  }, config))
+end
