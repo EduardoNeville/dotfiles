@@ -45,6 +45,10 @@ if type brew &>/dev/null; then
     compinit -i
 fi
 
+# glob
+setopt extended_glob
+setopt dot_glob
+
 ### ---- Plugins & Themes -----------------------------------
 
 # ZSH PLUGINS
@@ -135,12 +139,16 @@ alias .5="cd ../../../../.."
 alias .6="cd ../../../../../.."
 
 # --- ls shortcuts -------------------------------
-alias ls0="eza --icons --tree --level=1 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv'"
-alias lse="eza --icons --tree --level=2 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv'"
-alias ls3="eza --icons --tree --level=3 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv'"
-alias ls4="eza --icons --tree --level=4 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv'"
-alias lsn="eza --icons --tree --level=2 --sort='name' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv'"
+alias ls0="eza --icons --tree --level=1 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache'"
+alias lse="eza --icons --tree --level=2 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache'"
+alias ls3="eza --icons --tree --level=3 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache'"
+alias ls4="eza --icons --tree --level=4 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache'"
+alias lsn="eza --icons --tree --level=2 --sort='name' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache'"
 alias lss="dust -d 2 -z 5MB -brC"
+
+ignore_dirs="-I .git -I __pycache__ -I .mypy_cache -I .ipynb_checkpoints -I node_modules -I .venv -I .pytest_cache -I .ruff_cache -I .uv_cache"
+alias ls="ls --color=auto"
+alias la="ls --color=auto -al ${ignore_dirs}"
 
 alias lshelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%%
 ls COMMANDS
@@ -228,3 +236,8 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+alias sectest-sudo='sudo /home/eduardoneville/.local/bin/uv run --directory
+  /home/eduardoneville/projects/sec-test sectest'
+
+# opencode
+export PATH=/home/eduardoneville/.opencode/bin:$PATH
