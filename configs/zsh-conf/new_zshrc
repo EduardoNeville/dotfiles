@@ -45,6 +45,10 @@ if type brew &>/dev/null; then
     compinit -i
 fi
 
+# glob
+setopt extended_glob
+setopt dot_glob
+
 ### ---- Plugins & Themes -----------------------------------
 
 # ZSH PLUGINS
@@ -54,8 +58,10 @@ source $ZSH/plugins/fast-syntax-highlighting/F-Sy-H.plugin.zsh
 source $ZSH/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $ZSH/plugins/zsh-fzf-history-search/zsh-fzf-history-search.zsh
 
-### ----- ChatGPT config ------------------------------------------# ChatGPT OPENAI_API_KEY
+### ---- LLM config ------------------------------------------
 export OPENAI_API_KEY="$(cat $HOME/OPENAI_API_KEY.txt)"
+export ANTHROPIC_API_KEY="$(cat $HOME/ANTHROPIC_API_KEY.txt)"
+export GROK_API_KEY="$(cat $HOME/GROK_API_KEY.txt)"
 
 ### ----- fzf-tab config ------------------------------------------
 # disable sort when completing `git checkout`
@@ -133,12 +139,16 @@ alias .5="cd ../../../../.."
 alias .6="cd ../../../../../.."
 
 # --- ls shortcuts -------------------------------
-alias ls0="eza --icons --tree --level=1 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
-alias lse="eza  --icons --tree --level=2 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
-alias ls3="eza --icons --tree --level=3 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
-alias ls4="eza --icons --tree --level=4 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
-alias lsn="eza --icons --tree --level=2 --sort='name' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules'"
-alias lss="dust -d 2 -z 5MB -briC"
+alias ls0="eza --icons --tree --level=1 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache'"
+alias lse="eza --icons --tree --level=2 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache'"
+alias ls3="eza --icons --tree --level=3 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache'"
+alias ls4="eza --icons --tree --level=4 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache'"
+alias lsn="eza --icons --tree --level=2 --sort='name' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache'"
+alias lss="dust -d 2 -z 5MB -brC"
+
+ignore_dirs="-I .git -I __pycache__ -I .mypy_cache -I .ipynb_checkpoints -I node_modules -I .venv -I .pytest_cache -I .ruff_cache -I .uv_cache"
+alias ls="ls --color=auto"
+alias la="ls --color=auto -al ${ignore_dirs}"
 
 alias lshelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%%
 ls COMMANDS
@@ -149,20 +159,9 @@ ls4 -> eza all files in a tree of depth 4 sorted by size \n'"
 
 export EZA_COLORS="*csv=32:*.md=38;5;141"
 
-# --- fzf shortcuts -------------------------------
-fp_func() {
-    file=$(fzf --preview="bat --style=numbers --color=always {}")
-    echo "$file"
-    nvim "$file"
-}
-alias fp='fp_func'
-#'fd --type file --hidden --exclude .git | fzf-tmux -p 80%,80%  --reverse --preview "bat --style=numbers --color=always {}" | xargs nvim'
-alias fcd='z $(fd --type d --hidden --exclude .git | fzf --preview="eza --icons --tree --level=1 --reverse -a {}")'
-alias fzfhelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%%
-fzf COMMANDS
-%%%%%%%%%%%%%%%%%%%%%%%%%% \n
-fp -> fzf files with bat and open in nvim \n
-fcd -> cd from current dir \n"
+# --- tv shortcuts -------------------------------
+alias fp='file=$(tv); [ -n "$file" ] && echo "$file"; nvim "$file"'
+alias fcd='dir=$(tv dirs); [ -n "$dir" ] && echo "$dir"; z "$dir" || :'
 
 # --- Tmux shortcuts -------------------------------
 alias tmux="TERM=xterm-256color tmux"
@@ -178,7 +177,7 @@ alias gl='git log'
 alias gst='git status'
 alias gss='git stash'
 alias gco='git checkout'
-alias lg='lazygit'
+alias gt='gitui'
 alias ghelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%%
 github COMMANDS
 %%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -192,7 +191,7 @@ gl -> git log \n
 gst -> git status \n
 gss -> git stash \n
 gco -> git checkout\n
-lg -> lazygit\n'"
+gt -> git tui\n'"
 
 # --- Docker ----------------------------------
 alias ld='lazydocker'
@@ -200,34 +199,45 @@ alias ld='lazydocker'
 # --- evals config ----------------------------------
 eval "$(zoxide init zsh)"
 
-# --- Help -------------------------------
-alias sclist='ghelp;fzfhelp;lshelp;zhelp'
+# rust export
+export PATH="$HOME/.cargo/bin:$PATH"
 
-# bun completions
-[ -s "/Users/eduardoneville82/.bun/_bun" ] && source "/Users/eduardoneville82/.bun/_bun"
+autoload -U compinit; compinit -i
 
 # Starship 
 export STARSHIP_CONFIG=~/.config/starship/starship.toml
 export STARSHIP_CACHE=~/.starship/cache
 eval "$(starship init zsh)"
 
-# rust export
-export PATH="$HOME/.cargo/bin:$PATH"
+# Python local environment check
+[[ -f .venv/bin/activate ]] && source .venv/bin/activate && [[ -n "$VIRTUAL_ENV" ]] || true
 
-if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-if command -v pyenv 1>/dev/null 2>&1; then
-    eval "$(pyenv init -)"
-fi
+# AUDIO
+export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+
+# ClipMenu
+export CM_LAUNCHER=rofi
+
+# WASM
+export WASMTIME_HOME="$HOME/.wasmtime"
+export PATH="$WASMTIME_HOME/bin:$PATH"
+
+export PATH=$PATH:/opt/texlive/2025/bin/x86_64-linux
+export PATH=~/.npm-global/bin:$PATH
+export PATH="$HOME/.local/bin:$PATH"
+
+# bun completions
+[ -s "/home/eduardoneville/.bun/_bun" ] && source "/home/eduardoneville/.bun/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
 
-autoload -U compinit; compinit -i
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+alias sectest-sudo='sudo /home/eduardoneville/.local/bin/uv run --directory
+  /home/eduardoneville/projects/sec-test sectest'
 
-export PATH=$PATH:/home/eduardoneville/.spicetify
+# opencode
+export PATH=/home/eduardoneville/.opencode/bin:$PATH
