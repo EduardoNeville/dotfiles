@@ -5,6 +5,9 @@ export PATH="$HOME/.local/bin:$PATH"
 ### ZSH HOME
 export ZSH=$HOME/.config/zsh-conf
 
+### DOTFILES HOME
+export DOTFILES=$HOME/dotfiles
+
 ### ---- Editor ---------------------------------------------
 export EDITOR='nvim'
 
@@ -49,6 +52,17 @@ fi
 setopt extended_glob
 setopt dot_glob
 
+### ----- ENV KEYS ------------------------------------------
+api_keys=$DOTFILES/envs/api_keys
+load_env() {
+  if [ -f ${api_keys} ]; then
+    set -a
+    source ${api_keys}
+    set +a
+  fi
+}
+load_env
+
 ### ---- Plugins & Themes -----------------------------------
 
 # ZSH PLUGINS
@@ -57,11 +71,6 @@ source $ZSH/plugins/fzf-tab/fzf-tab.plugin.zsh
 source $ZSH/plugins/fast-syntax-highlighting/F-Sy-H.plugin.zsh
 source $ZSH/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $ZSH/plugins/zsh-fzf-history-search/zsh-fzf-history-search.zsh
-
-### ---- LLM config ------------------------------------------
-export OPENAI_API_KEY="$(cat $HOME/OPENAI_API_KEY.txt)"
-export ANTHROPIC_API_KEY="$(cat $HOME/ANTHROPIC_API_KEY.txt)"
-export GROK_API_KEY="$(cat $HOME/GROK_API_KEY.txt)"
 
 ### ----- fzf-tab config ------------------------------------------
 # disable sort when completing `git checkout`

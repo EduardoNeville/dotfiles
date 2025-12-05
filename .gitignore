@@ -4,6 +4,8 @@ configs/zsh-conf/.zsh_history
 configs/btop/btop.log
 configs/wireguard
 
+envs/
+
 .DS_Store
 
 legatio.md
