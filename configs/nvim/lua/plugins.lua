@@ -35,13 +35,38 @@ return {
     {
       "williamboman/mason.nvim",
       build = ":MasonUpdate",
-      config = true,
+      config = function()
+        require("mason").setup({
+          automatic_installation = false,
+        })
+      end,
+    },
+
+    {
+      "williamboman/mason-lspconfig.nvim",
+      dependencies = { "mason.nvim" },
+      config = function()
+        require("mason-lspconfig").setup({
+          ensure_installed = {
+            "lua_ls",
+            "rust_analyzer",
+            "clangd",
+            "eslint",
+            "ts_ls",
+            "tailwindcss",
+            "bashls",
+            "yamlls",
+            "marksman",
+          },
+        })
+      end,
     },
 
     {
       "neovim/nvim-lspconfig",
       dependencies = {
         "mason.nvim",
+        "mason-lspconfig.nvim",
         "SmiteshP/nvim-navic",
         "SmiteshP/nvim-navbuddy",
         "MunifTanjim/nui.nvim",
@@ -58,6 +83,73 @@ return {
         "MunifTanjim/nui.nvim"
       },
       opts = { lsp = { auto_attach = false } }
+    },
+
+    ---------------------------------------------------------------
+    -- Linting and Formatting -------------------------------------
+    ---------------------------------------------------------------
+    {
+      "stevearc/conform.nvim",
+      event = { "BufReadPre", "BufNewFile" },
+      config = function()
+        local conform = require("conform")
+        conform.setup({
+        formatters_by_ft = {
+          lua = { "stylua" },
+          javascript = { "prettier" },
+          typescript = { "prettier" },
+          javascriptreact = { "prettier" },
+          typescriptreact = { "prettier" },
+          css = { "prettier" },
+          html = { "prettier" },
+          json = { "prettier" },
+          yaml = { "prettier" },
+          markdown = { "prettier" },
+          bash = { "shfmt" },
+          rust = { "rustfmt" },
+        },
+          format_on_save = {
+            lsp_fallback = true,
+            async = false,
+            timeout_ms = 1000,
+          },
+        })
+        vim.keymap.set({ "n", "v" }, "<leader>mp", function()
+          conform.format({
+            lsp_fallback = true,
+            async = false,
+            timeout_ms = 1000,
+          })
+        end, { desc = "Format file or range (in visual mode)" })
+      end,
+    },
+
+    {
+      "mfussenegger/nvim-lint",
+      event = { "BufReadPre", "BufNewFile" },
+      config = function()
+        local lint = require("lint")
+        lint.linters_by_ft = {
+          lua = { "luacheck" },
+          javascript = { "eslint" },
+          typescript = { "eslint" },
+          javascriptreact = { "eslint" },
+          typescriptreact = { "eslint" },
+          bash = { "shellcheck" },
+          yaml = { "yamllint" },
+          markdown = { "markdownlint" },
+        }
+        local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
+        vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+          group = lint_augroup,
+          callback = function()
+            lint.try_lint()
+          end,
+        })
+        vim.keymap.set("n", "<leader>l", function()
+          lint.try_lint()
+        end, { desc = "Trigger linting for current file" })
+      end,
     },
 
     ---------------------------------------------------------------
@@ -246,9 +338,72 @@ return {
 
     {
         "nvim-treesitter/nvim-treesitter",
+        build = ":TSUpdate",
         config = function()
             require 'nvim-treesitter.configs'.setup {
                 highlight = {
+                    enable = true,
+                    additional_vim_regex_highlighting = false,
+                },
+                indent = {
+                    enable = true,
+                },
+                incremental_selection = {
+                    enable = true,
+                    keymaps = {
+                        init_selection = "gnn",
+                        node_incremental = "grn",
+                        scope_incremental = "grc",
+                        node_decremental = "grm",
+                    },
+                },
+                textobjects = {
+                    select = {
+                        enable = true,
+                        lookahead = true,
+                        keymaps = {
+                            ["af"] = "@function.outer",
+                            ["if"] = "@function.inner",
+                            ["ac"] = "@class.outer",
+                            ["ic"] = "@class.inner",
+                        },
+                    },
+                    move = {
+                        enable = true,
+                        set_jumps = true,
+                        goto_next_start = {
+                            ["]m"] = "@function.outer",
+                            ["]]"] = "@class.outer",
+                        },
+                        goto_next_end = {
+                            ["]M"] = "@function.outer",
+                            ["]["] = "@class.outer",
+                        },
+                        goto_previous_start = {
+                            ["[m"] = "@function.outer",
+                            ["[["] = "@class.outer",
+                        },
+                        goto_previous_end = {
+                            ["[M"] = "@function.outer",
+                            ["[]"] = "@class.outer",
+                        },
+                    },
+                },
+          ensure_installed = {
+            "lua_ls",
+            "rust_analyzer",
+            "clangd",
+            "eslint",
+            "tsserver",
+            "tailwindcss",
+            "bashls",
+            "yamlls",
+            "marksman",
+          },
+                autotag = {
+                    enable = true,
+                },
+                markdown = {
                     enable = true,
                 },
             }
