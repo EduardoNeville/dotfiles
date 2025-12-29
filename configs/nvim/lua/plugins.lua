@@ -33,205 +33,164 @@ return {
     -- LSP + Mason -----------------------------------------------
     ---------------------------------------------------------------
     {
-      "williamboman/mason.nvim",
-      build = ":MasonUpdate",
-      config = function()
-        require("mason").setup({
-          automatic_installation = false,
-        })
-      end,
+        "williamboman/mason.nvim",
+        build = ":MasonUpdate",
+        config = function()
+            require("mason").setup({
+                automatic_installation = false,
+            })
+        end,
     },
 
     {
-      "williamboman/mason-lspconfig.nvim",
-      dependencies = { "mason.nvim" },
-      config = function()
-        require("mason-lspconfig").setup({
-          ensure_installed = {
-            "lua_ls",
-            "rust_analyzer",
-            "clangd",
-            "eslint",
-            "ts_ls",
-            "tailwindcss",
-            "bashls",
-            "yamlls",
-            "marksman",
-          },
-        })
-      end,
+        "williamboman/mason-lspconfig.nvim",
+        dependencies = { "mason.nvim" },
+        config = function()
+            require("mason-lspconfig").setup({
+                ensure_installed = {
+                    "lua_ls",
+                    "rust_analyzer",
+                    "clangd",
+                    "eslint",
+                    "ts_ls",
+                    "tailwindcss",
+                    "bashls",
+                    "yamlls",
+                    "marksman",
+                },
+            })
+        end,
     },
 
     {
-      "neovim/nvim-lspconfig",
-      dependencies = {
-        "mason.nvim",
-        "mason-lspconfig.nvim",
-        "SmiteshP/nvim-navic",
+        "neovim/nvim-lspconfig",
+        dependencies = {
+            "mason.nvim",
+            "mason-lspconfig.nvim",
+            "SmiteshP/nvim-navic",
+            "SmiteshP/nvim-navbuddy",
+            "MunifTanjim/nui.nvim",
+        },
+        config = function()
+            require("lsp-config.language-server")
+        end,
+    },
+
+    {
         "SmiteshP/nvim-navbuddy",
-        "MunifTanjim/nui.nvim",
-      },
-      config = function()
-        require("lsp-config.language-server")
-      end,
-    },
-
-    {
-      "SmiteshP/nvim-navbuddy",
-      dependencies = {
-        "SmiteshP/nvim-navic",
-        "MunifTanjim/nui.nvim"
-      },
-      opts = { lsp = { auto_attach = false } }
+        dependencies = {
+            "SmiteshP/nvim-navic",
+            "MunifTanjim/nui.nvim"
+        },
+        opts = { lsp = { auto_attach = false } }
     },
 
     ---------------------------------------------------------------
     -- Linting and Formatting -------------------------------------
     ---------------------------------------------------------------
     {
-      "stevearc/conform.nvim",
-      event = { "BufReadPre", "BufNewFile" },
-      config = function()
-        local conform = require("conform")
-        conform.setup({
-        formatters_by_ft = {
-          lua = { "stylua" },
-          javascript = { "prettier" },
-          typescript = { "prettier" },
-          javascriptreact = { "prettier" },
-          typescriptreact = { "prettier" },
-          css = { "prettier" },
-          html = { "prettier" },
-          json = { "prettier" },
-          yaml = { "prettier" },
-          markdown = { "prettier" },
-          bash = { "shfmt" },
-          rust = { "rustfmt" },
-        },
-          format_on_save = {
-            lsp_fallback = true,
-            async = false,
-            timeout_ms = 1000,
-          },
-        })
-        vim.keymap.set({ "n", "v" }, "<leader>mp", function()
-          conform.format({
-            lsp_fallback = true,
-            async = false,
-            timeout_ms = 1000,
-          })
-        end, { desc = "Format file or range (in visual mode)" })
-      end,
+        "stevearc/conform.nvim",
+        event = { "BufReadPre", "BufNewFile" },
+        config = function()
+            local conform = require("conform")
+            conform.setup({
+                formatters_by_ft = {
+                    lua = { "stylua" },
+                    javascript = { "prettier" },
+                    typescript = { "prettier" },
+                    javascriptreact = { "prettier" },
+                    typescriptreact = { "prettier" },
+                    css = { "prettier" },
+                    html = { "prettier" },
+                    json = { "prettier" },
+                    yaml = { "prettier" },
+                    markdown = { "prettier" },
+                    bash = { "shfmt" },
+                    rust = { "rustfmt" },
+                },
+                format_on_save = {
+                    lsp_fallback = true,
+                    async = false,
+                    timeout_ms = 1000,
+                },
+            })
+            vim.keymap.set({ "n", "v" }, "<leader>mp", function()
+                conform.format({
+                    lsp_fallback = true,
+                    async = false,
+                    timeout_ms = 1000,
+                })
+            end, { desc = "Format file or range (in visual mode)" })
+        end,
     },
 
     {
-      "mfussenegger/nvim-lint",
-      event = { "BufReadPre", "BufNewFile" },
-      config = function()
-        local lint = require("lint")
-        lint.linters_by_ft = {
-          lua = { "luacheck" },
-          javascript = { "eslint" },
-          typescript = { "eslint" },
-          javascriptreact = { "eslint" },
-          typescriptreact = { "eslint" },
-          bash = { "shellcheck" },
-          yaml = { "yamllint" },
-          markdown = { "markdownlint" },
-        }
-        local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
-        vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
-          group = lint_augroup,
-          callback = function()
-            lint.try_lint()
-          end,
-        })
-        vim.keymap.set("n", "<leader>l", function()
-          lint.try_lint()
-        end, { desc = "Trigger linting for current file" })
-      end,
+        "mfussenegger/nvim-lint",
+        event = { "BufReadPre", "BufNewFile" },
+        config = function()
+            local lint = require("lint")
+            lint.linters_by_ft = {
+                lua = { "luacheck" },
+                javascript = { "eslint" },
+                typescript = { "eslint" },
+                javascriptreact = { "eslint" },
+                typescriptreact = { "eslint" },
+                bash = { "shellcheck" },
+                yaml = { "yamllint" },
+                markdown = { "markdownlint" },
+            }
+            local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
+            vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+                group = lint_augroup,
+                callback = function()
+                    lint.try_lint()
+                end,
+            })
+            vim.keymap.set("n", "<leader>l", function()
+                lint.try_lint()
+            end, { desc = "Trigger linting for current file" })
+        end,
     },
 
     ---------------------------------------------------------------
     -- Completion stack -------------------------------------------
     ---------------------------------------------------------------
-    { "L3MON4D3/LuaSnip", build = "make install_jsregexp" },
+    { "L3MON4D3/LuaSnip",             build = "make install_jsregexp" },
     { "rafamadriz/friendly-snippets", lazy = true },
 
     {
-      "hrsh7th/nvim-cmp",
-      dependencies = {
-        "hrsh7th/cmp-nvim-lsp",
-        "hrsh7th/cmp-path",
-        "hrsh7th/cmp-buffer",
-        "saadparwaiz1/cmp_luasnip",
-        "L3MON4D3/LuaSnip",
-        "windwp/nvim-autopairs",
-      },
-      config = function()
-        require("lsp-config.cmp-setup")               -- loads the plugin itself
-        require("cmp_nvim_lsp")      -- capability helper
-      end,
+        "hrsh7th/nvim-cmp",
+        dependencies = {
+            "hrsh7th/cmp-nvim-lsp",
+            "hrsh7th/cmp-path",
+            "hrsh7th/cmp-buffer",
+            "saadparwaiz1/cmp_luasnip",
+            "L3MON4D3/LuaSnip",
+            "windwp/nvim-autopairs",
+        },
+        config = function()
+            require("lsp-config.cmp-setup") -- loads the plugin itself
+            require("cmp_nvim_lsp")         -- capability helper
+        end,
     },
 
-    { "hrsh7th/cmp-cmdline", lazy = true },     -- optional
-    { "windwp/nvim-autopairs",  opts = {}, event = "InsertEnter" },
+    { "hrsh7th/cmp-cmdline",   lazy = true }, -- optional
+    { "windwp/nvim-autopairs", opts = {},                             event = "InsertEnter" },
 
 
     ----- Debug --------------------------------------------------
     { "mfussenegger/nvim-dap" },
-    { "rcarriga/nvim-dap-ui", requires = {"mfussenegger/nvim-dap"} },
+    { "rcarriga/nvim-dap-ui",  requires = { "mfussenegger/nvim-dap" } },
 
-    --- Copilot ---------------------------------------------------
-    -- Cloned separately using full_install.sh
-
-    -- Avante -----------------------------------------------------
-    --{
-    --  "yetone/avante.nvim",
-    --  event = "VeryLazy",
-    --  lazy = false,
-    --  version = false, -- set this if you want to always pull the latest change
-    --  opts = {
-    --    -- add any opts here
-    --  },
-    --  -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
-    --  build = "make",
-    --  -- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
-    --  dependencies = {
-    --    "nvim-treesitter/nvim-treesitter",
-    --    "stevearc/dressing.nvim",
-    --    "nvim-lua/plenary.nvim",
-    --    "MunifTanjim/nui.nvim",
-    --    --- The below dependencies are optional,
-    --    "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
-    --    "zbirenbaum/copilot.lua", -- for providers='copilot'
-    --    {
-    --      -- support for image pasting
-    --      "HakonHarnes/img-clip.nvim",
-    --      event = "VeryLazy",
-    --      opts = {
-    --        -- recommended settings
-    --        default = {
-    --          embed_image_as_base64 = false,
-    --          prompt_for_file_name = false,
-    --          drag_and_drop = {
-    --            insert_mode = true,
-    --          },
-    --          -- required for Windows users
-    --          use_absolute_path = true,
-    --        },
-    --      },
-    --    },
-    --    {
-    --      -- Make sure to set this up properly if you have lazy=true
-    --      'MeanderingProgrammer/render-markdown.nvim',
-    --      opts = {
-    --        file_types = { "markdown", "Avante" },
-    --      },
-    --      ft = { "markdown", "Avante" },
-    --    },
-    --  },
-    --},
+    {
+        "iamcco/markdown-preview.nvim",
+        cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+        build = "cd app && yarn install",
+        init = function()
+            vim.g.mkdp_filetypes = { "markdown" }
+        end,
+        ft = { "markdown" },
+    },
 
     ---------------------------------------------------------------
     ------- UI configs --------------------------------------------
@@ -289,26 +248,18 @@ return {
     },
 
     {
-      'stevearc/oil.nvim',
-      ---@module 'oil'
-      ---@type oil.SetupOpts
-      opts = {},
-      -- Optional dependencies
-      dependencies = { { "echasnovski/mini.icons", opts = {} } },
-      -- dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if you prefer nvim-web-devicons
-      -- Lazy loading is not recommended because it is very tricky to make it work correctly in all situations.
-      lazy = false,
+        'stevearc/oil.nvim',
+        ---@module 'oil'
+        ---@type oil.SetupOpts
+        opts = {},
+        -- Optional dependencies
+        dependencies = { { "echasnovski/mini.icons", opts = {} } },
+        -- dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if you prefer nvim-web-devicons
+        -- Lazy loading is not recommended because it is very tricky to make it work correctly in all situations.
+        lazy = false,
     },
 
     { "xiyaowong/transparent.nvim" },
-
-    -- Markdown Preview
-    {
-        "iamcco/markdown-preview.nvim",
-        cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-        ft = { "markdown" },
-        build = function() vim.fn["mkdp#util#install"]() end,
-    },
 
     {
         "jackMort/ChatGPT.nvim",
@@ -389,17 +340,17 @@ return {
                         },
                     },
                 },
-          ensure_installed = {
-            "lua_ls",
-            "rust_analyzer",
-            "clangd",
-            "eslint",
-            "tsserver",
-            "tailwindcss",
-            "bashls",
-            "yamlls",
-            "marksman",
-          },
+                ensure_installed = {
+                    "lua_ls",
+                    "rust_analyzer",
+                    "clangd",
+                    "eslint",
+                    "tsserver",
+                    "tailwindcss",
+                    "bashls",
+                    "yamlls",
+                    "marksman",
+                },
                 autotag = {
                     enable = true,
                 },
@@ -474,4 +425,3 @@ return {
     { "samharju/synthweave.nvim" },
     { "maxmx03/fluoromachine.nvim", event = "VeryLazy" },
 }
-

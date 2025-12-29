@@ -26,7 +26,6 @@ bash-completion
 
 # Text Editors
 vim
-neovim
 tree-sitter-cli
 
 # Terminal Utils
@@ -123,6 +122,12 @@ nodejs
 npm
 default-jdk
 golang
+luarocks
+
+# Linters
+shellcheck
+yamllint
+markdownlint-cli
 
 # Container & Virtualization
 docker.io
