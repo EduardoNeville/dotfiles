@@ -2,6 +2,21 @@
   "$schema": "https://opencode.ai/config.json",
   // Theme configuration
   "autoupdate": true,
+  // Tools allowed to be used
+  "tools": {
+     "write": true,
+     "bash": true,
+     "edit": true,
+     "read": true,
+     "grep": true,
+     "glob": true,
+     "list": true,
+     "patch": true,
+     "todowrite": true,
+     "todoread": true,
+     "webfetch": true
+  },
+  // Mcp servers
   "mcp": {
     "context7": {
       "type": "remote",
