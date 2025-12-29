@@ -2,6 +2,12 @@
 ------- NVIM plugins ------------------------------------------
 ---------------------------------------------------------------
 return {
+
+    -- Fuzzy Finder
+    -- Telescope found in plugins/telescope.lua
+    -- Status line with lualine
+    -- Lualine found in plugins/lualine.lua
+
     ---------------------------------------------------------------
     ------- LSP configs -------------------------------------------
     ---------------------------------------------------------------
@@ -211,13 +217,6 @@ return {
         end,
     },
 
-    -- Fuzzy Finder
-    {
-        "nvim-telescope/telescope.nvim",
-        lazy = false,
-        version = '0.1.4',
-        dependencies = { { 'nvim-lua/plenary.nvim' } }
-    },
 
     -- Indentations
     {
@@ -230,11 +229,6 @@ return {
         }
     },
 
-    -- Status line with lualine
-    {
-        'nvim-lualine/lualine.nvim',
-        dependencies = { 'nvim-tree/nvim-web-devicons' }
-    },
 
     -- Colour for #HEX
     { "norcalli/nvim-colorizer.lua" },
@@ -260,28 +254,6 @@ return {
     },
 
     { "xiyaowong/transparent.nvim" },
-
-    {
-        "jackMort/ChatGPT.nvim",
-        event = "VeryLazy",
-        config = function()
-            require("chatgpt").setup({
-                -- lazyional configuration
-                openai_params = {
-                    model = "gpt-4o"
-                },
-                openai_edit_params = {
-                    model = "gpt-4o"
-                },
-            })
-        end,
-        dependencies = {
-            "MunifTanjim/nui.nvim",
-            "nvim-lua/plenary.nvim",
-            "folke/trouble.nvim",
-            "nvim-telescope/telescope.nvim"
-        }
-    },
 
     ---------------------------------------------------------------
     ------- Syntax configs ----------------------------------------

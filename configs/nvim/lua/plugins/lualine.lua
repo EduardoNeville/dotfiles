@@ -1,27 +1,28 @@
-local vim = vim
-
-local status, lualine = pcall(require, "lualine")
-if (not status) then return end
-
-local function get_line_count()
-    local file = io.open(vim.fn.expand('%'), 'r')
-    if not file then
-        return ''
-    end
-
-    local line_count = 0
-    for _ in file:lines() do
-        line_count = line_count + 1
-    end
-    line_count = "󰼭 " .. line_count
-    file:close()
-    return line_count
-end
-
 return {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function ()
+        local status, lualine = pcall(require, "lualine")
+        if (not status) then return end
+
+        local custom_ayu = require'lualine.themes.ayu'
+        custom_ayu.normal.c.fg = "#7aa2f7"
+
+        local function get_line_count()
+            local file = io.open(vim.fn.expand('%'), 'r')
+            if not file then
+                return ''
+            end
+
+            local line_count = 0
+            for _ in file:lines() do
+                line_count = line_count + 1
+            end
+            line_count = "󰼭 " .. line_count
+            file:close()
+            return line_count
+        end
+
         require('lualine').setup {
             options = {
                 icons_enabled = true,
