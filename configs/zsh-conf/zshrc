@@ -236,7 +236,7 @@ export PATH=~/.npm-global/bin:$PATH
 export PATH="$HOME/.local/bin:$PATH"
 
 # bun completions
-[ -s "/home/eduardoneville/.bun/_bun" ] && source "/home/eduardoneville/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
@@ -249,4 +249,4 @@ alias sectest-sudo='sudo /home/eduardoneville/.local/bin/uv run --directory
   /home/eduardoneville/projects/sec-test sectest'
 
 # opencode
-export PATH=/home/eduardoneville/.opencode/bin:$PATH
+export PATH=$HOME/.opencode/bin:$PATH
