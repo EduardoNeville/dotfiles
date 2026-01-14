@@ -137,10 +137,10 @@ return {
             local lint = require("lint")
             lint.linters_by_ft = {
                 lua = { "luacheck" },
-                javascript = { "eslint" },
-                typescript = { "eslint" },
-                javascriptreact = { "eslint" },
-                typescriptreact = { "eslint" },
+                javascript = {},
+                typescript = {},
+                javascriptreact = {},
+                typescriptreact = {},
                 bash = { "shellcheck" },
                 yaml = { "yamllint" },
                 markdown = { "markdownlint" },
