@@ -5,60 +5,60 @@ local act = wezterm.action
 --- Theme Cycler -----------------------------------
 ----------------------------------------------------
 
-    ---cycle through builtin dark schemes in dark mode, 
-    ---and through light schemes in light mode
-    --local function themeCycler(window, _)
-    --	local allSchemes = wezterm.color.get_builtin_schemes()
-    --	local currentMode = wezterm.gui.get_appearance()
-    --	local currentScheme = window:effective_config().color_scheme
-    --	local darkSchemes = {'Tokyo Night Storm', 'Catppuccin Machiatto'}
-    --	local lightSchemes = {'Papercolor Light (Gogh)'}
-    --
-    --	for name, scheme in pairs(allSchemes) do
-    --		local bg = wezterm.color.parse(scheme.background) -- parse into a color object
-    --		---@diagnostic disable-next-line: unused-local
-    --		local h, s, l, a = bg:hsla() -- and extract HSLA information
-    --		if l < 0.4 then
-    --			table.insert(darkSchemes, name)
-    --		else
-    --			table.insert(lightSchemes, name)
-    --		end
-    --	end
-    --	local schemesToSearch = currentMode:find("Dark") and darkSchemes or lightSchemes
-    --
-    --	for i = 1, #schemesToSearch, 1 do
-    --		if schemesToSearch[i] == currentScheme then
-    --			local overrides = window:get_config_overrides() or {}
-    --			overrides.color_scheme = schemesToSearch[i+1]
-    --			wezterm.log_info("Switched to: " .. schemesToSearch[i+1])
-    --			window:set_config_overrides(overrides)
-    --			return
-    --		end
-    --	end
-    --end
+---cycle through builtin dark schemes in dark mode,
+---and through light schemes in light mode
+--local function themeCycler(window, _)
+--	local allSchemes = wezterm.color.get_builtin_schemes()
+--	local currentMode = wezterm.gui.get_appearance()
+--	local currentScheme = window:effective_config().color_scheme
+--	local darkSchemes = {'Tokyo Night Storm', 'Catppuccin Machiatto'}
+--	local lightSchemes = {'Papercolor Light (Gogh)'}
+--
+--	for name, scheme in pairs(allSchemes) do
+--		local bg = wezterm.color.parse(scheme.background) -- parse into a color object
+--		---@diagnostic disable-next-line: unused-local
+--		local h, s, l, a = bg:hsla() -- and extract HSLA information
+--		if l < 0.4 then
+--			table.insert(darkSchemes, name)
+--		else
+--			table.insert(lightSchemes, name)
+--		end
+--	end
+--	local schemesToSearch = currentMode:find("Dark") and darkSchemes or lightSchemes
+--
+--	for i = 1, #schemesToSearch, 1 do
+--		if schemesToSearch[i] == currentScheme then
+--			local overrides = window:get_config_overrides() or {}
+--			overrides.color_scheme = schemesToSearch[i+1]
+--			wezterm.log_info("Switched to: " .. schemesToSearch[i+1])
+--			window:set_config_overrides(overrides)
+--			return
+--		end
+--	end
+--end
 
 ---------------------------------------------------------------
 --- Workspace ----------------------------------------------------
 ---------------------------------------------------------------
 wezterm.on('update-right-status', function(window, pane)
-  window:set_right_status(window:active_workspace())
+    window:set_right_status(window:active_workspace())
 end)
 
 ---------------------------------------------------------------
 --- Config ----------------------------------------------------
 ---------------------------------------------------------------
 local config = {
-	check_for_updates = false,
+    check_for_updates = false,
 
     --- https://github.com/tonsky/FiraCode
     --- font = wezterm.font('Fira Code', {weight="Regular", stretch='Normal', style='Normal'}),
     font_size = 13,
 
-	--- Colour Schemes ------------------
-	--color_scheme = "Catppuccin", -- Machiatto
-	--color_scheme = "Tokyo Night Storm",	
+    --- Colour Schemes ------------------
+    --color_scheme = "Catppuccin", -- Machiatto
+    --color_scheme = "Tokyo Night Storm",	
     --color_scheme = 'Andromeda',
-	--color_scheme = 'Papercolor Light (Gogh)', -- "Aesthetic Night
+    --color_scheme = 'Papercolor Light (Gogh)', -- "Aesthetic Night
     --color_scheme = "Abernathy",	
     --color_scheme = 'Ayu Mirage (Gogh)',
     --color_scheme = 'Ayu Dark (Gogh)',
@@ -74,50 +74,53 @@ local config = {
     --color_scheme = "SynthwaveAlpha",
 
 
-	color_scheme_dirs = { os.getenv("HOME") .. "/.config/wezterm/colors/" },
-	-- Aesthetic Night Colorscheme
-	bold_brightens_ansi_colors = true,
+    color_scheme_dirs = { os.getenv("HOME") .. "/.config/wezterm/colors/" },
+    -- Aesthetic Night Colorscheme
+    bold_brightens_ansi_colors = true,
 
-	--- UI --------------------------------
+    --- UI --------------------------------
     --- Underline ------
     underline_thickness = 0,
 
-	--- Cursor style ---
-	default_cursor_style = "BlinkingBlock",
+    --- Cursor style ---
+    default_cursor_style = "BlinkingBlock",
 
-	--- Tab Bar --------
-	hide_tab_bar_if_only_one_tab = true,
-	show_tab_index_in_tab_bar = true,
-	tab_bar_at_bottom = true,
+    --- Tab Bar --------
+    hide_tab_bar_if_only_one_tab = true,
+    show_tab_index_in_tab_bar = true,
+    tab_bar_at_bottom = true,
 
-	--- Window Info ----
-	window_background_opacity = 0.85,
-	window_decorations = "RESIZE",
-	scrollback_lines = 5000,
+    --- Window Info ----
+    window_background_opacity = 0.85,
 
- 	window_padding = {
-		left = 0,
+    -- Default setting
+    window_decorations = "NONE",
+
+    scrollback_lines = 5000,
+
+    window_padding = {
+        left = 0,
         right = 0,
         top = 0,
         bottom = 0,
-	},
+    },
 }
 
---- Tab title 
+--- Tab title
 wezterm.on(
-  'format-tab-title',
-  function(tab, tabs, panes, config, hover, max_width)
-    --local title = tab_title(tab)
-    --local tabName = string.format("%s", tab.tab_title):split('(')[1]
+    'format-tab-title',
+    function(tab, tabs, panes, config, hover, max_width)
+        --local title = tab_title(tab)
+        --local tabName = string.format("%s", tab.tab_title):split('(')[1]
 
-    --if tab.is_active then
-    --  return {
-    --    { Text = tabName},
-    --  }
-    --end
-    local nonActive = string.format("-[ %s ]-", tab.tab_index)
-    return nonActive
-  end
+        --if tab.is_active then
+        --  return {
+        --    { Text = tabName},
+        --  }
+        --end
+        local nonActive = string.format("-[ %s ]-", tab.tab_index)
+        return nonActive
+    end
 )
 
 --- Window Frame ---
@@ -179,8 +182,8 @@ config.colors = {
             bg_color = "#1f2335",
             fg_color = "#545c7e",
 
-              -- The same options that were listed under the `active_tab` section above
-              -- can also be used for `inactive_tab`.
+            -- The same options that were listed under the `active_tab` section above
+            -- can also be used for `inactive_tab`.
         },
 
         -- You can configure some alternate styling when the mouse pointer
@@ -221,45 +224,48 @@ config.keys = {
     --{ key = "t", mods = "CTRL", action = wezterm.action_callback(themeCycler) },
 
     -- Debug Pane -----------------------
-    { key = "Escape", mods = "CTRL", action = wezterm.action.ShowDebugOverlay },
+    { key = "Escape", mods = "CTRL",       action = wezterm.action.ShowDebugOverlay },
 
     --------------------
     -- Split Window
     --------------------
-    
+
     -- Split Horizontal == <CTRL-Shift-v>
-    { key = 'v', mods = 'ALT|CTRL', action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' }, },
+    { key = 'v',      mods = 'ALT|CTRL',   action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' }, },
 
     -- Split Vertical == <CTRL-Shift-s>
-    { key = 's', mods = 'ALT|CTRL', action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' }, },
+    { key = 's',      mods = 'ALT|CTRL',   action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' }, },
 
     -- Switch Between Windows <CTRL-n> = +1 and <CTRL-p> = -1
-    { key = 'l', mods = 'CTRL', action = wezterm.action.ActivatePaneDirection "Right" },
-    { key = 'h', mods = 'CTRL', action = wezterm.action.ActivatePaneDirection "Left" },
-    { key = 'k', mods = 'CTRL', action = wezterm.action.ActivatePaneDirection "Up" },
-    { key = 'j', mods = 'CTRL', action = wezterm.action.ActivatePaneDirection "Down" },
+    { key = 'l',      mods = 'CTRL',       action = wezterm.action.ActivatePaneDirection "Right" },
+    { key = 'h',      mods = 'CTRL',       action = wezterm.action.ActivatePaneDirection "Left" },
+    { key = 'k',      mods = 'CTRL',       action = wezterm.action.ActivatePaneDirection "Up" },
+    { key = 'j',      mods = 'CTRL',       action = wezterm.action.ActivatePaneDirection "Down" },
 
     -- Increase the size of the pane to the left
-    {key="h", mods="CTRL|SHIFT", action=wezterm.action{AdjustPaneSize={"Left", 2}}},
+    { key = "h",      mods = "CTRL|SHIFT", action = wezterm.action { AdjustPaneSize = { "Left", 2 } } },
     -- Increase the size of the pane to the right
-    {key="l", mods="CTRL|SHIFT", action=wezterm.action{AdjustPaneSize={"Right", 2}}},
+    { key = "l",      mods = "CTRL|SHIFT", action = wezterm.action { AdjustPaneSize = { "Right", 2 } } },
     -- Increase the size of the pane above
-    {key="k", mods="CTRL|SHIFT", action=wezterm.action{AdjustPaneSize={"Up", 2}}},
+    { key = "k",      mods = "CTRL|SHIFT", action = wezterm.action { AdjustPaneSize = { "Up", 2 } } },
     -- Increase the size of the pane below
-    {key="j", mods="CTRL|SHIFT", action=wezterm.action{AdjustPaneSize={"Down", 2}}},
+    { key = "j",      mods = "CTRL|SHIFT", action = wezterm.action { AdjustPaneSize = { "Down", 2 } } },
 
     -- Show Tab Navigator
-    {key='i', mods = 'CTRL|SHIFT', action = act.ShowTabNavigator, },
+    { key = 'i',      mods = 'CTRL|SHIFT', action = act.ShowTabNavigator, },
 
-    -- Rotate panes Clockwise 
+    -- Rotate panes Clockwise
     -- eg.
     -- | 1 | 2 | 3 | => | 3 | 1 | 2 |
-    { key = 'b', mods = 'CTRL|SHIFT', action = act.RotatePanes 'Clockwise' },
+    { key = 'b',      mods = 'CTRL|SHIFT', action = act.RotatePanes 'Clockwise' },
 
 
     -- Claude integration
-    { key = 'c', mods = 'CTRL|SHIFT', action = wezterm.action{SendString="\x1b\r"}},
+    { key = 'c',      mods = 'CTRL|SHIFT', action = wezterm.action { SendString = "\x1b\r" } },
 }
 
-return config
+if wezterm.target_triple:find("darwin") then
+    config.window_decorations = "RESIZE"
+end
 
+return config
