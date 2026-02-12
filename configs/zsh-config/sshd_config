@@ -1,0 +1,19 @@
+# Hardened sshd_config managed in dotfiles (do not restart sshd automatically)
+# Based on best practices for public-key only, disabling root login, and minimal attack surface.
+
+Port 22
+Protocol 2
+
+PermitRootLogin no
+PasswordAuthentication no
+ChallengeResponseAuthentication no
+UsePAM yes
+
+LoginGraceTime 30s
+MaxAuthTries 3
+ClientAliveInterval 300
+ClientAliveCountMax 2
+
+AllowTcpForwarding no
+X11Forwarding no
+Subsystem sftp /usr/lib/openssh/sftp-server

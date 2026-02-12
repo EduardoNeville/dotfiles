@@ -148,14 +148,14 @@ alias .5="cd ../../../../.."
 alias .6="cd ../../../../../.."
 
 # --- ls shortcuts -------------------------------
-alias ls0="eza --icons --tree --level=1 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache|.next'"
-alias lse="eza --icons --tree --level=2 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache|.next'"
-alias ls3="eza --icons --tree --level=3 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache|.next'"
-alias ls4="eza --icons --tree --level=4 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache|.next'"
-alias lsn="eza --icons --tree --level=2 --sort='name' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache|.next'"
+alias ls0="eza --icons --tree --level=1 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache|.next|.yarn'"
+alias lse="eza --icons --tree --level=2 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache|.next|.yarn'"
+alias ls3="eza --icons --tree --level=3 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache|.next|.yarn'"
+alias ls4="eza --icons --tree --level=4 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache|.next|.yarn'"
+alias lsn="eza --icons --tree --level=2 --sort='name' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache|.next|.yarn'"
 alias lss="dust -d 2 -z 5MB -brC"
 
-ignore_dirs="-I .git -I __pycache__ -I .mypy_cache -I .ipynb_checkpoints -I node_modules -I .venv -I .pytest_cache -I .ruff_cache -I .uv_cache -I .next"
+ignore_dirs="-I .git -I __pycache__ -I .mypy_cache -I .ipynb_checkpoints -I node_modules -I .venv -I .pytest_cache -I .ruff_cache -I .uv_cache -I .next -I .yarn"
 alias ls="ls --color=auto"
 alias la="ls --color=auto -al ${ignore_dirs}"
 
@@ -249,3 +249,6 @@ alias sectest-sudo='sudo $HOME/.local/bin/uv run --directory $HOME/projects/sec-
 
 # opencode
 export PATH=$HOME/.opencode/bin:$PATH
+
+# OpenClaw Completion
+source <(openclaw completion --shell zsh)
