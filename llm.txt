@@ -1,0 +1,355 @@
+# Eduardo's Dotfiles - LLM Context
+
+## Repository Overview
+This is a comprehensive, automated dotfiles system designed for rapid deployment of a complete Linux development environment. The repository supports multiple Linux distributions (Debian/Ubuntu, Void, Fedora) and macOS, with emphasis on USB stick portability - clone to USB, plug into any machine, run one command, and the entire environment installs automatically.
+
+**Author:** Eduardo Neville
+**Primary Target:** Debian/Ubuntu systems
+**Philosophy:** Zero-configuration, plug-and-play development environments
+
+## Repository Structure
+
+```
+/home/eduardoneville/dotfiles/
+├── full_install.sh              # Main orchestration script (623 lines)
+├── README.md                    # Comprehensive user documentation
+├── llm.txt                      # This file - AI assistant context
+├── configs/                     # All application configurations
+│   ├── nvim/                   # Neovim with Lazy.nvim plugin manager
+│   ├── zsh-conf/              # ZSH shell + plugins (git submodules)
+│   │   └── plugins/           # fast-syntax-highlighting, zsh-autosuggestions, fzf-tab, etc.
+│   ├── suckless/              # dwm (window manager) + slstatus (status bar) source
+│   │   ├── dwm/              # Patched dwm source code
+│   │   └── slstatus/         # Status bar source
+│   ├── nnn/                   # File manager (full source with plugins)
+│   ├── wezterm/               # GPU-accelerated terminal emulator config
+│   ├── starship/              # Cross-shell prompt configuration
+│   ├── sway/                  # Wayland window manager config
+│   ├── waybar/                # Wayland status bar config
+│   ├── rofi/                  # Application launcher (X11)
+│   ├── wofi/                  # Application launcher (Wayland)
+│   ├── dunst/                 # Notification daemon config
+│   ├── television/            # Fuzzy finder with custom channels
+│   ├── services/              # systemd user services (pipewire)
+│   ├── .gitconfig             # Git configuration with delta integration
+│   └── .xinitrc               # X11 startup script
+├── scripts/                     # Modular installation scripts
+│   ├── debian/                # Debian/Ubuntu specific scripts
+│   │   ├── configure_system.sh    # Symlink creation, shell setup
+│   │   ├── install_suckless.sh    # dwm/slstatus compilation
+│   │   ├── install_rust_tools.sh  # Rust toolchain + cargo packages
+│   │   ├── install_nvm_node.sh    # Node.js via NVM
+│   │   ├── setup_audio.sh         # PipeWire audio system setup
+│   │   ├── setup_github.sh        # GitHub CLI authentication
+│   │   └── install_wezterm.sh     # WezTerm terminal installation
+│   ├── backup/                # System backup scripts
+│   ├── base_fedora_install.sh
+│   ├── base_void_install.sh
+│   ├── installer.sh
+│   └── validate_install.sh
+├── opt/                         # Package lists and definitions
+│   ├── debianPkgs             # 193+ Debian packages by category
+│   ├── cargoPkgs              # 14 Rust CLI tools to install
+│   ├── xbpsPkgs               # Void Linux packages
+│   ├── dnfPkgs                # Fedora packages
+│   ├── Brewfile               # macOS packages
+│   ├── nixPkgs                # Nix packages
+│   ├── homebrew               # Homebrew configuration
+│   ├── nodePkgs               # Global npm packages
+│   ├── pip                    # Python packages
+│   ├── aptPkgs                # Additional apt packages
+│   └── links                  # Symlink definitions for configure_system.sh
+├── notes/                       # Documentation
+│   ├── bootSteps.md           # Post-installation steps
+│   ├── neoVimPlugins.md       # Legacy packer instructions (outdated)
+│   └── packagesInfo.md        # Audio/PipeWire references
+├── assets/                      # Wallpapers and images
+└── deprecated/                  # Old installation scripts
+```
+
+## Architecture Patterns
+
+### 1. Symlink-Based Configuration Management
+The `scripts/debian/configure_system.sh` script uses symlinks to manage configs:
+- Creates symlinks from `~/dotfiles/configs/*` to `~/.config/*`
+- **Exception:** `suckless/` and `services/` directories handled specially
+- Backs up existing configs with timestamps before overwriting
+- Links `.zshrc` and `.gitconfig` directly to home directory
+- Sources are defined in `opt/links` file
+
+### 2. OS Detection and Adaptation
+The main script (`full_install.sh`) detects OS and sets package manager:
+- Debian/Ubuntu → `apt`
+- Void Linux → `xbps`  
+- Fedora → `dnf`
+- macOS → `brew`
+- Scripts fall back: tries `$OS/` subdirectory first, then `debian/`
+
+### 3. Three Installation Modes
+1. **Interactive** (default): Menu-driven selection of components
+2. **Full** (`--full`): Automated with minimal prompts
+3. **Unattended** (`--unattended`): Zero interaction for USB deployment
+
+### 4. Git Submodules for Shell Plugins
+ZSH plugins are vendored as git submodules in `configs/zsh-conf/plugins/`:
+- fast-syntax-highlighting
+- zsh-autosuggestions
+- fzf-tab
+- zsh-completions
+- zsh-fzf-history-search
+This ensures offline installation and version stability.
+
+### 5. Custom Suckless Builds
+Both dwm and slstatus are compiled from source:
+- Source code in `configs/suckless/`
+- Multiple patches included (flextile, nmaster, bartabgroups)
+- Custom color schemes and keybindings
+- Requires compilation via `scripts/debian/install_suckless.sh`
+
+## Key Configuration Details
+
+### ZSH Configuration (`configs/zsh-conf/zshrc`)
+**Plugins loaded via git submodules:**
+- fast-syntax-highlighting: Command syntax highlighting
+- zsh-autosuggestions: Fish-like auto-suggestions
+- fzf-tab: FZF-powered tab completion
+- zsh-completions: Additional command completions
+- zsh-fzf-history-search: History search with FZF
+
+**Key Settings:**
+- Vi mode enabled (`bindkey -v`)
+- FZF theming with synthwave colors
+- Auto-activation of Python virtualenvs
+- Environment isolation for API keys (`$DOTFILES/envs/api_keys`)
+
+**Custom Aliases:**
+- `ls0`, `lse`, `ls3`, `ls4`, `lsn`, `lss` - eza tree views with different depths
+- `zq` - zoxide interactive query
+- `ga`, `gc`, `gac`, `gps`, `gpl`, `gt` - Git shortcuts
+- `fp`, `fcd` - television file/directory picker
+
+### Neovim Configuration (`configs/nvim/`)
+**Plugin Manager:** Lazy.nvim (not Packer - legacy docs outdated)
+
+**Key Plugins:**
+- **LSP:** Mason + nvim-lspconfig with auto-install
+- **Completion:** nvim-cmp with LuaSnip
+- **Formatting:** conform.nvim (stylua, prettier, shfmt, rustfmt)
+- **Linting:** nvim-lint (luacheck, shellcheck, yamllint)
+- **Navigation:** Flash.nvim, eyeliner.nvim, oil.nvim
+- **UI:** indent-blankline, nvim-colorizer, transparent.nvim
+- **File Manager:** nnn.nvim integration
+- **Colors:** synthweave.nvim, fluoromachine.nvim
+
+**LSP Servers Auto-Installed:**
+lua_ls, rust_analyzer, clangd, ts_ls, jsonls, yamllint, dockerls, etc.
+
+### Window Manager Configurations
+
+**dwm (`configs/suckless/dwm/`):**
+- Custom color scheme (synthwave/void palette)
+- Roman numeral tags (I, II, III, IV, V, VI, VII)
+- Patches: flextile, nmaster, bartabgroups
+- Must be compiled with `make clean install`
+
+**sway (`configs/sway/config`):**
+- Wayland compositor (i3-compatible)
+- Status bar: waybar
+- Keybindings similar to i3/dwm
+
+**Waybar (`configs/waybar/`):**
+- Configuration in `config`
+- Styling in `style.css`
+
+### Starship Prompt (`configs/starship/starship.toml`)
+- Cross-shell prompt configuration
+- Git integration with branch status
+- Programming language version display
+- Nerd Font icons required
+- Execution time for long commands
+
+### Television (`configs/television/`)
+- Modern fuzzy finder (Rust-based)
+- Custom channels defined in `cable/` directory:
+  - alias.toml - Shell aliases
+  - bash-history.toml - Command history
+  - dirs.toml - Directory navigation
+  - docker-images.toml - Docker management
+  - git-repos.toml - Git repositories
+  - And 15+ more custom channels
+
+### Audio System (`configs/services/`)
+**PipeWire setup:**
+- pipewire/run - Main audio daemon
+- pipewire-pulse/run - PulseAudio compatibility
+- wireplumber/run - Session manager
+- Systemd user services enabled automatically
+
+## Development Workflow
+
+### Adding New Configuration Files
+1. Place config in appropriate subdirectory under `configs/`
+2. Add symlink entry to `opt/links` if needed
+3. Run `bash scripts/debian/configure_system.sh` to apply
+
+### Modifying Package Lists
+- Edit `opt/debianPkgs` for Debian/Ubuntu
+- Edit `opt/cargoPkgs` for Rust tools
+- Edit `opt/xbpsPkgs` for Void Linux
+- Edit `opt/dnfPkgs` for Fedora
+- Edit `opt/Brewfile` for macOS
+
+### Customizing dwm/slstatus
+1. Edit `configs/suckless/dwm/config.h` or `configs/suckless/slstatus/config.h`
+2. Run `bash scripts/debian/install_suckless.sh` to recompile
+
+### Adding Installation Scripts
+1. Create script in `scripts/debian/` (or appropriate OS subdirectory)
+2. Make executable: `chmod +x scripts/debian/my_script.sh`
+3. Integrate into `full_install.sh` menu or call standalone
+
+## Important File Locations
+
+**Configuration Symlinks Map:**
+```
+~/dotfiles/configs/nvim/           → ~/.config/nvim
+~/dotfiles/configs/zsh-conf/zshrc  → ~/.zshrc
+~/dotfiles/configs/.gitconfig      → ~/.gitconfig
+~/dotfiles/configs/sway/           → ~/.config/sway
+~/dotfiles/configs/waybar/         → ~/.config/waybar
+~/dotfiles/configs/rofi/           → ~/.config/rofi
+~/dotfiles/configs/wezterm/        → ~/.config/wezterm
+~/dotfiles/configs/starship/       → ~/.config/starship.toml
+~/dotfiles/configs/television/     → ~/.config/television
+~/dotfiles/configs/dunst/          → ~/.config/dunst
+~/dotfiles/configs/services/       → ~/.config/service (special handling)
+~/dotfiles/configs/suckless/       → Not symlinked, compiled separately
+~/dotfiles/configs/nnn/            → Not symlinked, compiled separately
+```
+
+**Package Lists:**
+- Main packages: `opt/debianPkgs`
+- Rust tools: `opt/cargoPkgs`
+- Symlink definitions: `opt/links`
+
+**Logs:**
+- Installation log: `~/dotfiles_install.log`
+
+## Modern CLI Tools Stack
+
+The system emphasizes modern Rust-based CLI replacements:
+- `eza` - Modern ls replacement with icons
+- `bat` - Syntax-highlighting cat
+- `ripgrep` - Fast grep with better defaults
+- `fd` - Better find with intuitive syntax
+- `zoxide` - Smart cd that learns your habits
+- `starship` - Fast, customizable prompt
+- `git-delta` - Beautiful git diffs with syntax highlighting
+- `gitui` - Terminal UI for git operations
+- `btop` - Resource monitor with graphs
+- `du-dust` - Disk usage analyzer
+- `television` - Fuzzy finder with custom channels
+- `csvlens` - CSV file viewer
+
+## Common Tasks
+
+**Full system installation:**
+```bash
+bash full_install.sh --full
+```
+
+**Just update symlinks:**
+```bash
+bash scripts/debian/configure_system.sh
+```
+
+**Recompile dwm after config changes:**
+```bash
+bash scripts/debian/install_suckless.sh
+```
+
+**Install new cargo package:**
+```bash
+source ~/.cargo/env
+cargo install <package>
+```
+
+**Update all plugins (ZSH):**
+```bash
+cd ~/dotfiles
+git submodule update --init --recursive
+```
+
+**Check audio status:**
+```bash
+systemctl --user status pipewire wireplumber
+pactl list sinks
+```
+
+## Dependencies and Prerequisites
+
+**Required:**
+- sudo privileges
+- Internet connection
+- git
+
+**Assumed Installed (minimal base):**
+- bash
+- curl/wget
+- Basic build tools (gcc, make, etc. - installed by script)
+
+**Fonts Required:**
+- Nerd Fonts (for starship and terminal icons)
+
+## Colors and Theming
+
+**Primary Color Schemes:**
+- Synthwave (purple/cyan/pink)
+- Void Linux inspired (green/black)
+- Used across: dwm, terminal, neovim, starship
+
+**FZF Theme:**
+Synthwave colors configured in zshrc
+
+## Security Considerations
+
+- SSH keys generated with ed25519 (modern, secure)
+- GitHub authentication via official `gh` CLI
+- API keys isolated in `$DOTFILES/envs/api_keys` (not in repo)
+- All downloads use HTTPS
+- No passwords stored in dotfiles
+
+## Troubleshooting Common Issues
+
+**Fonts not displaying:**
+```bash
+fc-cache -fv
+```
+
+**Audio not working:**
+```bash
+systemctl --user restart pipewire pipewire-pulse wireplumber
+```
+
+**Cargo packages failing:**
+- Uses `cargo-binstall` for faster installation
+- Falls back to compilation
+
+**ZSH plugins not loading:**
+```bash
+cd ~/dotfiles
+git submodule update --init --recursive
+```
+
+## Notes for AI Assistants
+
+1. **Always use the symlink approach** when adding new configs - don't directly edit ~/.config files
+2. **Check opt/links** before creating new symlinks manually
+3. **OS-specific scripts** should go in scripts/$OS/ with fallback to scripts/debian/
+4. **ZSH plugins are submodules** - don't try to install via package manager
+5. **dwm/slstatus require compilation** - config changes need re-running install_suckless.sh
+6. **Package lists are categorized** in opt/debianPkgs by use case (dev, multimedia, etc.)
+7. **Use modern CLI tools** (eza, bat, fd, rg) instead of legacy tools (ls, cat, find, grep)
+8. **Lazy.nvim** is the plugin manager - not Packer (legacy documentation exists but is outdated)
+9. **Television** is the fuzzy finder of choice - configure channels in configs/television/cable/
+
