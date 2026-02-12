@@ -5,10 +5,12 @@ A sleek, modern tmux configuration optimized for managing remote servers via Tai
 ## Features
 
 - **Powerline-style status bar** with synthwave color scheme
+- **Git branch display** - Shows current branch in status bar
 - **Tailscale integration** - Shows connection status in status bar
+- **SSH indicator** - Shows when connected via SSH
 - **SSH shortcuts** - Quick SSH connections to hosts
-- **Network monitoring** - Real-time network usage display
 - **Vim-style keybindings** - Familiar navigation
+- **Session management** - Create and rename sessions easily
 - **True color support** - Full 256-color terminal support
 
 ## Color Scheme
@@ -17,9 +19,8 @@ Matches your existing dotfiles theme:
 - Blue (#0969da) - Primary accent
 - Light Blue (#45aeff) - Secondary accent
 - Cyan (#0ae4a4) - Tailscale/t Success indicators
-- Pink (#f0268f) - Active window highlight
-- Green (#65ff87) - Time display
-- Yellow (#f1d751) - Load average
+- Pink (#f0268f) - Active window highlight, git branch
+- Yellow (#f1d751) - SSH indicator
 
 ## Key Bindings
 
@@ -48,6 +49,8 @@ Matches your existing dotfiles theme:
 - `prefix + N` - Show network connections
 
 ### Sessions
+- `prefix + C` - Create new session (prompts for name)
+- `prefix + $` - Rename current session
 - `prefix + Shift+Left/Right` - Switch to previous/next session
 - `prefix + L` - List all sessions (tree view)
 - `prefix + d` - Detach from session
@@ -62,7 +65,7 @@ Matches your existing dotfiles theme:
 ### Left Side
 - **Session name** (blue background)
 - **Hostname** (light blue)
-- **Tailscale status** (green when connected, red when offline)
+- **Git branch** (pink - shows current git branch in repo)
 
 ### Center
 - **Window list** with powerline separators
@@ -70,10 +73,8 @@ Matches your existing dotfiles theme:
 - Zoom indicator (󰊓) when pane is zoomed
 
 ### Right Side
-- **Download speed** (current interface)
-- **Upload speed** (current interface)
-- **Load average**
-- **Current time** (24-hour format)
+- **SSH indicator** (yellow - shows when connected via SSH)
+- **Tailscale status** (green when connected, red when offline)
 
 ## Tailscale Integration
 
