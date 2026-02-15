@@ -168,6 +168,21 @@ lua_ls, rust_analyzer, clangd, ts_ls, jsonls, yamllint, dockerls, etc.
 - Nerd Font icons required
 - Execution time for long commands
 
+### Tmux (`configs/tmux/`)
+- Prefix key: Ctrl+Space
+- Status bar: Session, hostname, git branch on left; SSH/Tailscale on right
+- Key bindings:
+  - `prefix + C` - Create new session (prompts for name)
+  - `prefix + $` - Rename current session
+  - `prefix + L` - List sessions (tree view)
+  - `prefix + S` - SSH to host
+  - `prefix + c` - New window
+  - `prefix + v/s` - Split horizontal/vertical
+  - `prefix + h/j/k/l` - Navigate panes (vim style)
+  - `prefix + n/p` - Next/previous window
+- SSH indicator shows when connected via SSH_CLIENT
+- Tailscale status shows connection state
+
 ### Television (`configs/television/`)
 - Modern fuzzy finder (Rust-based)
 - Custom channels defined in `cable/` directory:
@@ -222,6 +237,7 @@ lua_ls, rust_analyzer, clangd, ts_ls, jsonls, yamllint, dockerls, etc.
 ~/dotfiles/configs/starship/       → ~/.config/starship.toml
 ~/dotfiles/configs/television/     → ~/.config/television
 ~/dotfiles/configs/dunst/          → ~/.config/dunst
+~/dotfiles/configs/tmux/           → ~/.config/tmux
 ~/dotfiles/configs/services/       → ~/.config/service (special handling)
 ~/dotfiles/configs/suckless/       → Not symlinked, compiled separately
 ~/dotfiles/configs/nnn/            → Not symlinked, compiled separately
