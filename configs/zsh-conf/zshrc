@@ -41,11 +41,16 @@ export CLICOLOR=1
 # cd without cd
 setopt autocd
 ### ----- Completion init -----------------------------------
-if type brew &>/dev/null; then
-    FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+# Add custom completions to fpath
+fpath=($ZSH/plugins/zsh-completions/src $ZSH/plugins/openclaw $fpath)
 
-    autoload -Uz compinit
+# Only run compinit once per day to speed up startup
+autoload -Uz compinit
+if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
     compinit -i
+    touch ~/.zcompdump
+else
+    compinit -C -i
 fi
 
 # glob
@@ -66,7 +71,6 @@ load_env
 ### ---- Plugins & Themes -----------------------------------
 
 # ZSH PLUGINS
-fpath=($ZSH/plugins/zsh-completions/src $fpath)
 source $ZSH/plugins/fzf-tab/fzf-tab.plugin.zsh
 source $ZSH/plugins/fast-syntax-highlighting/F-Sy-H.plugin.zsh
 source $ZSH/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
@@ -249,8 +253,6 @@ eval "$(zoxide init zsh)"
 # rust export
 export PATH="$HOME/.cargo/bin:$PATH"
 
-autoload -U compinit; compinit -i
-
 # Starship 
 export STARSHIP_CONFIG=~/.config/starship/starship.toml
 export STARSHIP_CACHE=~/.starship/cache
@@ -280,13 +282,16 @@ export PATH="$HOME/.local/bin:$PATH"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
+# Lazy load NVM (only when node/npm is called)
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-alias sectest-sudo='sudo $HOME/.local/bin/uv run --directory $HOME/projects/sec-test sectest'
+nvm() {
+  unset -f nvm
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+  nvm "$@"
+}
 
 # opencode
 export PATH=$HOME/.opencode/bin:$PATH
 
-# OpenClaw Completion
-source <(openclaw completion --shell zsh)
+# OpenClaw Completion (cached in $ZSH/plugins/openclaw/)
