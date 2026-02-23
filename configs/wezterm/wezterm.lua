@@ -2,40 +2,40 @@ local wezterm = require("wezterm")
 local act = wezterm.action
 
 ----------------------------------------------------
---- Theme Cycler -----------------------------------
+--- Theme Switcher ---------------------------------
 ----------------------------------------------------
 
----cycle through builtin dark schemes in dark mode,
----and through light schemes in light mode
---local function themeCycler(window, _)
---	local allSchemes = wezterm.color.get_builtin_schemes()
---	local currentMode = wezterm.gui.get_appearance()
---	local currentScheme = window:effective_config().color_scheme
---	local darkSchemes = {'Tokyo Night Storm', 'Catppuccin Machiatto'}
---	local lightSchemes = {'Papercolor Light (Gogh)'}
---
---	for name, scheme in pairs(allSchemes) do
---		local bg = wezterm.color.parse(scheme.background) -- parse into a color object
---		---@diagnostic disable-next-line: unused-local
---		local h, s, l, a = bg:hsla() -- and extract HSLA information
---		if l < 0.4 then
---			table.insert(darkSchemes, name)
---		else
---			table.insert(lightSchemes, name)
---		end
---	end
---	local schemesToSearch = currentMode:find("Dark") and darkSchemes or lightSchemes
---
---	for i = 1, #schemesToSearch, 1 do
---		if schemesToSearch[i] == currentScheme then
---			local overrides = window:get_config_overrides() or {}
---			overrides.color_scheme = schemesToSearch[i+1]
---			wezterm.log_info("Switched to: " .. schemesToSearch[i+1])
---			window:set_config_overrides(overrides)
---			return
---		end
---	end
---end
+local dark_scheme = "Ayu Dark (Gogh)"
+local light_scheme = "Papercolor Light (Gogh)"
+
+local dark_window_frame = {
+    active_titlebar_bg = '#171d23',
+    inactive_titlebar_bg = '#1f2d38',
+}
+
+local light_window_frame = {
+    active_titlebar_bg = '#ffffff',
+    inactive_titlebar_bg = '#e4e4e4',
+}
+
+local function toggle_theme(window, _)
+    local current_scheme = window:effective_config().color_scheme
+    local overrides = window:get_config_overrides() or {}
+    
+    if current_scheme == dark_scheme then
+        overrides.color_scheme = light_scheme
+        overrides.window_frame = light_window_frame
+        overrides.window_background_opacity = 1.0
+        wezterm.log_info("Switched to light theme: " .. light_scheme)
+    else
+        overrides.color_scheme = dark_scheme
+        overrides.window_frame = dark_window_frame
+        overrides.window_background_opacity = 0.85
+        wezterm.log_info("Switched to dark theme: " .. dark_scheme)
+    end
+    
+    window:set_config_overrides(overrides)
+end
 
 ---------------------------------------------------------------
 --- Workspace ----------------------------------------------------
@@ -63,15 +63,16 @@ local config = {
     --color_scheme = 'Ayu Mirage (Gogh)',
     --color_scheme = 'Ayu Dark (Gogh)',
     --color_scheme = 'Ayu Light (Gogh)',
-    color_scheme = 'Elio (Gogh)',
+    --color_scheme = 'Elio (Gogh)',
     --color_scheme = 'Matrix (terminal.sexy)',
     --color_scheme = "Eldritch",
     --color_scheme = "Scarlet Protocol",
     --
-    -- Synthwave
+    -- SynthWave
     --color_scheme = "Synthwave (Gogh)",
     --color_scheme = "Synthwave Alpha (Gogh)",
     --color_scheme = "SynthwaveAlpha",
+    color_scheme = dark_scheme,
 
 
     color_scheme_dirs = { os.getenv("HOME") .. "/.config/wezterm/colors/" },
@@ -219,6 +220,9 @@ config.colors = {
 }
 
 config.keys = {
+    --- Theme Toggle --------------------
+    { key = "l", mods = "CTRL|SHIFT", action = wezterm.action_callback(toggle_theme) },
+
     --- Theme Cycler --------------------
     -- Calling the themeCycler
     --{ key = "t", mods = "CTRL", action = wezterm.action_callback(themeCycler) },
