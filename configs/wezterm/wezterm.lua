@@ -13,25 +13,96 @@ local dark_window_frame = {
     inactive_titlebar_bg = '#1f2d38',
 }
 
+local dark_colors = {
+    background = '#171d23',
+    foreground = '#bfbfbf',
+    cursor_bg = '#bfbfbf',
+    cursor_border = '#bfbfbf',
+    selection_bg = '#33425c',
+    selection_fg = '#bfbfbf',
+    ansi = {
+        '#171d23', -- black
+        '#f07178', -- red
+        '#aad94c', -- green
+        '#ffcf67', -- yellow
+        '#59a5f2', -- blue
+        '#d39bd6', -- magenta
+        '#6bc3d4', -- cyan
+        '#bfbfbf', -- white
+    },
+    brights = {
+        '#586975', -- bright black
+        '#ff8e9e', -- bright red
+        '#c2e68d', -- bright yellow
+        '#ffe586', -- bright blue
+        '#7aa9f7', -- bright magenta
+        '#e78fd6', -- bright cyan
+        '#9fd9e8', -- bright white
+    },
+}
+
 local light_window_frame = {
     active_titlebar_bg = '#ffffff',
     inactive_titlebar_bg = '#e4e4e4',
 }
 
+local light_colors = {
+    background = '#ffffff',
+    foreground = '#333333',
+    cursor_bg = '#333333',
+    cursor_border = '#333333',
+    selection_bg = '#b3d9ff',
+    selection_fg = '#333333',
+    ansi = {
+        '#333333', -- black
+        '#cc2222', -- red
+        '#22aa22', -- green
+        '#ccaa22', -- yellow
+        '#2255cc', -- blue
+        '#aa2255', -- magenta
+        '#22aaaa', -- cyan
+        '#dddddd', -- white
+    },
+    brights = {
+        '#555555', -- bright black
+        '#ff4444', -- bright red
+        '#44cc44', -- bright green
+        '#ffee44', -- bright yellow
+        '#4488ff', -- bright blue
+        '#ff44aa', -- bright magenta
+        '#44ffff', -- bright cyan
+        '#ffffff', -- bright white
+    },
+    indexed = { [16] = '#cc8800', [17] = '#444444' },
+    scrollbar_thumb = '#cccccc',
+    split = '#dddddd',
+    tab_bar = {
+        active_tab = { bg_color = '#ffffff', fg_color = '#333333' },
+        inactive_tab = { bg_color = '#e4e4e4', fg_color = '#777777' },
+        inactive_tab_hover = { bg_color = '#dddddd', fg_color = '#333333', italic = true },
+        new_tab = { bg_color = '#eeeeee', fg_color = '#555555' },
+        new_tab_hover = { bg_color = '#dddddd', fg_color = '#333333', italic = true },
+    },
+}
+
+local is_light = false
+
 local function toggle_theme(window, _)
-    local current_scheme = window:effective_config().color_scheme
-    local overrides = window:get_config_overrides() or {}
+    is_light = not is_light
     
-    if current_scheme == dark_scheme then
-        overrides.color_scheme = light_scheme
-        overrides.window_frame = light_window_frame
-        overrides.window_background_opacity = 1.0
-        wezterm.log_info("Switched to light theme: " .. light_scheme)
+    local new_opacity = is_light and 1.0 or 0.85
+    local new_frame = is_light and light_window_frame or dark_window_frame
+    
+    local overrides = {
+        window_background_opacity = new_opacity,
+        window_frame = new_frame,
+    }
+    
+    if is_light then
+        overrides.colors = light_colors
     else
         overrides.color_scheme = dark_scheme
-        overrides.window_frame = dark_window_frame
-        overrides.window_background_opacity = 0.85
-        wezterm.log_info("Switched to dark theme: " .. dark_scheme)
+        overrides.colors = dark_colors
     end
     
     window:set_config_overrides(overrides)
@@ -93,8 +164,6 @@ local config = {
 
     --- Window Info ----
     window_background_opacity = 0.85,
-
-    -- Default setting
     window_decorations = "NONE",
 
     scrollback_lines = 5000,
@@ -221,7 +290,7 @@ config.colors = {
 
 config.keys = {
     --- Theme Toggle --------------------
-    { key = "l", mods = "CTRL|SHIFT", action = wezterm.action_callback(toggle_theme) },
+    { key = "y",      mods = "CTRL|SHIFT", action = wezterm.action_callback(toggle_theme) },
 
     --- Theme Cycler --------------------
     -- Calling the themeCycler
