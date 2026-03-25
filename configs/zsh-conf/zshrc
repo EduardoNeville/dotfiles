@@ -244,6 +244,9 @@ gss -> git stash \n
 gco -> git checkout\n
 gt -> git tui\n'"
 
+# --- Neovim  ----------------------------------
+export PATH="$PATH:/opt/nvim-linux-x86_64/bin"
+
 # --- Docker ----------------------------------
 alias ld='lazydocker'
 
