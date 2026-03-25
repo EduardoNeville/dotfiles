@@ -87,11 +87,30 @@ local light_colors = {
 
 local is_light = false
 
+local tmux_dark_theme = {
+    status_bg = '#1f2335',
+    status_fg = '#a9b1d6',
+    pane_border = '#3b4261',
+    active_border = '#0969da',
+    message_bg = '#0969da',
+    mode_bg = '#f0268f',
+}
+
+local tmux_light_theme = {
+    status_bg = '#ffffff',
+    status_fg = '#383a42',
+    pane_border = '#e4e4e4',
+    active_border = '#0969da',
+    message_bg = '#0969da',
+    mode_bg = '#e45649',
+}
+
 local function toggle_theme(window, _)
     is_light = not is_light
     
     local new_opacity = is_light and 1.0 or 0.85
     local new_frame = is_light and light_window_frame or dark_window_frame
+    local tmux_theme = is_light and tmux_light_theme or tmux_dark_theme
     
     local overrides = {
         window_background_opacity = new_opacity,
@@ -106,6 +125,17 @@ local function toggle_theme(window, _)
     end
     
     window:set_config_overrides(overrides)
+    
+    local tmux_cmd = string.format(
+        'set -g status-style bg=%s,fg=%s ; set -g pane-border-style fg=%s ; set -g pane-active-border-style fg=%s ; set -g message-style bg=%s,fg=ffffff ; set -g mode-style bg=%s,fg=ffffff',
+        tmux_theme.status_bg,
+        tmux_theme.status_fg,
+        tmux_theme.pane_border,
+        tmux_theme.active_border,
+        tmux_theme.message_bg,
+        tmux_theme.mode_bg
+    )
+    window:perform_action(wezterm.action.SendString('\x1bPtmux;' .. tmux_cmd .. '\x1b\\'), nil)
 end
 
 ---------------------------------------------------------------
