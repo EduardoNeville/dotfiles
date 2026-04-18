@@ -1,5 +1,34 @@
 local wezterm = require("wezterm")
 local act = wezterm.action
+local io = require("io")
+local os = require("os")
+
+----------------------------------------------------
+--- Theme State File -------------------------------
+----------------------------------------------------
+
+local STATE_FILE = os.getenv("XDG_STATE_HOME") .. "/theme"
+if not STATE_FILE or STATE_FILE == "/theme" then
+    STATE_FILE = os.getenv("HOME") .. "/.local/state/theme"
+end
+
+local function read_theme_state()
+    local f = io.open(STATE_FILE, "r")
+    if f then
+        local state = f:read("*a"):gsub("%s+", "")
+        f:close()
+        return state == "light"
+    end
+    return false
+end
+
+local function write_theme_state(is_light)
+    local f = io.open(STATE_FILE, "w")
+    if f then
+        f:write(is_light and "light" or "dark")
+        f:close()
+    end
+end
 
 ----------------------------------------------------
 --- Theme Switcher ---------------------------------
@@ -85,7 +114,7 @@ local light_colors = {
     },
 }
 
-local is_light = false
+local is_light = read_theme_state()
 
 local tmux_dark_theme = {
     status_bg = '#1f2335',
@@ -107,6 +136,7 @@ local tmux_light_theme = {
 
 local function toggle_theme(window, _)
     is_light = not is_light
+    write_theme_state(is_light)
     
     local new_opacity = is_light and 1.0 or 0.85
     local new_frame = is_light and light_window_frame or dark_window_frame
@@ -126,16 +156,7 @@ local function toggle_theme(window, _)
     
     window:set_config_overrides(overrides)
     
-    local tmux_cmd = string.format(
-        'set -g status-style bg=%s,fg=%s ; set -g pane-border-style fg=%s ; set -g pane-active-border-style fg=%s ; set -g message-style bg=%s,fg=ffffff ; set -g mode-style bg=%s,fg=ffffff',
-        tmux_theme.status_bg,
-        tmux_theme.status_fg,
-        tmux_theme.pane_border,
-        tmux_theme.active_border,
-        tmux_theme.message_bg,
-        tmux_theme.mode_bg
-    )
-    window:perform_action(wezterm.action.SendString('\x1bPtmux;' .. tmux_cmd .. '\x1b\\'), nil)
+    window:emit("theme-changed", is_light and "light" or "dark")
 end
 
 ---------------------------------------------------------------
