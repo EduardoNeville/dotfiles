@@ -29,7 +29,7 @@ _header() {
 program_exists() { command -v "$1" >/dev/null 2>&1; }
 
 log() {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$LOG_FILE"
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >>"$LOG_FILE"
 }
 
 # ============================================================================
@@ -51,24 +51,24 @@ detect_os() {
     fi
 
     case "$OS" in
-        "ubuntu"|"debian")
-            PACKAGE_MANAGER="apt"
-            ;;
-        "fedora"|"centos"|"rhel")
-            PACKAGE_MANAGER="dnf"
-            ;;
-        "arch"|"manjaro")
-            PACKAGE_MANAGER="pacman"
-            ;;
-        "void")
-            PACKAGE_MANAGER="xbps"
-            ;;
-        "macos")
-            PACKAGE_MANAGER="brew"
-            ;;
-        *)
-            PACKAGE_MANAGER="unknown"
-            ;;
+    "ubuntu" | "debian")
+        PACKAGE_MANAGER="apt"
+        ;;
+    "fedora" | "centos" | "rhel")
+        PACKAGE_MANAGER="dnf"
+        ;;
+    "arch" | "manjaro")
+        PACKAGE_MANAGER="pacman"
+        ;;
+    "void")
+        PACKAGE_MANAGER="xbps"
+        ;;
+    "macos")
+        PACKAGE_MANAGER="brew"
+        ;;
+    *)
+        PACKAGE_MANAGER="unknown"
+        ;;
     esac
 
     _success "Detected: $OS (Package manager: $PACKAGE_MANAGER)"
@@ -83,18 +83,18 @@ install_package_manager() {
     _header "Package Manager Setup"
 
     case $PACKAGE_MANAGER in
-        "brew")
-            if ! program_exists brew; then
-                _process "Installing Homebrew"
-                /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-                _success "Homebrew installed"
-            else
-                _success "Homebrew already installed"
-            fi
-            ;;
-        *)
-            _success "Package manager already available"
-            ;;
+    "brew")
+        if ! program_exists brew; then
+            _process "Installing Homebrew"
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+            _success "Homebrew installed"
+        else
+            _success "Homebrew already installed"
+        fi
+        ;;
+    *)
+        _success "Package manager already available"
+        ;;
     esac
 }
 
@@ -103,25 +103,25 @@ update_system() {
     _process "Updating system packages"
 
     case $PACKAGE_MANAGER in
-        "apt")
-            sudo apt update && sudo apt upgrade -y
-            ;;
-        "dnf")
-            sudo dnf upgrade -y
-            ;;
-        "pacman")
-            sudo pacman -Syu --noconfirm
-            ;;
-        "xbps")
-            sudo xbps-install -Su
-            ;;
-        "brew")
-            brew update && brew upgrade
-            ;;
-        *)
-            _error "Unsupported package manager"
-            return 1
-            ;;
+    "apt")
+        sudo apt update && sudo apt upgrade -y
+        ;;
+    "dnf")
+        sudo dnf upgrade -y
+        ;;
+    "pacman")
+        sudo pacman -Syu --noconfirm
+        ;;
+    "xbps")
+        sudo xbps-install -Su
+        ;;
+    "brew")
+        brew update && brew upgrade
+        ;;
+    *)
+        _error "Unsupported package manager"
+        return 1
+        ;;
     esac
 
     _success "System updated"
@@ -137,30 +137,30 @@ install_packages() {
     local pkg_file=""
 
     case $PACKAGE_MANAGER in
-        "apt")
-            pkg_file="${DOTFILES_DIR}/opt/debianPkgs"
-            ;;
-        "dnf")
-            pkg_file="${DOTFILES_DIR}/opt/dnfPkgs"
-            ;;
-        "xbps")
-            pkg_file="${DOTFILES_DIR}/opt/xbpsPkgs"
-            ;;
-        "brew")
-            if [ -f "${DOTFILES_DIR}/opt/Brewfile" ]; then
-                _process "Installing packages via Brewfile"
-                cd "${DOTFILES_DIR}/opt"
-                brew bundle
-                cd - >/dev/null
-                _success "Brew packages installed"
-                return 0
-            fi
-            pkg_file="${DOTFILES_DIR}/opt/brewPkgs"
-            ;;
-        *)
-            _error "Unsupported package manager: $PACKAGE_MANAGER"
-            return 1
-            ;;
+    "apt")
+        pkg_file="${DOTFILES_DIR}/opt/debianPkgs"
+        ;;
+    "dnf")
+        pkg_file="${DOTFILES_DIR}/opt/dnfPkgs"
+        ;;
+    "xbps")
+        pkg_file="${DOTFILES_DIR}/opt/xbpsPkgs"
+        ;;
+    "brew")
+        if [ -f "${DOTFILES_DIR}/opt/Brewfile" ]; then
+            _process "Installing packages via Brewfile"
+            cd "${DOTFILES_DIR}/opt"
+            brew bundle
+            cd - >/dev/null
+            _success "Brew packages installed"
+            return 0
+        fi
+        pkg_file="${DOTFILES_DIR}/opt/brewPkgs"
+        ;;
+    *)
+        _error "Unsupported package manager: $PACKAGE_MANAGER"
+        return 1
+        ;;
     esac
 
     if [ ! -f "$pkg_file" ]; then
@@ -180,23 +180,57 @@ install_packages() {
 
     _process "Installing ${#packages[@]} packages (this may take a while)..."
 
+    local failed=0
+
     case $PACKAGE_MANAGER in
-        "apt")
-            sudo apt update
-            sudo apt install -y "${packages[@]}" 2>&1 | tee -a "$LOG_FILE"
-            ;;
-        "dnf")
-            sudo dnf install -y "${packages[@]}" 2>&1 | tee -a "$LOG_FILE"
-            ;;
-        "xbps")
-            sudo xbps-install -y "${packages[@]}" 2>&1 | tee -a "$LOG_FILE"
-            ;;
-        "brew")
-            brew install "${packages[@]}" 2>&1 | tee -a "$LOG_FILE"
-            ;;
+    "apt")
+        sudo apt update
+        for pkg in "${packages[@]}"; do
+            if sudo apt install -y "$pkg" 2>&1 | tee -a "$LOG_FILE"; then
+                _success "Installed: $pkg"
+            else
+                _error "Failed to install: $pkg"
+                failed=$((failed + 1))
+            fi
+        done
+        ;;
+    "dnf")
+        for pkg in "${packages[@]}"; do
+            if sudo dnf install -y "$pkg" 2>&1 | tee -a "$LOG_FILE"; then
+                _success "Installed: $pkg"
+            else
+                _error "Failed to install: $pkg"
+                failed=$((failed + 1))
+            fi
+        done
+        ;;
+    "xbps")
+        for pkg in "${packages[@]}"; do
+            if sudo xbps-install -y "$pkg" 2>&1 | tee -a "$LOG_FILE"; then
+                _success "Installed: $pkg"
+            else
+                _error "Failed to install: $pkg"
+                failed=$((failed + 1))
+            fi
+        done
+        ;;
+    "brew")
+        for pkg in "${packages[@]}"; do
+            if brew install "$pkg" 2>&1 | tee -a "$LOG_FILE"; then
+                _success "Installed: $pkg"
+            else
+                _error "Failed to install: $pkg"
+                failed=$((failed + 1))
+            fi
+        done
+        ;;
     esac
 
-    _success "Packages installed successfully"
+    if [ $failed -gt 0 ]; then
+        _error "$failed package(s) failed to install"
+    else
+        _success "All packages installed successfully"
+    fi
 }
 
 # ============================================================================
@@ -214,47 +248,47 @@ install_docker() {
     _process "Installing Docker"
 
     case $PACKAGE_MANAGER in
-        "apt")
-            # Install Docker on Debian/Ubuntu
-            sudo apt-get update
-            sudo apt-get install -y ca-certificates curl
-            sudo install -m 0755 -d /etc/apt/keyrings
-            sudo curl -fsSL https://download.docker.com/linux/${OS}/gpg -o /etc/apt/keyrings/docker.asc
-            sudo chmod a+r /etc/apt/keyrings/docker.asc
+    "apt")
+        # Install Docker on Debian/Ubuntu
+        sudo apt-get update
+        sudo apt-get install -y ca-certificates curl
+        sudo install -m 0755 -d /etc/apt/keyrings
+        sudo curl -fsSL https://download.docker.com/linux/${OS}/gpg -o /etc/apt/keyrings/docker.asc
+        sudo chmod a+r /etc/apt/keyrings/docker.asc
 
-            echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/${OS} \
-            $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-            sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/${OS} \
+            $(. /etc/os-release && echo "$VERSION_CODENAME") stable" |
+            sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
 
-            sudo apt-get update
-            sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+        sudo apt-get update
+        sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
-            # Add user to docker group
-            sudo usermod -aG docker ${USER}
-            ;;
+        # Add user to docker group
+        sudo usermod -aG docker ${USER}
+        ;;
 
-        "dnf")
-            sudo dnf -y install dnf-plugins-core
-            sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
-            sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-            sudo systemctl enable --now docker
-            sudo usermod -aG docker ${USER}
-            ;;
+    "dnf")
+        sudo dnf -y install dnf-plugins-core
+        sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+        sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+        sudo systemctl enable --now docker
+        sudo usermod -aG docker ${USER}
+        ;;
 
-        "xbps")
-            sudo xbps-install -y docker
-            sudo ln -s /etc/sv/docker /var/service/
-            sudo usermod -aG docker ${USER}
-            ;;
+    "xbps")
+        sudo xbps-install -y docker
+        sudo ln -s /etc/sv/docker /var/service/
+        sudo usermod -aG docker ${USER}
+        ;;
 
-        "brew")
-            brew install --cask docker
-            ;;
+    "brew")
+        brew install --cask docker
+        ;;
 
-        *)
-            _error "Docker installation not supported for $PACKAGE_MANAGER"
-            return 1
-            ;;
+    *)
+        _error "Docker installation not supported for $PACKAGE_MANAGER"
+        return 1
+        ;;
     esac
 
     _success "Docker installed"
@@ -340,11 +374,11 @@ install_wezterm() {
         bash "${DOTFILES_DIR}/scripts/debian/install_wezterm.sh"
     else
         _process "Installing Wezterm (fallback debian method)"
-	curl -fsSL https://apt.fury.io/wez/gpg.key | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
-	echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list
-	sudo chmod 644 /usr/share/keyrings/wezterm-fury.gpg
-	sudo apt update
-	sudo apt install -y wezterm
+        curl -fsSL https://apt.fury.io/wez/gpg.key | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
+        echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list
+        sudo chmod 644 /usr/share/keyrings/wezterm-fury.gpg
+        sudo apt update
+        sudo apt install -y wezterm
     fi
 }
 
@@ -439,46 +473,46 @@ interactive_install() {
 
     for choice in "${choices[@]}"; do
         case $choice in
-            1)
-                full_install
-                ;;
-            2)
-                update_system
-                ;;
-            3)
-                install_packages
-                ;;
-            4)
-                install_docker
-                ;;
-            5)
-                install_rust
-                ;;
-            6)
-                install_nodejs
-                ;;
-            7)
-                install_wezterm
-                ;;
-            8)
-                install_suckless
-                ;;
-            9)
-                setup_audio
-                ;;
-            10)
-                setup_github
-                ;;
-            11)
-                configure_system
-                ;;
-            0)
-                echo "Exiting..."
-                exit 0
-                ;;
-            *)
-                _error "Invalid option: $choice"
-                ;;
+        1)
+            full_install
+            ;;
+        2)
+            update_system
+            ;;
+        3)
+            install_packages
+            ;;
+        4)
+            install_docker
+            ;;
+        5)
+            install_rust
+            ;;
+        6)
+            install_nodejs
+            ;;
+        7)
+            install_wezterm
+            ;;
+        8)
+            install_suckless
+            ;;
+        9)
+            setup_audio
+            ;;
+        10)
+            setup_github
+            ;;
+        11)
+            configure_system
+            ;;
+        0)
+            echo "Exiting..."
+            exit 0
+            ;;
+        *)
+            _error "Invalid option: $choice"
+            ;;
         esac
     done
 
@@ -581,7 +615,7 @@ unattended_install() {
 
 main() {
     # Initialize log file
-    echo "Installation started at $(date)" > "$LOG_FILE"
+    echo "Installation started at $(date)" >"$LOG_FILE"
 
     # ASCII Art Banner
     echo ""
