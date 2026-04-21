@@ -234,6 +234,50 @@ install_packages() {
 }
 
 # ============================================================================
+# Tailscale Installation
+# ============================================================================
+
+install_tailscale() {
+    _header "Tailscale Installation"
+
+    if program_exists tailscale; then
+        _success "Tailscale already installed"
+        return 0
+    fi
+
+    _process "Installing Tailscale"
+
+    case $PACKAGE_MANAGER in
+    "apt")
+        curl -fsSL https://tailscale.com/install.sh | sh
+        ;;
+
+    "dnf")
+        sudo dnf install -y tailscale
+        ;;
+
+    "pacman")
+        sudo pacman -S --noconfirm tailscale
+        ;;
+
+    "xbps")
+        sudo xbps-install -y tailscale
+        ;;
+
+    "brew")
+        brew install --cask tailscale
+        ;;
+
+    *)
+        _error "Tailscale installation not supported for $PACKAGE_MANAGER"
+        return 1
+        ;;
+    esac
+
+    _success "Tailscale installed"
+}
+
+# ============================================================================
 # Docker Installation
 # ============================================================================
 
@@ -459,13 +503,14 @@ interactive_install() {
     echo "  2) System update only"
     echo "  3) Core packages"
     echo "  4) Docker"
-    echo "  5) Rust & Cargo tools"
-    echo "  6) Node.js & NPM"
-    echo "  7) Wezterm"
-    echo "  8) Suckless tools (dwm, slstatus, etc.)"
-    echo "  9) Audio system (PipeWire)"
-    echo " 10) GitHub setup & authentication"
-    echo " 11) System configuration & dotfiles linking"
+    echo "  5) Tailscale"
+    echo "  6) Rust & Cargo tools"
+    echo "  7) Node.js & NPM"
+    echo "  8) Wezterm"
+    echo "  9) Suckless tools (dwm, slstatus, etc.)"
+    echo " 10) Audio system (PipeWire)"
+    echo " 11) GitHub setup & authentication"
+    echo " 12) System configuration & dotfiles linking"
     echo ""
     echo "  0) Exit"
     echo ""
@@ -486,24 +531,27 @@ interactive_install() {
             install_docker
             ;;
         5)
-            install_rust
+            install_tailscale
             ;;
         6)
-            install_nodejs
+            install_rust
             ;;
         7)
-            install_wezterm
+            install_nodejs
             ;;
         8)
-            install_suckless
+            install_wezterm
             ;;
         9)
-            setup_audio
+            install_suckless
             ;;
         10)
-            setup_github
+            setup_audio
             ;;
         11)
+            setup_github
+            ;;
+        12)
             configure_system
             ;;
         0)
@@ -536,6 +584,7 @@ full_install() {
 
     # Development tools
     install_docker
+    install_tailscale
     install_rust
     install_nodejs
     install_wezterm
@@ -593,10 +642,11 @@ unattended_install() {
 
     log "Starting unattended installation"
 
-    install_package_manager
+install_package_manager
     update_system
     install_packages
     install_docker
+    install_tailscale
     install_rust
     install_nodejs
 
