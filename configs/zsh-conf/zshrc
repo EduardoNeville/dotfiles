@@ -245,6 +245,9 @@ gss -> git stash \n
 gco -> git checkout\n
 gt -> git tui\n'"
 
+# --- Neovim  ----------------------------------
+export PATH="$PATH:/opt/nvim-linux-x86_64/bin"
+
 # --- Docker ----------------------------------
 alias ld='lazydocker'
 
@@ -285,12 +288,7 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 
 # Lazy load NVM (only when node/npm is called)
 export NVM_DIR="$HOME/.nvm"
-nvm() {
-  unset -f nvm
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-  nvm "$@"
-}
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
 # opencode
 export PATH=$HOME/.opencode/bin:$PATH

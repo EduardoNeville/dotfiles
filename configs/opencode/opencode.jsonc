@@ -1,22 +1,26 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  // Theme configuration
   "autoupdate": true,
-  // Mcp servers
+  "theme": {
+    "dark": {
+      "background": "#1f2335",
+      "foreground": "#a9b1d6",
+      "cursor": "#bfbfbf",
+      "selection": "#33425c"
+    },
+    "light": {
+      "background": "#ffffff",
+      "foreground": "#333333",
+      "cursor": "#333333",
+      "selection": "#b3d9ff"
+    },
+    "sync_with_shell": true,
+    "state_file": "~/.local/state/theme"
+  },
   "mcp": {
-    //"remotion-documentation": {
-    //  "type": "local",
-    //  "command": "npx",
-    //  "args": ["@remotion/mcp@latest"],
-    //  "enabled": true
-    //},
-    //"context7": {
-    //  "type": "remote",
-    //  "url": "https://mcp.context7.com/mcp",
-    //  "headers": {
-    //    "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"
-    //  },
-    //  "enabled": true
-    //}
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp"
+    }
   }
 }
