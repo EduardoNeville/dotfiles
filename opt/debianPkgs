@@ -127,7 +127,6 @@ luarocks
 # Linters
 shellcheck
 yamllint
-markdownlint-cli
 
 # Container & Virtualization
 docker.io

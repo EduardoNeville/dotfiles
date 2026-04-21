@@ -10,7 +10,8 @@ local light_scheme = "Papercolor Light (Gogh)"
 
 local dark_window_frame = {
     active_titlebar_bg = '#171d23',
-    inactive_titlebar_bg = '#1f2d38',
+    -- Keep the titlebar color consistent when the window is unfocused
+    inactive_titlebar_bg = '#171d23',
 }
 
 local dark_colors = {
@@ -43,7 +44,8 @@ local dark_colors = {
 
 local light_window_frame = {
     active_titlebar_bg = '#ffffff',
-    inactive_titlebar_bg = '#e4e4e4',
+    -- Keep the titlebar color consistent when the window is unfocused
+    inactive_titlebar_bg = '#ffffff',
 }
 
 local light_colors = {
@@ -198,9 +200,8 @@ config.window_frame = {
     -- The overall background color of the tab bar when
     -- the window is focused
     active_titlebar_bg = '#191b28',
-    -- The overall background color of the tab bar when
-    -- the window is not focused
-    inactive_titlebar_bg = '#1f2335',
+    -- Keep the titlebar color consistent when unfocused to prevent resize issues
+    inactive_titlebar_bg = '#191b28',
     --active_tab_left = {
     --	chars = "▐▌",
     --	style = "Bold",
