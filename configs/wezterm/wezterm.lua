@@ -7,9 +7,12 @@ local os = require("os")
 --- Theme State File -------------------------------
 ----------------------------------------------------
 
-local STATE_FILE = os.getenv("XDG_STATE_HOME") .. "/theme"
-if not STATE_FILE or STATE_FILE == "/theme" then
-    STATE_FILE = os.getenv("HOME") .. "/.local/state/theme"
+local STATE_FILE = os.getenv("XDG_STATE_HOME")
+if not STATE_FILE or STATE_FILE == "" then
+    local home = os.getenv("HOME") or "/home/" .. (os.getenv("USER") or "user")
+    STATE_FILE = home .. "/.local/state/theme"
+else
+    STATE_FILE = STATE_FILE .. "/theme"
 end
 
 local function read_theme_state()
@@ -171,35 +174,12 @@ end)
 ---------------------------------------------------------------
 --- Config ----------------------------------------------------
 ---------------------------------------------------------------
+local home_dir = os.getenv("HOME") or "/home/" .. (os.getenv("USER") or "user")
+local color_scheme_dirs = { home_dir .. "/.config/wezterm/colors/" }
+
 local config = {
     check_for_updates = false,
-
-    --- https://github.com/tonsky/FiraCode
-    --- font = wezterm.font('Fira Code', {weight="Regular", stretch='Normal', style='Normal'}),
-    font_size = 13,
-
-    --- Colour Schemes ------------------
-    --color_scheme = "Catppuccin", -- Machiatto
-    --color_scheme = "Tokyo Night Storm",	
-    --color_scheme = 'Andromeda',
-    --color_scheme = 'Papercolor Light (Gogh)', -- "Aesthetic Night
-    --color_scheme = "Abernathy",	
-    --color_scheme = 'Ayu Mirage (Gogh)',
-    --color_scheme = 'Ayu Dark (Gogh)',
-    --color_scheme = 'Ayu Light (Gogh)',
-    --color_scheme = 'Elio (Gogh)',
-    --color_scheme = 'Matrix (terminal.sexy)',
-    --color_scheme = "Eldritch",
-    --color_scheme = "Scarlet Protocol",
-    --
-    -- SynthWave
-    --color_scheme = "Synthwave (Gogh)",
-    --color_scheme = "Synthwave Alpha (Gogh)",
-    --color_scheme = "SynthwaveAlpha",
-    color_scheme = dark_scheme,
-
-
-    color_scheme_dirs = { os.getenv("HOME") .. "/.config/wezterm/colors/" },
+    color_scheme_dirs = color_scheme_dirs,
     -- Aesthetic Night Colorscheme
     bold_brightens_ansi_colors = true,
 
