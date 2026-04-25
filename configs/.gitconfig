@@ -13,3 +13,5 @@
 [user]
 	email = eduardoneville82@gmail.com
 	name = EduardoNeville
+[advice]
+	addIgnoredFile = false
