@@ -161,6 +161,14 @@ local function toggle_theme(window, _)
     window:set_config_overrides(overrides)
     
     window:emit("theme-changed", is_light and "light" or "dark")
+
+    if is_light then
+        window:emit("passthrough", "\E]10;#fbfbfb\E\\")
+        window:emit("passthrough", "\E]11;#403f53\E\\")
+    else
+        window:emit("passthrough", "\E]10;#d6deeb\E\\")
+        window:emit("passthrough", "\E]11;#011627\E\\")
+    end
 end
 
 ---------------------------------------------------------------
