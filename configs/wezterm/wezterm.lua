@@ -163,11 +163,11 @@ local function toggle_theme(window, _)
     window:emit("theme-changed", is_light and "light" or "dark")
 
     if is_light then
-        window:emit("passthrough", "\E]10;#fbfbfb\E\\")
-        window:emit("passthrough", "\E]11;#403f53\E\\")
+        window:emit("passthrough", "\x1b]10;#fbfbfb\x1b\\")
+        window:emit("passthrough", "\x1b]11;#403f53\x1b\\")
     else
-        window:emit("passthrough", "\E]10;#d6deeb\E\\")
-        window:emit("passthrough", "\E]11;#011627\E\\")
+        window:emit("passthrough", "\x1b]10;#d6deeb\x1b\\")
+        window:emit("passthrough", "\x1b]11;#011627\x1b\\")
     end
 end
 
