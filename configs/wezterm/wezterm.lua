@@ -37,106 +37,105 @@ end
 --- Theme Switcher ---------------------------------
 ----------------------------------------------------
 
-local dark_scheme = "Ayu Dark (Gogh)"
-local light_scheme = "Papercolor Light (Gogh)"
+local dark_scheme = "Night Owl (Gogh)"
+local light_scheme = "Night Owlish Light"
 
 local dark_window_frame = {
-    active_titlebar_bg = '#171d23',
-    -- Keep the titlebar color consistent when the window is unfocused
-    inactive_titlebar_bg = '#171d23',
+    active_titlebar_bg = '#011627',
+    inactive_titlebar_bg = '#011627',
 }
 
 local dark_colors = {
-    background = '#171d23',
-    foreground = '#bfbfbf',
-    cursor_bg = '#bfbfbf',
-    cursor_border = '#bfbfbf',
-    selection_bg = '#33425c',
-    selection_fg = '#bfbfbf',
+    background = '#011627',
+    foreground = '#d6deeb',
+    cursor_bg = '#80a4c2',
+    cursor_border = '#80a4c2',
+    selection_bg = '#1d3b53',
+    selection_fg = '#d6deeb',
     ansi = {
-        '#171d23', -- black
-        '#f07178', -- red
-        '#aad94c', -- green
-        '#ffcf67', -- yellow
-        '#59a5f2', -- blue
-        '#d39bd6', -- magenta
-        '#6bc3d4', -- cyan
-        '#bfbfbf', -- white
+        '#011627', -- black
+        '#ef5350', -- red
+        '#22da6e', -- green
+        '#c5e478', -- yellow
+        '#82aaff', -- blue
+        '#c792ea', -- magenta
+        '#21c7a8', -- cyan
+        '#d6deeb', -- white
     },
     brights = {
-        '#586975', -- bright black
-        '#ff8e9e', -- bright red
-        '#c2e68d', -- bright yellow
-        '#ffe586', -- bright blue
-        '#7aa9f7', -- bright magenta
-        '#e78fd6', -- bright cyan
-        '#9fd9e8', -- bright white
+        '#575656', -- bright black
+        '#ef5350', -- bright red
+        '#22da6e', -- bright green
+        '#ffeb95', -- bright yellow
+        '#82aaff', -- bright blue
+        '#c792ea', -- bright magenta
+        '#7fdbca', -- bright cyan
+        '#ffffff', -- bright white
     },
 }
 
 local light_window_frame = {
-    active_titlebar_bg = '#ffffff',
-    -- Keep the titlebar color consistent when the window is unfocused
-    inactive_titlebar_bg = '#ffffff',
+    active_titlebar_bg = '#fbfbfb',
+    inactive_titlebar_bg = '#fbfbfb',
 }
 
 local light_colors = {
-    background = '#ffffff',
-    foreground = '#333333',
-    cursor_bg = '#333333',
-    cursor_border = '#333333',
-    selection_bg = '#b3d9ff',
-    selection_fg = '#333333',
+    background = '#fbfbfb',
+    foreground = '#403f53',
+    cursor_bg = '#90a7b2',
+    cursor_border = '#90a7b2',
+    selection_bg = '#e0e0e0',
+    selection_fg = '#403f53',
     ansi = {
-        '#333333', -- black
-        '#cc2222', -- red
-        '#22aa22', -- green
-        '#ccaa22', -- yellow
-        '#2255cc', -- blue
-        '#aa2255', -- magenta
-        '#22aaaa', -- cyan
-        '#dddddd', -- white
+        '#403f53', -- black
+        '#de3d3b', -- red
+        '#08916a', -- green
+        '#e0af02', -- yellow
+        '#288ed7', -- blue
+        '#d6438a', -- magenta
+        '#2aa298', -- cyan
+        '#f0f0f0', -- white
     },
     brights = {
-        '#555555', -- bright black
-        '#ff4444', -- bright red
-        '#44cc44', -- bright green
-        '#ffee44', -- bright yellow
-        '#4488ff', -- bright blue
-        '#ff44aa', -- bright magenta
-        '#44ffff', -- bright cyan
-        '#ffffff', -- bright white
+        '#403f53', -- bright black
+        '#de3d3b', -- bright red
+        '#08916a', -- bright green
+        '#daaa01', -- bright yellow
+        '#288ed7', -- bright blue
+        '#d6438a', -- bright magenta
+        '#2aa298', -- bright cyan
+        '#f0f0f0', -- bright white
     },
-    indexed = { [16] = '#cc8800', [17] = '#444444' },
-    scrollbar_thumb = '#cccccc',
-    split = '#dddddd',
+    indexed = { [16] = '#e0af02', [17] = '#403f53' },
+    scrollbar_thumb = '#c0c0c0',
+    split = '#e0e0e0',
     tab_bar = {
-        active_tab = { bg_color = '#ffffff', fg_color = '#333333' },
-        inactive_tab = { bg_color = '#e4e4e4', fg_color = '#777777' },
-        inactive_tab_hover = { bg_color = '#dddddd', fg_color = '#333333', italic = true },
-        new_tab = { bg_color = '#eeeeee', fg_color = '#555555' },
-        new_tab_hover = { bg_color = '#dddddd', fg_color = '#333333', italic = true },
+        active_tab = { bg_color = '#fbfbfb', fg_color = '#403f53' },
+        inactive_tab = { bg_color = '#e0e0e0', fg_color = '#989fb1' },
+        inactive_tab_hover = { bg_color = '#d0d0d0', fg_color = '#403f53', italic = true },
+        new_tab = { bg_color = '#ebebeb', fg_color = '#787b8a' },
+        new_tab_hover = { bg_color = '#d0d0d0', fg_color = '#403f53', italic = true },
     },
 }
 
 local is_light = read_theme_state()
 
 local tmux_dark_theme = {
-    status_bg = '#1f2335',
-    status_fg = '#a9b1d6',
-    pane_border = '#3b4261',
-    active_border = '#0969da',
-    message_bg = '#0969da',
-    mode_bg = '#f0268f',
+    status_bg = '#011627',
+    status_fg = '#d6deeb',
+    pane_border = '#1d3b53',
+    active_border = '#82aaff',
+    message_bg = '#82aaff',
+    mode_bg = '#c792ea',
 }
 
 local tmux_light_theme = {
-    status_bg = '#ffffff',
-    status_fg = '#383a42',
-    pane_border = '#e4e4e4',
-    active_border = '#0969da',
-    message_bg = '#0969da',
-    mode_bg = '#e45649',
+    status_bg = '#fbfbfb',
+    status_fg = '#403f53',
+    pane_border = '#e0e0e0',
+    active_border = '#288ed7',
+    message_bg = '#288ed7',
+    mode_bg = '#d6438a',
 }
 
 local function toggle_theme(window, _)
@@ -228,94 +227,42 @@ wezterm.on(
 
 --- Window Frame ---
 config.window_frame = {
-    -- The overall background color of the tab bar when
-    -- the window is focused
-    active_titlebar_bg = '#191b28',
-    -- Keep the titlebar color consistent when unfocused to prevent resize issues
-    inactive_titlebar_bg = '#191b28',
-    --active_tab_left = {
-    --	chars = "▐▌",
-    --	style = "Bold",
-    --},
-    --active_tab_right = {
-    --	chars = "▐▌",
-    --	style = "Bold",
-    --},
-    --inactive_tab_left = {
-    --	chars = "▐▌",
-    --	style = "Bold",
-    --},
-    --inactive_tab_right = {
-    --	chars = "▐▌",
-    --	style = "Bold",
-    --},
+    active_titlebar_bg = '#011627',
+    inactive_titlebar_bg = '#011627',
 }
 
 config.colors = {
     tab_bar = {
         -- The active tab is the one that has focus in the window
         active_tab = {
-            -- The color of the background area for the tab
-            bg_color = "#24283b",
-            -- The color of the text for the tab
-            fg_color = "#7aa2f7",
-
-            -- Specify whether you want "Half", "Normal" or "Bold" intensity for the
-            -- label shown for this tab.
-            -- The default is "Normal"
+            bg_color = "#011627",
+            fg_color = "#82aaff",
             intensity = 'Normal',
-
-            -- Specify whether you want "None", "Single" or "Double" underline for
-            -- label shown for this tab.
-            -- The default is "None"
             underline = 'None',
-
-            -- Specify whether you want the text to be italic (true) or not (false)
-            -- for this tab.  The default is false.
             italic = false,
-
-            -- Specify whether you want the text to be rendered with strikethrough (true)
-            -- or not for this tab.  The default is false.
             strikethrough = false,
         },
 
-        -- Inactive tabs are the tabs that do not have focus
         inactive_tab = {
-            bg_color = "#1f2335",
-            fg_color = "#545c7e",
-
-            -- The same options that were listed under the `active_tab` section above
-            -- can also be used for `inactive_tab`.
+            bg_color = "#0b2942",
+            fg_color = "#565f89",
         },
 
-        -- You can configure some alternate styling when the mouse pointer
-        -- moves over inactive tabs
         inactive_tab_hover = {
-            bg_color = '#1f2335',
-            fg_color = '#7aa2f7',
+            bg_color = '#0b2942',
+            fg_color = '#82aaff',
             italic = true,
-
-            -- The same options that were listed under the `active_tab` section above
-            -- can also be used for `inactive_tab_hover`.
         },
 
-        -- The new tab button that let you create new tabs
         new_tab = {
-            bg_color = '#7aa2f7',
-            fg_color = '#191b28',
-
-            -- The same options that were listed under the `active_tab` section above
-            -- can also be used for `new_tab`.
+            bg_color = '#82aaff',
+            fg_color = '#011627',
         },
 
-        -- You can configure some alternate styling when the mouse pointer
-        -- moves over the new tab button
         new_tab_hover = {
-            bg_color = '#1f2335',
-            fg_color = '#7aa2f7',
+            bg_color = '#0b2942',
+            fg_color = '#82aaff',
             italic = true,
-            -- The same options that were listed under the `active_tab` section above
-            -- can also be used for `new_tab_hover`.
         },
     },
 }

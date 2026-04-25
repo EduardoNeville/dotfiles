@@ -3,16 +3,16 @@
   "autoupdate": true,
   "theme": {
     "dark": {
-      "background": "#1f2335",
-      "foreground": "#a9b1d6",
-      "cursor": "#bfbfbf",
-      "selection": "#33425c"
+      "background": "#011627",
+      "foreground": "#d6deeb",
+      "cursor": "#80a4c2",
+      "selection": "#1d3b53"
     },
     "light": {
-      "background": "#ffffff",
-      "foreground": "#333333",
-      "cursor": "#333333",
-      "selection": "#b3d9ff"
+      "background": "#fbfbfb",
+      "foreground": "#403f53",
+      "cursor": "#90a7b2",
+      "selection": "#e0e0e0"
     },
     "sync_with_shell": true,
     "state_file": "~/.local/state/theme"
