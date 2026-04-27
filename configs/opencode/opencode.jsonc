@@ -22,5 +22,74 @@
       "type": "remote",
       "url": "https://mcp.context7.com/mcp"
     }
+  },
+  "agent": {
+    "build": {
+      "mode": "primary",
+      "prompt": "{file:~/.config/opencode/prompts/build.txt}",
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "todowrite": "allow",
+        "webfetch": "allow"
+      }
+    },
+    "plan": {
+      "mode": "primary",
+      "prompt": "{file:~/.config/opencode/prompts/plan.txt}",
+      "permission": {
+        "edit": "deny",
+        "bash": "deny",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "todowrite": "deny",
+        "webfetch": "allow"
+      }
+    },
+    "super": {
+      "description": "Unrestricted development with destructive command safeguards",
+      "mode": "primary",
+      "prompt": "{file:~/.config/opencode/prompts/super.txt}",
+      "permission": {
+        "edit": "allow",
+        "bash": {
+          "*": "allow",
+          "rm -rf *": "ask",
+          "git push --force *": "ask",
+          "git reset --hard *": "ask",
+          "sudo rm *": "ask",
+          "chmod -R 777 *": "ask"
+        },
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "todowrite": "allow",
+        "webfetch": "allow"
+      }
+    },
+    "god": {
+      "mode": "subagent",
+      "hidden": true,
+      "description": "Internal orchestration subagent",
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "todowrite": "allow",
+        "webfetch": "allow",
+        "task": {
+          "*": "deny",
+          "plan": "allow",
+          "build": "allow",
+          "super": "allow"
+        }
+      }
+    }
   }
 }
