@@ -27,6 +27,7 @@
     "build": {
       "mode": "primary",
       "prompt": "{file:~/.config/opencode/prompts/build.txt}",
+      "temperature": 0.3,
       "permission": {
         "edit": "allow",
         "bash": "allow",
@@ -40,6 +41,8 @@
     "plan": {
       "mode": "primary",
       "prompt": "{file:~/.config/opencode/prompts/plan.txt}",
+      "temperature": 0.1,
+      "steps": 10,
       "permission": {
         "edit": "deny",
         "bash": "deny",
@@ -54,6 +57,8 @@
       "description": "Unrestricted development with destructive command safeguards",
       "mode": "primary",
       "prompt": "{file:~/.config/opencode/prompts/super.txt}",
+      "temperature": 0.25,
+      "steps": 25,
       "permission": {
         "edit": "allow",
         "bash": {
@@ -75,6 +80,8 @@
       "mode": "subagent",
       "hidden": true,
       "description": "Internal orchestration subagent",
+      "temperature": 0.1,
+      "steps": 8,
       "permission": {
         "edit": "allow",
         "bash": "allow",

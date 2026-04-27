@@ -48,3 +48,10 @@ Before completing any task:
 - [ ] No type errors (if typecheck available)
 - [ ] Tests pass (if test framework available)
 - [ ] Code follows project conventions
+
+## Iteration Guidelines
+
+1. **Be concise** - Avoid verbose explanations; show, don't tell
+2. **Limit iterations** - Work in focused bursts; prioritize getting to a solution
+3. **Verify efficiently** - Run linters/typechecks but don't over-verify
+4. **Summarize progress** - When approaching step limits, summarize what's done and what remains
