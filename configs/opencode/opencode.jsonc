@@ -22,5 +22,81 @@
       "type": "remote",
       "url": "https://mcp.context7.com/mcp"
     }
+  },
+  "agent": {
+    "build": {
+      "mode": "primary",
+      "prompt": "{file:~/.config/opencode/prompts/build.txt}",
+      "temperature": 0.3,
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "todowrite": "allow",
+        "webfetch": "allow"
+      }
+    },
+    "plan": {
+      "mode": "primary",
+      "prompt": "{file:~/.config/opencode/prompts/plan.txt}",
+      "temperature": 0.1,
+      "steps": 10,
+      "permission": {
+        "edit": "deny",
+        "bash": "deny",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "todowrite": "deny",
+        "webfetch": "allow"
+      }
+    },
+    "super": {
+      "description": "Unrestricted development with destructive command safeguards",
+      "mode": "primary",
+      "prompt": "{file:~/.config/opencode/prompts/super.txt}",
+      "temperature": 0.25,
+      "steps": 25,
+      "permission": {
+        "edit": "allow",
+        "bash": {
+          "*": "allow",
+          "rm -rf *": "ask",
+          "git push --force *": "ask",
+          "git reset --hard *": "ask",
+          "sudo rm *": "ask",
+          "chmod -R 777 *": "ask"
+        },
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "todowrite": "allow",
+        "webfetch": "allow"
+      }
+    },
+    "god": {
+      "mode": "subagent",
+      "hidden": true,
+      "description": "Internal orchestration subagent",
+      "temperature": 0.1,
+      "steps": 8,
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "todowrite": "allow",
+        "webfetch": "allow",
+        "task": {
+          "*": "deny",
+          "plan": "allow",
+          "build": "allow",
+          "super": "allow"
+        }
+      }
+    }
   }
 }
