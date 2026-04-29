@@ -1,61 +1,61 @@
 /**
  * sudo-handler.js — OpenCode Server Plugin
  *
- * Intercepts sudo commands executed by the agent and injects a
- * SUDO_ASKPASS helper so sudo can authenticate without a TTY.
+ * Intercepts sudo commands and injects an inline SUDO_ASKPASS
+ * environment variable so sudo authenticates without a TTY.
  *
  * ## How it works
  *
  *   tool.execute.before (bash + contains "sudo")
  *     │
- *     ├─ Password available? (via /tmp/opencode-sudo-pass or env var)
- *     │   └─ Yes → rewrite "sudo" to "sudo -A" (use askpass)
- *     │   └─ No  → leave command unchanged (sudo will error, agent adapts)
+ *     ├─ Password available? (OPENCODE_SUDO_PASS or /tmp/opencode-sudo-pass)
+ *     │   └─ Yes → Create askpass helper script (one-time)
+ *     │           Rewrite: sudo cmd → SUDO_ASKPASS=... sudo -A cmd
  *     │
- *   shell.env (every shell command)
- *     │
- *     └─ Set SUDO_ASKPASS=/tmp/opencode-askpass-<pid>.sh
- *        (helper script echoes password from temp file)
+ *     └─ No  → Leave command unchanged
+ *              sudo fails → agent sees error → can ask user
  *
  * ## Password sources (checked in order)
  *
  *   1. OPENCODE_SUDO_PASS environment variable
- *   2. /tmp/opencode-sudo-pass (written by sudo-prompt.tui.js)
+ *   2. /tmp/opencode-sudo-pass temp file (created by opencode-sudo-setup.sh)
  *
- * ## Security
+ * ## Setup (pick one)
  *
- *   - Password temp file: 0600 permissions, in /tmp (tmpfs)
- *   - Askpass helper: 0700 permissions, created once per opencode process
- *   - Cleanup on exit: both temp files deleted
+ *   # Option A: env var (ephemeral, per-session)
+ *   export OPENCODE_SUDO_PASS='your-password'
+ *   opencode
+ *
+ *   # Option B: helper script (stores in /tmp, persists until reboot)
+ *   bash ~/dotfiles/scripts/opencode-sudo-setup.sh
+ *   opencode
+ *
+ * ## Requirements
+ *
+ *   - opencode >= 1.14.x (uses tool.execute.before hook)
+ *   - sudo configured to allow the user (standard)
  *
  * ## Limitations
  *
- *   - Only intercepts direct "bash" tool invocations; scripts or Makefiles
- *     that internally call sudo are NOT intercepted
- *   - sudo -A timeout (default 5 min) is not reset — agent may need to
- *     re-authenticate for long-running sessions
+ *   - Only intercepts direct "bash" tool invocations
+ *   - SUDO_ASKPASS is visible in the command string (process list)
+ *     for the brief moment the command runs
  */
 
 import { unlinkSync } from "node:fs";
 
-export const SudoHandlerPlugin = async ({
-  project,
-  client,
-  $,
-  directory,
-  worktree,
-}) => {
+export const SudoHandlerPlugin = async ({ project, client, $ }) => {
   let askpassReady = false;
   let askpassPath = null;
 
   /**
-   * One-time setup: read the password and create the SUDO_ASKPASS
+   * One-time setup: locate the password and create the SUDO_ASKPASS
    * helper script. Safe to call multiple times — only runs once.
    */
   async function setupAskpass() {
     if (askpassReady) return;
 
-    // Check environment variable and sync to temp file
+    // Priority 1: Environment variable → sync to temp file
     const envPass = process.env.OPENCODE_SUDO_PASS;
     if (envPass) {
       try {
@@ -73,6 +73,7 @@ export const SudoHandlerPlugin = async ({
 
       if (pass) {
         askpassPath = `/tmp/opencode-askpass-${process.pid}.sh`;
+        // Write a one-line askpass script that echoes the password
         await $`printf '#!/bin/sh\ncat /tmp/opencode-sudo-pass\n' > ${askpassPath}`.quiet();
         await $`chmod 700 ${askpassPath}`.quiet();
         askpassReady = true;
@@ -87,92 +88,63 @@ export const SudoHandlerPlugin = async ({
         });
       }
     } catch {
-      // No password file available — sudo commands will fail with TTY error
       await client.app.log({
         body: {
           service: "sudo-handler",
           level: "warn",
           message:
-            "No sudo password available — sudo commands will fail without a TTY",
+            "No sudo password available — sudo commands will fail without a TTY. " +
+            "Run: bash ~/dotfiles/scripts/opencode-sudo-setup.sh",
         },
       });
     }
   }
 
-  // ── Cleanup on exit ────────────────────────────────────────────
+  // ── Cleanup temp files on exit ────────────────────────────────
   function cleanup() {
-    try {
-      unlinkSync("/tmp/opencode-sudo-pass");
-    } catch {
-      // File may already be gone
-    }
+    try { unlinkSync("/tmp/opencode-sudo-pass"); } catch {}
     if (askpassPath) {
-      try {
-        unlinkSync(askpassPath);
-      } catch {
-        // File may already be gone
-      }
+      try { unlinkSync(askpassPath); } catch {}
     }
   }
 
   process.on("exit", cleanup);
-  process.on("SIGTERM", () => {
-    cleanup();
-    process.exit();
-  });
-  process.on("SIGINT", () => {
-    cleanup();
-    process.exit();
-  });
+  process.on("SIGTERM", () => { cleanup(); process.exit(); });
+  process.on("SIGINT", () => { cleanup(); process.exit(); });
 
-  // ── Hooks ──────────────────────────────────────────────────────
+  // ── Hook ──────────────────────────────────────────────────────
 
   return {
     /**
-     * Inject SUDO_ASKPASS into every shell environment.
+     * Intercept bash commands that use sudo.
      *
-     * This ensures sudo can authenticate via the askpass helper
-     * rather than trying to read from a TTY (which doesn't exist
-     * in opencode's shell execution context).
-     */
-    "shell.env": async (input, output) => {
-      await setupAskpass();
-
-      if (askpassReady) {
-        output.env.SUDO_ASKPASS = askpassPath;
-      }
-    },
-
-    /**
-     * Detect sudo commands and rewrite them to use the askpass helper.
+     * Rewrites "sudo cmd" to "SUDO_ASKPASS=... sudo -A cmd"
+     * so sudo authenticates via the askpass helper instead of
+     * trying to read from a non-existent TTY.
      *
-     * - "sudo apt update"       → "sudo -A apt update"
-     * - "sudo -E make install"  → "sudo -A -E make install"
-     * - "echo x | sudo tee ..." → "echo x | sudo -A tee ..."
-     *
-     * Skips commands already using -A, -S (stdin), or -n (non-interactive).
+     * Skips commands already using -A (askpass), -S (stdin),
+     * or -n (non-interactive).
      */
     "tool.execute.before": async (input, output) => {
-      // Only handle bash tool invocations
       if (input.tool !== "bash") return;
 
       const cmd = output.args?.command;
       if (typeof cmd !== "string" || !cmd) return;
 
-      // Check if the command uses sudo (but not already -A, -S, or -n)
+      // Check if command uses sudo (but not already -A, -S, or -n)
       const sudoNeedsAskpass = /\bsudo\b(?!\s+-[ASn])/;
       if (!sudoNeedsAskpass.test(cmd)) return;
 
-      // Ensure password is available
+      // Ensure password and askpass helper are ready
       await setupAskpass();
 
       if (askpassReady) {
-        // Replace ALL sudo occurrences with "sudo -A"
-        // The negative lookahead avoids double-wrapping -A, -S, -n
-        output.args.command = cmd.replace(
+        // Prefix SUDO_ASKPASS env var and append -A to sudo
+        const rewritten = cmd.replace(
           /\bsudo\b(?!\s+-[ASn])/g,
           "sudo -A"
         );
+        output.args.command = `SUDO_ASKPASS=${askpassPath} ${rewritten}`;
 
         await client.app.log({
           body: {
@@ -187,9 +159,8 @@ export const SudoHandlerPlugin = async ({
           },
         });
       }
-      // If no password available: leave command unchanged.
-      // sudo will fail with "no tty present" and the agent
-      // can handle the error (ask user, try alternate approach).
+      // If no password: leave unchanged. sudo will fail with
+      // "no tty present" and the agent can adapt.
     },
   };
 };
