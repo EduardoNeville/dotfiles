@@ -33,11 +33,14 @@
  *
  * ## Event Types
  *
- *   - session.idle      → Agent finished responding. Includes session title
- *                          and file change summary (+additions -deletions).
- *   - session.error     → Session encountered an error. Includes the
- *                          specific error type and message (e.g. APIError).
- *   - session.compacted → Context window trimmed. Includes session title.
+ *   - session.idle       → Agent finished responding. Includes session title
+ *                           and file change summary (+additions -deletions).
+ *   - session.error      → Session encountered an error. Includes the
+ *                           specific error type and message (e.g. APIError).
+ *   - session.compacted  → Context window trimmed. Includes session title.
+ *   - permission.updated → Agent needs approval for an action. Includes
+ *                           the permission type (bash, edit, read, etc.)
+ *                           and the human-readable title.
  *
  * ## Session Metadata
  *
@@ -227,6 +230,15 @@ export const NotificationPlugin = async ({ project, client, $ }) => {
             : "Session compacted — context trimmed."
 
           await notify("opencode", msg)
+          break
+        }
+
+        // ── Permission / approval request ──────────────────────
+        case "permission.updated": {
+          const perm = event.properties
+          const kind = perm?.type || "permission"
+          const desc = perm?.title || "approval needed"
+          await notify("opencode — Needs Approval", `${kind} — ${desc}`)
           break
         }
       }
