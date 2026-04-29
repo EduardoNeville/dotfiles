@@ -33,9 +33,17 @@
  *
  * ## Event Types
  *
- *   - session.idle      → Agent finished responding, waiting for input
- *   - session.error     → Session encountered an error
- *   - session.compacted → Context window trimmed (compaction occurred)
+ *   - session.idle      → Agent finished responding. Includes session title
+ *                          and file change summary (+additions -deletions).
+ *   - session.error     → Session encountered an error. Includes the
+ *                          specific error type and message (e.g. APIError).
+ *   - session.compacted → Context window trimmed. Includes session title.
+ *
+ * ## Session Metadata
+ *
+ *   Session titles are cached from session.created / session.updated
+ *   events to avoid extra API calls. On cache miss, falls back to
+ *   client.session.get() for the title and file change summary.
  */
 
 export const NotificationPlugin = async ({ project, client, $ }) => {
@@ -115,26 +123,112 @@ export const NotificationPlugin = async ({ project, client, $ }) => {
     }
   }
 
+  // ── Session metadata cache ────────────────────────────────────
+  // session.created and session.updated events carry the full
+  // Session object (including title). We cache titles here so
+  // session.idle and session.compacted (which only carry sessionID)
+  // can display them without making an API call.
+  const sessionCache = {}
+
+  /**
+   * Get the session title, cache-first.
+   * Falls back to client.session.get() on cache miss.
+   */
+  async function getSessionTitle(sessionID) {
+    if (sessionCache[sessionID]) return sessionCache[sessionID]
+    try {
+      const session = await client.session.get({ path: { id: sessionID } })
+      const title = session?.title?.trim()
+      if (title) {
+        sessionCache[sessionID] = title
+        return title
+      }
+    } catch {
+      // Session may have been deleted, or client unavailable
+    }
+    return null
+  }
+
+  /**
+   * Fetch file change summary for the session.
+   * Returns a formatted string like "3 files (+42 -8)" or null.
+   */
+  async function getChangeSummary(sessionID) {
+    try {
+      const session = await client.session.get({ path: { id: sessionID } })
+      if (session?.summary) {
+        const { additions = 0, deletions = 0, files = 0 } = session.summary
+        if (files > 0) {
+          return `${files} file${files !== 1 ? "s" : ""} (+${additions} -${deletions})`
+        }
+      }
+    } catch {
+      // Silently skip — summary is non-critical
+    }
+    return null
+  }
+
+  /**
+   * Format a typed error object into a human-readable string.
+   */
+  function formatError(error) {
+    if (!error) return "Unknown error"
+    const name = error.name || "Error"
+    const message = error.data?.message || ""
+    const status = error.data?.statusCode ? ` [${error.data.statusCode}]` : ""
+    const retry = error.data?.isRetryable ? " (retryable)" : ""
+    return `${name}: ${message}${status}${retry}`.trim()
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // Event handler
+  // ═══════════════════════════════════════════════════════════════
+
   return {
     event: async ({ event }) => {
       switch (event.type) {
-        case "session.idle":
-          await notify("opencode", "Session completed — agent is now idle.")
+        // ── Cache session titles from lifecycle events ──────────
+        case "session.created":
+        case "session.updated": {
+          const info = event.properties?.info
+          if (info?.id && info?.title) {
+            sessionCache[info.id] = info.title
+          }
           break
+        }
 
-        case "session.error":
-          await notify(
-            "opencode — Error",
-            "Session encountered an error. Check the session for details."
-          )
-          break
+        // ── Session completed / agent idle ─────────────────────
+        case "session.idle": {
+          const sid = event.properties.sessionID
+          const title = await getSessionTitle(sid)
+          const changes = await getChangeSummary(sid)
 
-        case "session.compacted":
-          await notify(
-            "opencode",
-            "Session compacted — context window was trimmed to save space."
-          )
+          let msg = title ? `"${title}" — ` : ""
+          msg += "agent is now idle."
+          if (changes) msg += ` ${changes}.`
+
+          await notify("opencode", msg)
           break
+        }
+
+        // ── Session error ──────────────────────────────────────
+        case "session.error": {
+          const errorMsg = formatError(event.properties.error)
+          await notify("opencode — Error", errorMsg)
+          break
+        }
+
+        // ── Session compacted ──────────────────────────────────
+        case "session.compacted": {
+          const sid = event.properties.sessionID
+          const title = await getSessionTitle(sid)
+          const msg = title
+            ? `"${title}" — session compacted.`
+            : "Session compacted — context trimmed."
+
+          await notify("opencode", msg)
+          break
+        }
       }
     },
   }
