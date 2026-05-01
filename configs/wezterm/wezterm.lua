@@ -141,25 +141,25 @@ local tmux_light_theme = {
 local function toggle_theme(window, _)
     is_light = not is_light
     write_theme_state(is_light)
-    
+
     local new_opacity = is_light and 1.0 or 0.85
     local new_frame = is_light and light_window_frame or dark_window_frame
     local tmux_theme = is_light and tmux_light_theme or tmux_dark_theme
-    
+
     local overrides = {
         window_background_opacity = new_opacity,
         window_frame = new_frame,
     }
-    
+
     if is_light then
         overrides.colors = light_colors
     else
         overrides.color_scheme = dark_scheme
         overrides.colors = dark_colors
     end
-    
+
     window:set_config_overrides(overrides)
-    
+
     window:emit("theme-changed", is_light and "light" or "dark")
 
     if is_light then
@@ -324,8 +324,6 @@ config.keys = {
     { key = 'c',      mods = 'CTRL|SHIFT', action = wezterm.action { SendString = "\x1b\r" } },
 }
 
-if wezterm.target_triple:find("darwin") then
-    config.window_decorations = "RESIZE"
-end
+config.window_decorations = "RESIZE"
 
 return config
