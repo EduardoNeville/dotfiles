@@ -38,15 +38,16 @@
  *   - session.error      → Session encountered an error. Includes the
  *                           specific error type and message (e.g. APIError).
  *   - session.compacted  → Context window trimmed. Includes session title.
- *   - permission.updated → Agent needs approval for an action. Includes
+ *   - permission.ask     → Agent needs approval for an action. Includes
  *                           the permission type (bash, edit, read, etc.)
  *                           and the human-readable title.
  *
  * ## Session Metadata
  *
  *   Session titles are cached from session.created / session.updated
- *   events to avoid extra API calls. On cache miss, falls back to
- *   client.session.get() for the title and file change summary.
+ *   events to avoid extra API calls. On cache miss, a single
+ *   client.session.get() call fetches agent type, title, and change
+ *   summary together (consolidated via getSessionInfo()).
  */
 
 export const NotificationPlugin = async ({ project, client, $ }) => {
@@ -126,6 +127,11 @@ export const NotificationPlugin = async ({ project, client, $ }) => {
     }
   }
 
+  // ── Debug helper (enabled with OPCODE_NOTIFY_DEBUG=1) ──────
+  const debug = process.env.OPCODE_NOTIFY_DEBUG === "1"
+    ? (...args) => console.error("[notify]", ...args)
+    : () => {};
+
   // ── Session metadata cache ────────────────────────────────────
   // session.created and session.updated events carry the full
   // Session object (including title). We cache titles here so
@@ -134,57 +140,42 @@ export const NotificationPlugin = async ({ project, client, $ }) => {
   const sessionCache = {};
 
   /**
-   * Get the session title, cache-first.
-   * Falls back to client.session.get() on cache miss.
+   * Fetch session metadata (agent type, title, change summary) in a single API call.
+   * Cache-first for titles — avoids redundant API calls.
+   * Returns { agentType, title, changes }.
    */
-  async function getSessionTitle(sessionID) {
-    if (sessionCache[sessionID]) return sessionCache[sessionID];
-    try {
-      const session = await client.session.get({ path: { id: sessionID } });
-      const title = session?.title?.trim();
-      if (title) {
-        sessionCache[sessionID] = title;
-        return title;
-      }
-    } catch {
-      // Session may have been deleted, or client unavailable
+  async function getSessionInfo(sessionID) {
+    if (!sessionID) {
+      debug("getSessionInfo called with no sessionID");
+      return { agentType: "agent", title: null, changes: null };
     }
-    return null;
-  }
 
-  /**
-   * Determine if the session is a subagent.
-   * Checks for subagent-related properties in the session.
-   * Returns "subagent" if it's a subagent, "agent" otherwise.
-   */
-  async function getAgentType(sessionID) {
     try {
       const session = await client.session.get({ path: { id: sessionID } });
-      // Check for subagent indicators - adjust based on actual session properties
+      if (!session) {
+        return { agentType: "agent", title: sessionCache[sessionID] || null, changes: null };
+      }
+
+      // Cache title for future use (from session.created / session.updated events)
+      const title = session.title?.trim() || null;
+      if (title) sessionCache[sessionID] = title;
+
+      // Determine agent type
       const isSubagent = session?.isSubagent || session?.agentType === "subagent" || session?.parentSessionId;
-      return isSubagent ? "subagent" : "agent";
-    } catch {
-      return "agent";
-    }
-  }
+      const agentType = isSubagent ? "subagent" : "agent";
 
-  /**
-   * Fetch file change summary for the session.
-   * Returns a formatted string like "3 files (+42 -8)" or null.
-   */
-  async function getChangeSummary(sessionID) {
-    try {
-      const session = await client.session.get({ path: { id: sessionID } });
-      if (session?.summary) {
+      // Build change summary from session stats
+      let changes = null;
+      if (session?.summary?.files > 0) {
         const { additions = 0, deletions = 0, files = 0 } = session.summary;
-        if (files > 0) {
-          return `${files} file${files !== 1 ? "s" : ""} (+${additions} -${deletions})`;
-        }
+        changes = `${files} file${files !== 1 ? "s" : ""} (+${additions} -${deletions})`;
       }
-    } catch {
-      // Silently skip — summary is non-critical
+
+      return { agentType, title, changes };
+    } catch (err) {
+      debug("getSessionInfo error:", err);
+      return { agentType: "agent", title: sessionCache[sessionID] || null, changes: null };
     }
-    return null;
   }
 
   /**
@@ -218,57 +209,54 @@ export const NotificationPlugin = async ({ project, client, $ }) => {
 
 // ── Session completed / agent idle ─────────────────────
         case "session.idle": {
-          const sid = event.properties.sessionID;
-          const agentType = await getAgentType(sid);
-          const title = await getSessionTitle(sid);
-          const changes = await getChangeSummary(sid);
-
+          const sid = event.properties?.sessionID ?? event.properties?.id ?? event.properties?.info?.id ?? event.id;
+          const { agentType, title, changes } = await getSessionInfo(sid);
           let msg = title ? `"${title}" — ` : "";
           msg += "is now idle.";
           if (changes) msg += ` ${changes}.`;
-
+          debug("session.idle notification:", { agentType, title, changes });
           await notify(`opencode - ${agentType}`, msg);
           break;
         }
 
         // ── Session error ──────────────────────────────────────
         case "session.error": {
-          const sid = event.properties.sessionID;
-          const agentType = await getAgentType(sid);
+          const sid = event.properties?.sessionID ?? event.properties?.id ?? event.properties?.info?.id ?? event.id;
+          const { agentType } = await getSessionInfo(sid);
           const errorMsg = formatError(event.properties.error);
+          debug("session.error notification:", { agentType, error: errorMsg });
           await notify(`opencode - ${agentType}`, errorMsg);
           break;
         }
 
 // ── Session compacted ──────────────────────────────────
         case "session.compacted": {
-          const sid = event.properties.sessionID;
-          const agentType = await getAgentType(sid);
-          const title = await getSessionTitle(sid);
+          const sid = event.properties?.sessionID ?? event.properties?.id ?? event.properties?.info?.id ?? event.id;
+          const { agentType, title } = await getSessionInfo(sid);
           const msg = title
             ? `"${title}" — session compacted.`
             : "Session compacted — context trimmed.";
-
+          debug("session.compacted notification:", { agentType, title });
           await notify(`opencode - ${agentType}`, msg);
           break;
         }
 
-        // ── Permission / approval request ─────────────────────
-        case "permission.updated": {
-          const perm = event.properties;
-          const kind = perm?.type || "permission";
-          const desc = perm?.title || "approval needed";
-          await notify("opencode - agent", `${kind} — ${desc}`);
-          break;
-        }
       }
+    },
+
+    // ── Permission / approval request ────────────────────────
+    "permission.ask": async (input) => {
+      const kind = input?.type || "permission";
+      const desc = input?.title || "approval needed";
+      debug("permission.ask notification:", { kind, desc });
+      await notify("opencode - agent", `${kind} — ${desc}`);
     },
 
     // ── Agent message received ─────────────────────────────
     "chat.message": async ({ sessionID, agent }) => {
-      const agentType = await getAgentType(sessionID);
-      const title = await getSessionTitle(sessionID);
+      const { agentType, title } = await getSessionInfo(sessionID);
       const sessionTitle = title ? `"${title}"` : "Session";
+      debug("chat.message notification:", { agentType, title, agent });
       await notify(`opencode - ${agentType}`, `${sessionTitle} — waiting for your input.`);
     },
   };
