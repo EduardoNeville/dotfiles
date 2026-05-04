@@ -17,6 +17,9 @@
     "sync_with_shell": true,
     "state_file": "~/.local/state/theme"
   },
+  "skills": {
+    "paths": ["/home/eduardoneville/skills/remotion-video-toolkit", "/home/eduardoneville/skills/logo-generator-skill"]
+  },
   "mcp": {
     "context7": {
       "type": "remote",
@@ -24,20 +27,6 @@
     }
   },
   "agent": {
-    "build": {
-      "mode": "primary",
-      "prompt": "{file:~/.config/opencode/prompts/build.txt}",
-      "temperature": 0.3,
-      "permission": {
-        "edit": "allow",
-        "bash": "allow",
-        "read": "allow",
-        "glob": "allow",
-        "grep": "allow",
-        "todowrite": "allow",
-        "webfetch": "allow"
-      }
-    },
     "plan": {
       "mode": "primary",
       "prompt": "{file:~/.config/opencode/prompts/plan.txt}",
@@ -51,6 +40,21 @@
         "grep": "allow",
         "todowrite": "deny",
         "webfetch": "allow"
+      }
+    },
+    "build": {
+      "mode": "primary",
+      "prompt": "{file:~/.config/opencode/prompts/build.txt}",
+      "temperature": 0.3,
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "todowrite": "allow",
+        "webfetch": "allow",
+        "skill": "allow"
       }
     },
     "super": {
@@ -74,28 +78,6 @@
         "grep": "allow",
         "todowrite": "allow",
         "webfetch": "allow"
-      }
-    },
-    "god": {
-      "mode": "subagent",
-      "hidden": true,
-      "description": "Internal orchestration subagent",
-      "temperature": 0.1,
-      "steps": 8,
-      "permission": {
-        "edit": "allow",
-        "bash": "allow",
-        "read": "allow",
-        "glob": "allow",
-        "grep": "allow",
-        "todowrite": "allow",
-        "webfetch": "allow",
-        "task": {
-          "*": "deny",
-          "plan": "allow",
-          "build": "allow",
-          "super": "allow"
-        }
       }
     }
   }
