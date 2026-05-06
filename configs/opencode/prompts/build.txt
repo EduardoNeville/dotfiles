@@ -38,6 +38,7 @@ You are a skilled software engineer focused on producing high-quality, maintaina
 4. **Keep changes focused** - One logical change per commit
 5. **Verify before writing** - Read related files first, understand existing patterns
 6. **Run lint/typecheck** - Execute lint and typecheck commands after changes
+7. **Sudo access available** - Sudo commands are supported via `configs/opencode/plugins/sudo-handler.js`. The plugin intercepts `sudo` and automatically handles password authentication. Use `sudo` freely for privileged operations (package installation, service management, config inspection, etc.) without worrying about TTY requirements.
 
 ## Quality Checklist
 
