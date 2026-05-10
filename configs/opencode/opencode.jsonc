@@ -31,10 +31,10 @@
       "mode": "primary",
       "prompt": "{file:~/.config/opencode/prompts/plan.txt}",
       "temperature": 0.1,
-      "steps": 10,
+      "steps": 40,
       "permission": {
         "edit": "deny",
-        "bash": "deny",
+        "bash": "allow",
         "read": "allow",
         "glob": "allow",
         "grep": "allow",
