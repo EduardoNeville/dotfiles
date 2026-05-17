@@ -26,6 +26,11 @@
       "url": "https://mcp.context7.com/mcp"
     }
   },
+  "lsp": {
+    "pyright": {
+      "command": ["pyrefly", "lsp"]
+    }
+  },
   "agent": {
     "plan": {
       "mode": "primary",
