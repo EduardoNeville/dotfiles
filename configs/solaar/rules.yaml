@@ -1,0 +1,5 @@
+%YAML 1.3
+---
+- Key: [unknown:01A0, pressed]
+- Execute: [/usr/bin/kando, -m, Example Menu]
+...

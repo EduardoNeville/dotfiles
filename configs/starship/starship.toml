@@ -2,6 +2,10 @@
 
 # Configurations
 
+# Increase scan_timeout to avoid "Scanning current directory timed out" warnings
+# especially in large repos or on slow filesystems
+scan_timeout = 100
+
 # Format
 
 format = """$username$directory$git_branch$git_status$fill$time$all$character"""
