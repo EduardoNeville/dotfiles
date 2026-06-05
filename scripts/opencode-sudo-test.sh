@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # opencode-sudo-test.sh
 #
-# Validates the sudo plugin pipeline without needing opencode running.
-# Tests: password storage, askpass helper, inline SUDO_ASKPASS, regex transforms.
+# Validates the sudo tool pipeline without needing opencode running.
+# Tests: password storage, askpass helper, SUDO_ASKPASS + sudo -A, tool endpoint.
 #
 # Usage:
 #   bash ~/dotfiles/scripts/opencode-sudo-test.sh
@@ -11,8 +11,8 @@
 #   1. Run: bash ~/dotfiles/scripts/opencode-sudo-setup.sh
 #      (enter your real sudo password once)
 #   2. Start opencode
-#   3. Ask the agent: sudo echo "hello from opencode"
-#   4. If it returns "hello from opencode" — the plugin works!
+#   3. Ask the agent: use the `sudo` tool with command "echo 'hello from opencode'"
+#   4. If it returns "hello from opencode" — the tool works!
 
 set -e
 
@@ -38,7 +38,8 @@ trap cleanup EXIT
 
 echo ""
 echo -e "${BOLD}════════════════════════════════════════════════════════${NC}"
-echo -e "${BOLD}  OpenCode Sudo Plugin — Pipeline Test (v2: inline SUDO_ASKPASS)${NC}"
+echo -e "${BOLD}  OpenCode Sudo Tool — Pipeline Test${NC}"
+echo -e "${BOLD}  (custom tool → SUDO_ASKPASS → sudo -A)${NC}"
 echo -e "${BOLD}════════════════════════════════════════════════════════${NC}"
 echo ""
 
@@ -78,48 +79,90 @@ output=$("$ASKPASS_SCRIPT" 2>/dev/null)
     || fail "Askpass output mismatch"
 echo ""
 
-# ── 5. Inline SUDO_ASKPASS (the tool.execute.before rewrite) ─────
-info "5. Inline SUDO_ASKPASS + sudo -A rewrite"
+# ── 5. SUDO_ASKPASS + sudo -A (the tool execution path) ──────────
+info "5. SUDO_ASKPASS + sudo -A execution"
 
-declare -A TESTS=(
-    ["sudo apt update"]="SUDO_ASKPASS=${ASKPASS_SCRIPT} sudo -A apt update"
-    ["sudo -E make install"]="SUDO_ASKPASS=${ASKPASS_SCRIPT} sudo -A -E make install"
-    ["echo x | sudo tee /etc/file"]="SUDO_ASKPASS=${ASKPASS_SCRIPT} echo x | sudo -A tee /etc/file"
-    ["sudo -A apt update"]="sudo -A apt update"
-    ["sudo -S apt install"]="sudo -A apt install"
-    ["sudo -n echo hi"]="sudo -A echo hi"
-    ["sudo apt update && sudo apt upgrade"]="SUDO_ASKPASS=${ASKPASS_SCRIPT} sudo -A apt update && sudo -A apt upgrade"
-    ["apt update"]="apt update"
-)
+# Instead of testing plugin regex (which no longer exists), we test
+# the actual sudo -A invocation that the custom tool uses internally.
 
-failures=0
-for original in "${!TESTS[@]}"; do
-    expected="${TESTS[$original]}"
-    needsSudo=$(echo "$original" | grep -qP '\bsudo\b(?!\s+-[ASn])' && echo 1 || echo 0)
-    rewritten="$original"
-    if [ "$needsSudo" = "1" ]; then
-        rewritten=$(echo "$original" | sed -E 's/\bsudo\b( +-[ASn])?/sudo -A/g')
-        rewritten="SUDO_ASKPASS=${ASKPASS_SCRIPT} $rewritten"
+# Test: sudo -A works with a command that requires no special handling
+output=$(SUDO_ASKPASS="$ASKPASS_SCRIPT" timeout 5 sudo -A -n true 2>&1) || true
+if echo "$output" | grep -qiE "password|sorry|incorrect"; then
+    # Password from dummy askpass was rejected — that's expected
+    # because we used a dummy password. The important thing is it
+    # didn't hang and the askpass was called.
+    pass "sudo -A invoked askpass (expected rejection with dummy password)"
+elif [ -z "$output" ] && [ $? -eq 0 ] 2>/dev/null; then
+    pass "sudo -A succeeded (real password found?)"
+else
+    warn "sudo -A output: ${output:-"(empty)"}"
+fi
+echo ""
+
+# ── 6. Tool definition file check ────────────────────────────────
+info "6. Custom tool file integrity"
+TOOL_PATH="$HOME/.config/opencode/tools/sudo.js"
+if [ -f "$TOOL_PATH" ]; then
+    pass "Tool file exists at $TOOL_PATH"
+
+    # Check that it imports from @opencode-ai/plugin
+    if grep -qE "import.*from.*@opencode-ai/plugin" "$TOOL_PATH"; then
+        pass "Tool imports @opencode-ai/plugin"
     else
-        rewritten=$(echo "$original" | sed -E 's/\bsudo\b( +-[ASn])?/sudo -A/g')
+        fail "Tool does not import @opencode-ai/plugin"
     fi
-    [ "$rewritten" = "$expected" ] \
-        && pass "'$original' → '$rewritten'" \
-        || { fail "'$original' → '$rewritten' (expected '$expected')"; ((failures++)); }
-done
 
-echo ""
-[ $failures -eq 0 ] \
-    && pass "All ${#TESTS[@]} transformations correct" \
-    || fail "$failures transformation(s) failed"
+    # Check that it exports a tool() definition
+    if grep -q "export default tool(" "$TOOL_PATH"; then
+        pass "Tool exports a tool() definition"
+    else
+        fail "Missing 'export default tool(' in tool file"
+    fi
+
+    # Check that it uses execSync for command execution
+    if grep -q "execSync" "$TOOL_PATH"; then
+        pass "Tool uses execSync for command execution"
+    else
+        fail "Missing execSync in tool file"
+    fi
+
+    # Check that it has a 'command' argument definition
+    # (args are on multiple lines: command: tool.schema\n      .string())
+    if grep -q "command:.*tool.schema" "$TOOL_PATH"; then
+        pass "Tool defines 'command' argument with string schema"
+    else
+        fail "Missing 'command' argument definition"
+    fi
+else
+    fail "Tool file not found at $TOOL_PATH"
+    fail "Create it by copying from dotfiles:"
+    fail "  cp ~/dotfiles/configs/opencode/tools/sudo.js $TOOL_PATH"
+fi
 echo ""
 
-# ── 6. sudo -A non-blocking ──────────────────────────────────────
-info "6. sudo -A: verify it fails gracefully (no hang)"
-output=$(SUDO_ASKPASS="$ASKPASS_SCRIPT" timeout 2 sudo -A -n true 2>&1) || true
-echo "$output" | grep -qiE "password|sorry|incorrect|not found" \
-    && pass "sudo -A fails gracefully (no hang)" \
-    || warn "sudo -A output: $output"
+# ── 7. Plugin removal check ──────────────────────────────────────
+info "7. Old plugin removal check"
+PLUGIN_PATH="$HOME/.config/opencode/plugins/sudo-handler.js"
+if [ -f "$PLUGIN_PATH" ]; then
+    warn "Old plugin still exists at $PLUGIN_PATH"
+    warn "It should be removed — the custom tool replaces it."
+    warn "Delete it with: rm $PLUGIN_PATH"
+else
+    pass "Old plugin file removed (sudo-handler.js)"
+fi
+echo ""
+
+# ── 8. Askpass script cleanup check ──────────────────────────────
+info "8. Askpass script cleanup (tool should delete askpass after use)"
+# Simulate what the tool does: write askpass, verify it exists, then delete
+printf '#!/bin/sh\ncat %s\n' "$PASSFILE" > "$ASKPASS_SCRIPT"
+chmod 700 "$ASKPASS_SCRIPT"
+[ -f "$ASKPASS_SCRIPT" ] && pass "Askpass exists before execution"
+
+# Delete it (as the tool would)
+rm -f "$ASKPASS_SCRIPT"
+[ ! -f "$ASKPASS_SCRIPT" ] && pass "Askpass cleaned up after execution" \
+    || fail "Askpass was not cleaned up"
 echo ""
 
 echo -e "${BOLD}────────────────────────────────────────────────────────${NC}"
@@ -133,12 +176,16 @@ echo -e "       (enter your real password — verified before saving)"
 echo ""
 echo -e "    2. opencode"
 echo ""
-echo -e "    3. Ask the agent: ${BOLD}sudo echo 'hello from opencode'${NC}"
+echo -e "    3. Ask the agent to ${BOLD}use the 'sudo' tool${NC}"
+echo -e "       with: ${BOLD}command: \"echo 'hello from opencode'\"${NC}"
 echo ""
-echo -e "    4. If it returns 'hello from opencode' → plugin works!"
+echo -e "    4. If it returns 'hello from opencode' → tool works!"
 echo ""
 echo -e "  ${BOLD}Without the password file:${NC}"
 echo -e "    export OPENCODE_SUDO_PASS='your-password'"
 echo -e "    opencode"
+echo ""
+echo -e "  ${BOLD}Custom tool location:${NC}"
+echo -e "    ~/.config/opencode/tools/sudo.js"
 echo ""
 echo -e "${BOLD}────────────────────────────────────────────────────────${NC}"

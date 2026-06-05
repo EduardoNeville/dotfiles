@@ -2,7 +2,7 @@
 # opencode-sudo-setup.sh
 #
 # Securely prompts for your sudo password and stores it in a temp file
-# that the opencode sudo-handler plugin reads at runtime.
+# that the opencode sudo custom tool reads at runtime.
 #
 # Usage:
 #   bash ~/dotfiles/scripts/opencode-sudo-setup.sh
