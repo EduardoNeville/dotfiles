@@ -63,7 +63,7 @@ export default tool({
       .string()
       .describe(
         "The shell command to execute with root privileges. " +
-        "Do NOT include the 'sudo' prefix — this is added automatically."
+          "Do NOT include the 'sudo' prefix — this is added automatically.",
       ),
   },
 
@@ -94,17 +94,13 @@ export default tool({
       if (envPass) {
         // Escape special characters for the shell script context
         const escaped = envPass.replace(/[\\"$`]/g, "\\$&");
-        writeFileSync(
-          askpassPath,
-          `#!/bin/sh\necho "${escaped}"\n`,
-          { mode: 0o700 }
-        );
+        writeFileSync(askpassPath, `#!/bin/sh\necho "${escaped}"\n`, {
+          mode: 0o700,
+        });
       } else {
-        writeFileSync(
-          askpassPath,
-          `#!/bin/sh\ncat ${passFile}\n`,
-          { mode: 0o700 }
-        );
+        writeFileSync(askpassPath, `#!/bin/sh\ncat ${passFile}\n`, {
+          mode: 0o700,
+        });
       }
 
       // ── Execute via shell (preserves pipes, redirects, etc.) ──
@@ -116,18 +112,16 @@ export default tool({
           timeout: 120_000,
           maxBuffer: 10 * 1024 * 1024,
           windowsHide: true,
-        }
+        },
       );
 
       return result.replace(/\n$/, "");
-
     } catch (err) {
       const lines = [`Exit code: ${err.status || "?"}`];
       if (err.stdout) lines.push(err.stdout.replace(/\n$/, ""));
       if (err.stderr) lines.push(err.stderr.replace(/\n$/, ""));
       if (!err.stdout && !err.stderr) lines.push(err.message);
       return lines.join("\n");
-
     } finally {
       // Remove askpass script immediately — it contains the password
       try {
