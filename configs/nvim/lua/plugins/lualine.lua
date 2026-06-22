@@ -1,19 +1,22 @@
 return {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
-    config = function ()
+    config = function()
         local status, lualine = pcall(require, "lualine")
         if (not status) then return end
 
-        local custom_ayu = require'lualine.themes.ayu'
-        custom_ayu.normal.c.fg = "#7aa2f7"
+        -- Custom ayu theme tweaks for dark mode
+        local function get_ayu_theme()
+            local custom_ayu = require('lualine.themes.ayu')
+            custom_ayu.normal.c.fg = "#7aa2f7"
+            return custom_ayu
+        end
 
         local function get_line_count()
             local file = io.open(vim.fn.expand('%'), 'r')
             if not file then
                 return ''
             end
-
             local line_count = 0
             for _ in file:lines() do
                 line_count = line_count + 1
@@ -23,58 +26,66 @@ return {
             return line_count
         end
 
-        require('lualine').setup {
-            options = {
-                icons_enabled = true,
-                --theme = custom_duskfox, --custom_duskfox, -- custom_nova, -- "nova", -- custom_duskfox, -- "duskfox",
-                theme = custom_ayu,
-                section_separators = { left = '', right = '' },
-                --  
-                --   
-                --  
-                --  │ 
-                --  
-                --  
-                --  
-                component_separators = { left = '│', right = '│' },
-                disabled_filetypes = {}
-            },
-            sections = {
-                lualine_a = { 'mode' },
-                lualine_b = { 'branch' },
-                lualine_c = { {
-                    'filename',
-                    file_status = true, -- displays file status (readonly status, modified status)
-                    path = 0 -- 0 = just filename, 1 = relative path, 2 = absolute path
-                } },
-                lualine_x = {
-                    {
-                        'diagnostics',
-                        sources = { "nvim_diagnostic" },
-                        symbols = { error = ' ', warn = ' ', info = ' ', hint = ' ' } },
-                    --'encoding',
-                    'filetype'
+        local function get_lualine_theme()
+            if vim.g.theme_is_light then
+                -- Catppuccin lualine theme auto-detects latte flavour
+                return "catppuccin"
+            else
+                return get_ayu_theme()
+            end
+        end
+
+        local function setup_lualine()
+            require('lualine').setup {
+                options = {
+                    icons_enabled = true,
+                    theme = get_lualine_theme(),
+                    section_separators = { left = '', right = '' },
+                    component_separators = { left = '│', right = '│' },
+                    disabled_filetypes = {}
                 },
-                lualine_y = {
-                    --'progress'
+                sections = {
+                    lualine_a = { 'mode' },
+                    lualine_b = { 'branch' },
+                    lualine_c = { {
+                        'filename',
+                        file_status = true,
+                        path = 0
+                    } },
+                    lualine_x = {
+                        {
+                            'diagnostics',
+                            sources = { "nvim_diagnostic" },
+                            symbols = { error = ' ', warn = ' ', info = ' ', hint = ' ' } },
+                        'filetype'
+                    },
+                    lualine_y = {},
+                    lualine_z = { 'location', get_line_count }
                 },
-                lualine_z = { 'location', get_line_count }
-            },
-            inactive_sections = {
-                lualine_a = {},
-                lualine_b = {},
-                lualine_c = { {
-                    'filename',
-                    file_status = true, -- displays file status (readonly status, modified status)
-                    path = 1 -- 0 = just filename, 1 = relative path, 2 = absolute path
-                } },
-                lualine_x = { 'location' },
-                lualine_y = {},
-                lualine_z = {}
-            },
-            tabline = {},
-            extensions = { 'fugitive' }
-        }
+                inactive_sections = {
+                    lualine_a = {},
+                    lualine_b = {},
+                    lualine_c = { {
+                        'filename',
+                        file_status = true,
+                        path = 1
+                    } },
+                    lualine_x = { 'location' },
+                    lualine_y = {},
+                    lualine_z = {}
+                },
+                tabline = {},
+                extensions = { 'fugitive' }
+            }
+        end
+
+        -- Initial setup
+        setup_lualine()
+
+        -- Re-setup on theme change
+        vim.api.nvim_create_autocmd("User", {
+            pattern = "ThemeChanged",
+            callback = setup_lualine,
+        })
     end
 }
-

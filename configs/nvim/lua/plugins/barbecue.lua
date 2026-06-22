@@ -8,205 +8,151 @@ return {
     opts = {
         -- configurations go here
     },
-    config = function ()
+    config = function()
         local status, barbecue = pcall(require, "barbecue")
         if (not status) then return end
 
-        barbecue.setup({
-            ---Whether to attach navic to language servers automatically.
-            ---
-            ---@type boolean
-            attach_navic = true,
+        local function get_barbecue_theme()
+            if vim.g.theme_is_light then
+                -- Light mode: softer, high-contrast colors
+                return {
+                    normal = { fg = "#1A1A2E" },
+                    ellipsis = { fg = "#9CA0B0" },
+                    separator = { fg = "#9CA0B0" },
+                    modified = { fg = "#D20F39" },
+                    dirname = { fg = "#6C6F85" },
+                    basename = { bold = true },
+                    context = {},
+                    context_file = { fg = "#1E66F5" },
+                    context_module = { fg = "#8839EF" },
+                    context_namespace = { fg = "#8839EF" },
+                    context_package = { fg = "#8839EF" },
+                    context_class = { fg = "#D20F39" },
+                    context_method = { fg = "#1E66F5" },
+                    context_property = { fg = "#179299" },
+                    context_field = { fg = "#179299" },
+                    context_constructor = { fg = "#EA76CB" },
+                    context_enum = { fg = "#8839EF" },
+                    context_interface = { fg = "#8839EF" },
+                    context_function = { fg = "#1E66F5" },
+                    context_variable = { fg = "#D20F39" },
+                    context_constant = { fg = "#EA76CB" },
+                    context_string = { fg = "#40A02B" },
+                    context_number = { fg = "#D20F39" },
+                    context_boolean = { fg = "#D20F39" },
+                    context_array = { fg = "#DF8E1D" },
+                    context_object = { fg = "#DF8E1D" },
+                    context_key = { fg = "#1E66F5" },
+                    context_null = { fg = "#6C6F85" },
+                    context_enum_member = { fg = "#179299" },
+                    context_struct = { fg = "#8839EF" },
+                    context_event = { fg = "#EA76CB" },
+                    context_operator = { fg = "#1A1A2E" },
+                    context_type_parameter = { fg = "#DF8E1D" },
+                }
+            else
+                -- Dark mode: synthweave-inspired colors
+                return {
+                    normal = { fg = "#c0caf5" },
+                    ellipsis = { fg = "#737aa2" },
+                    separator = { fg = "#737aa2" },
+                    modified = { fg = "#737aa2" },
+                    dirname = { fg = "#737aa2" },
+                    basename = { bold = true },
+                    context = {},
+                    context_file = { fg = "#ac8fe4" },
+                    context_module = { fg = "#ac8fe4" },
+                    context_namespace = { fg = "#ac8fe4" },
+                    context_package = { fg = "#ac8fe4" },
+                    context_class = { fg = "#ac8fe4" },
+                    context_method = { fg = "#ac8fe4" },
+                    context_property = { fg = "#ac8fe4" },
+                    context_field = { fg = "#ac8fe4" },
+                    context_constructor = { fg = "#ac8fe4" },
+                    context_enum = { fg = "#ac8fe4" },
+                    context_interface = { fg = "#ac8fe4" },
+                    context_function = { fg = "#ac8fe4" },
+                    context_variable = { fg = "#ac8fe4" },
+                    context_constant = { fg = "#ac8fe4" },
+                    context_string = { fg = "#ac8fe4" },
+                    context_number = { fg = "#ac8fe4" },
+                    context_boolean = { fg = "#ac8fe4" },
+                    context_array = { fg = "#ac8fe4" },
+                    context_object = { fg = "#ac8fe4" },
+                    context_key = { fg = "#ac8fe4" },
+                    context_null = { fg = "#ac8fe4" },
+                    context_enum_member = { fg = "#ac8fe4" },
+                    context_struct = { fg = "#ac8fe4" },
+                    context_event = { fg = "#ac8fe4" },
+                    context_operator = { fg = "#ac8fe4" },
+                    context_type_parameter = { fg = "#ac8fe4" },
+                }
+            end
+        end
 
-            ---Whether to create winbar updater autocmd.
-            ---
-            ---@type boolean
-            create_autocmd = true,
+        local function setup_barbecue()
+            local theme = get_barbecue_theme()
 
-            ---Buftypes to enable winbar in.
-            ---
-            ---@type string[]
-            include_buftypes = { "" },
+            barbecue.setup({
+                attach_navic = true,
+                create_autocmd = true,
+                include_buftypes = { "" },
+                exclude_filetypes = { "netrw", "toggleterm" },
+                modifiers = {
+                    dirname = ":~:.",
+                    basename = "",
+                },
+                show_dirname = true,
+                show_basename = true,
+                show_modified = false,
+                modified = function(bufnr) return vim.bo[bufnr].modified end,
+                show_navic = true,
+                lead_custom_section = function() return " " end,
+                custom_section = function() return " " end,
+                theme = theme,
+                context_follow_icon_color = false,
+                symbols = {
+                    modified = "●",
+                    ellipsis = "…",
+                    separator = "",
+                },
+                kinds = {
+                    File = "",
+                    Module = "",
+                    Namespace = "",
+                    Package = "",
+                    Class = "",
+                    Method = "",
+                    Property = "",
+                    Field = "",
+                    Constructor = "",
+                    Enum = "",
+                    Interface = "",
+                    Function = "",
+                    Variable = "",
+                    Constant = "",
+                    String = "",
+                    Number = "",
+                    Boolean = "",
+                    Array = "",
+                    Object = "",
+                    Key = "",
+                    Null = "",
+                    EnumMember = "",
+                    Struct = "",
+                    Event = "",
+                    Operator = "",
+                    TypeParameter = "",
+                },
+            })
+        end
 
-            ---Filetypes not to enable winbar in.
-            ---
-            ---@type string[]
-            exclude_filetypes = { "netrw", "toggleterm" },
+        setup_barbecue()
 
-            modifiers = {
-                ---Filename modifiers applied to dirname.
-                ---
-                ---See: `:help filename-modifiers`
-                ---
-                ---@type string
-                dirname = ":~:.",
-
-                ---Filename modifiers applied to basename.
-                ---
-                ---See: `:help filename-modifiers`
-                ---
-                ---@type string
-                basename = "",
-            },
-
-            ---Whether to display path to file.
-            ---
-            ---@type boolean
-            show_dirname = true,
-
-            ---Whether to display file name.
-            ---
-            ---@type boolean
-            show_basename = true,
-
-            ---Whether to replace file icon with the modified symbol when buffer is
-            ---modified.
-            ---
-            ---@type boolean
-            show_modified = false,
-
-            ---Get modified status of file.
-            ---
-            ---NOTE: This can be used to get file modified status from SCM (e.g. git)
-            ---
-            ---@type fun(bufnr: number): boolean
-            modified = function(bufnr) return vim.bo[bufnr].modified end,
-
-            ---Whether to show/use navic in the winbar.
-            ---
-            ---@type boolean
-            show_navic = true,
-
-            ---Get leading custom section contents.
-            ---
-            ---NOTE: This function shouldn't do any expensive actions as it is run on each
-            ---render.
-            ---
-            ---@type fun(bufnr: number, winnr: number): barbecue.Config.custom_section
-            lead_custom_section = function() return " " end,
-
-            ---@alias barbecue.Config.custom_section
-            ---|string # Literal string.
-            ---|{ [1]: string, [2]: string? }[] # List-like table of `[text, highlight?]` tuples in which `highlight` is optional.
-            ---
-            ---Get custom section contents.
-            ---
-            ---NOTE: This function shouldn't do any expensive actions as it is run on each
-            ---render.
-            ---
-            ---@type fun(bufnr: number, winnr: number): barbecue.Config.custom_section
-            custom_section = function() return " " end,
-
-            ---@alias barbecue.Config.theme
-            ---|'"auto"' # Use your current colorscheme's theme or generate a theme based on it.
-            ---|string # Theme located under `barbecue.theme` module.
-            ---|barbecue.Theme # Same as '"auto"' but override it with the given table.
-            ---
-            ---Theme to be used for generating highlight groups dynamically.
-            ---
-            ---@type barbecue.Config.theme
-            theme= {
-                -- this highlight is used to override other highlights
-                -- you can take advantage of its `bg` and set a background throughout your winbar
-                -- (e.g. basename will look like this: { fg = "#c0caf5", bold = true })
-                normal = { fg = "#c0caf5" },
-
-                -- these highlights correspond to symbols table from config
-                ellipsis = { fg = "#737aa2" },
-                separator = { fg = "#737aa2" },
-                modified = { fg = "#737aa2" },
-
-                -- these highlights represent the _text_ of three main parts of barbecue
-                dirname = { fg = "#737aa2" },
-                basename = { bold = true },
-                context = {},
-
-                -- these highlights are used for context/navic icons
-                context_file = { fg = "#ac8fe4" },
-                context_module = { fg = "#ac8fe4" },
-                context_namespace = { fg = "#ac8fe4" },
-                context_package = { fg = "#ac8fe4" },
-                context_class = { fg = "#ac8fe4" },
-                context_method = { fg = "#ac8fe4" },
-                context_property = { fg = "#ac8fe4" },
-                context_field = { fg = "#ac8fe4" },
-                context_constructor = { fg = "#ac8fe4" },
-                context_enum = { fg = "#ac8fe4" },
-                context_interface = { fg = "#ac8fe4" },
-                context_function = { fg = "#ac8fe4" },
-                context_variable = { fg = "#ac8fe4" },
-                context_constant = { fg = "#ac8fe4" },
-                context_string = { fg = "#ac8fe4" },
-                context_number = { fg = "#ac8fe4" },
-                context_boolean = { fg = "#ac8fe4" },
-                context_array = { fg = "#ac8fe4" },
-                context_object = { fg = "#ac8fe4" },
-                context_key = { fg = "#ac8fe4" },
-                context_null = { fg = "#ac8fe4" },
-                context_enum_member = { fg = "#ac8fe4" },
-                context_struct = { fg = "#ac8fe4" },
-                context_event = { fg = "#ac8fe4" },
-                context_operator = { fg = "#ac8fe4" },
-                context_type_parameter = { fg = "#ac8fe4" },
-            },
-
-            ---Whether context text should follow its icon's color.
-            ---
-            ---@type boolean
-            context_follow_icon_color = false,
-
-            symbols = {
-                ---Modification indicator.
-                ---
-                ---@type string
-                modified = "●",
-
-                ---Truncation indicator.
-                ---
-                ---@type string
-                ellipsis = "…",
-
-                ---Entry separator.
-                ---
-                ---@type string
-                separator = "",
-            },
-
-            ---@alias barbecue.Config.kinds
-            ---|false # Disable kind icons.
-            ---|table<string, string> # Type to icon mapping.
-            ---
-            ---Icons for different context entry kinds.
-            ---
-            ---@type barbecue.Config.kinds
-            kinds = {
-                File = "",
-                Module = "",
-                Namespace = "",
-                Package = "",
-                Class = "",
-                Method = "",
-                Property = "",
-                Field = "",
-                Constructor = "",
-                Enum = "",
-                Interface = "",
-                Function = "",
-                Variable = "",
-                Constant = "",
-                String = "",
-                Number = "",
-                Boolean = "",
-                Array = "",
-                Object = "",
-                Key = "",
-                Null = "",
-                EnumMember = "",
-                Struct = "",
-                Event = "",
-                Operator = "",
-                TypeParameter = "",
-            },
+        -- Re-setup on theme change
+        vim.api.nvim_create_autocmd("User", {
+            pattern = "ThemeChanged",
+            callback = setup_barbecue,
         })
     end
 }

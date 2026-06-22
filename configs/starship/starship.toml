@@ -1,40 +1,78 @@
 #                                 
 
-# Configurations
+# ============================================================
+# Root-level settings (must come before any [table] header)
+# ============================================================
 
 # Increase scan_timeout to avoid "Scanning current directory timed out" warnings
 # especially in large repos or on slow filesystems
 scan_timeout = 100
 
 # Format
-
 format = """$username$directory$git_branch$git_status$fill$time$all$character"""
 
 #right_format = """$all"""
 
+# Default palette (overridden by STARSHIP_PALETTE env var from zsh precmd)
+palette = "dark"
+
+# ============================================================
+# Light/Dark palettes
+# Selected via STARSHIP_PALETTE env var set by zsh's precmd
+# from ~/.local/state/theme (written by wezterm toggle).
+# ============================================================
+[palettes.light]
+blue      = "#1E66F5"
+teal      = "#179299"
+green     = "#40A02B"
+success   = "#40A02B"
+red       = "#D20F39"
+pink      = "#EA76CB"
+yellow    = "#DF8E1D"
+purple    = "#8839EF"
+orange    = "#D97437"
+overlay0  = "#9CA0B0"
+subtext0  = "#6C6F85"
+surface0  = "#E6E9EF"
+fg        = "#1A1A2E"
+
+[palettes.dark]
+blue      = "#82aaff"
+teal      = "#21c7a8"
+green     = "#22da6e"
+success   = "#0ae4a4"
+red       = "#ef5350"
+pink      = "#c792ea"
+yellow    = "#c5e478"
+purple    = "#c792ea"
+orange    = "#ffeb95"
+overlay0  = "#565f89"
+subtext0  = "#565f89"
+surface0  = "#0b2942"
+fg        = "#d6deeb"
 
 # General config
 
 [username]
-style_user = "fg:#0969da"
-style_root = "fg:#45aeff"
+style_user = "fg:@blue"
+style_root = "fg:@blue"
 format = '[\[$user\]]($style)'
 disabled = true 
 
 #  ❯ ❮ ✘
 [character]
-success_symbol = '[](bold #0ae4a4)'
+success_symbol = '[](bold @success)'
 error_symbol = '[](bold red)'
-vimcmd_symbol = '[](bold #0ae4a4)'
+vimcmd_symbol = '[](bold @success)'
 vimcmd_replace_one_symbol = '[ ](bold purple)'
 vimcmd_visual_symbol = '[ ](bold green)'
 
 [directory]
 truncation_length = 8 
 truncate_to_repo = false
-before_repo_root_style="fg:#0969da"
-repo_root_style="fg:#89c0d0"
-style="fg:#45aeff"
+before_repo_root_style="fg:@blue"
+repo_root_style="fg:@teal"
+style="fg:@blue"
 read_only=" "
 read_only_style="red"
 repo_root_format ='\[[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style)\]'
@@ -49,16 +87,16 @@ disabled = false
 
 [fill]
 symbol = "·"
-style = "fg:#e4e4e4"
+style = "fg:@overlay0"
 
 [git_branch]
 symbol = ""
-style = "fg:#f0268f"
+style = "fg:@pink"
 format = '[\[$symbol $branch\]]($style)'
 disabled = false
 
 [git_status]
-style = "fg:#65ff87"
+style = "fg:@green"
 ahead ='󰞕 $count'
 behind ='󰞒 $count'
 modified = '!$count'
@@ -73,98 +111,97 @@ disabled = false
 [time]
 disabled = false
 time_format = "%T" # Hour:Minute Format
-style = "fg:#65ff87"
+style = "fg:@green"
 format = '([\[$time\]]($style))'
 
 [cmd_duration]
-style = "fg:#f1d751"
+style = "fg:@yellow"
 format = '([\[$duration\]]($style))'
 
 # Start languages and tools #
 
 [nix_shell]
 symbol = " "
-style = "fg:#90b7e0"
+style = "fg:@blue"
 format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [docker_context]
 symbol = "󰡨 "
-style = "fg:#589be9"
+style = "fg:@blue"
 format = '(via [\[$symbol $context\]]($style))'
 disabled = false
 
 [bun]
 symbol = "󱠶 "
-style = "fg:#da9253"
+style = "fg:@yellow"
 version_format = "$raw"
 format = '(via [\[$symbol $context\]]($style))'
 disabled = false
 
 [c]
 symbol = ""
-style = "fg:#84a930"
+style = "fg:@green"
 version_format = "$raw"
 format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [kubernetes]
-style = "fg:#326ce5"
+style = "fg:@blue"
 format = '([\[ﴱ $cluster\($namespace\)\]]($style))'
 disabled = true
 
 [gcloud]
 symbol = " "
-style = "fg:#0f9d58"
+style = "fg:@green"
 format = '([ \[on $symbol $account(@$domain)(\($region\))\]]($style) )'
-# format = '[ on $symbol account@company.iam.gserviceaccount.com(\($region\)) ]($style) ' # for testing purposes
 disabled = false
 
 [golang]
 symbol = ""
-style = "fg:#007d9c"
+style = "fg:@teal"
 version_format = "$raw"
 format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [java]
 symbol = ""
-style = "fg:#cd6f1a"
+style = "fg:@orange"
 version_format = "$raw"
 format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [lua]
 symbol = ""
-style = "fg:#5582da"
+style = "fg:@blue"
 version_format = "$raw"
 format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [nodejs]
 symbol = ""
-style = "fg:#5fa04e"
+style = "fg:@green"
 version_format = "$raw"
 format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [package]
 symbol = " "
-style = "fg:#cb3837"
+style = "fg:@red"
 version_format = "$raw"
 format = '([\[$symbol ($version)\]]($style))'
 disabled = true
 
 [php]
 symbol = ''
-style = "fg:#4F5B93"
+style = "fg:@purple"
 version_format = "$raw"
 format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [python]
 symbol = ''
-style = "fg:#ffdf76"
+style = "fg:@yellow"
 version_format = "$raw"
 format = '([\[$symbol ($version)\]]($style))'
 detect_files = ['pyproject.toml']
@@ -172,14 +209,14 @@ disabled = false
 
 [rust]
 symbol = ""
-style = "fg:#9e6a4b"
+style = "fg:@orange"
 version_format = "$raw"
 format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [scala]
 symbol = ""
-style = "fg:#a72145"
+style = "fg:@red"
 version_format = "$raw"
 format = '([\[$symbol ($version)\]]($style))'
 disabled = false
@@ -231,4 +268,3 @@ SUSE = " "
 Ubuntu = " "
 Unknown = " "
 Windows = "󰍲 "
-

@@ -38,7 +38,6 @@ end
 ----------------------------------------------------
 
 local dark_scheme = "Night Owl (Gogh)"
-local light_scheme = "Night Owlish Light"
 
 local dark_window_frame = {
     active_titlebar_bg = '#011627',
@@ -74,47 +73,50 @@ local dark_colors = {
     },
 }
 
+-- ── Light Mode Colors (Catppuccin Latte-inspired) ──────────
+-- Background: off-white #FAFAFA, Foreground: near-black #1A1A2E
+
 local light_window_frame = {
-    active_titlebar_bg = '#fbfbfb',
-    inactive_titlebar_bg = '#fbfbfb',
+    active_titlebar_bg = '#FAFAFA',
+    inactive_titlebar_bg = '#FAFAFA',
 }
 
 local light_colors = {
-    background = '#fbfbfb',
-    foreground = '#403f53',
-    cursor_bg = '#90a7b2',
-    cursor_border = '#90a7b2',
-    selection_bg = '#e0e0e0',
-    selection_fg = '#403f53',
+    background = '#FAFAFA',
+    foreground = '#1A1A2E',
+    cursor_bg = '#1E66F5',
+    cursor_border = '#1E66F5',
+    selection_bg = '#BEE3F8',
+    selection_fg = '#1A1A2E',
     ansi = {
-        '#403f53', -- black
-        '#de3d3b', -- red
-        '#08916a', -- green
-        '#e0af02', -- yellow
-        '#288ed7', -- blue
-        '#d6438a', -- magenta
-        '#2aa298', -- cyan
-        '#f0f0f0', -- white
+        '#2D3748', -- black (dark gray)
+        '#D20F39', -- red
+        '#40A02B', -- green
+        '#DF8E1D', -- yellow
+        '#1E66F5', -- blue
+        '#EA76CB', -- magenta (pink)
+        '#179299', -- cyan (teal)
+        '#F5F5F9', -- white (near-white)
     },
     brights = {
-        '#403f53', -- bright black
-        '#de3d3b', -- bright red
-        '#08916a', -- bright green
-        '#daaa01', -- bright yellow
-        '#288ed7', -- bright blue
-        '#d6438a', -- bright magenta
-        '#2aa298', -- bright cyan
-        '#f0f0f0', -- bright white
+        '#4A5568', -- bright black
+        '#D20F39', -- bright red
+        '#40A02B', -- bright green
+        '#DF8E1D', -- bright yellow
+        '#1E66F5', -- bright blue
+        '#EA76CB', -- bright magenta
+        '#179299', -- bright cyan
+        '#FFFFFF', -- bright white
     },
-    indexed = { [16] = '#e0af02', [17] = '#403f53' },
-    scrollbar_thumb = '#c0c0c0',
-    split = '#e0e0e0',
+    indexed = { [16] = '#DF8E1D', [17] = '#1A1A2E' },
+    scrollbar_thumb = '#E6E9EF',
+    split = '#E6E9EF',
     tab_bar = {
-        active_tab = { bg_color = '#fbfbfb', fg_color = '#403f53' },
-        inactive_tab = { bg_color = '#e0e0e0', fg_color = '#989fb1' },
-        inactive_tab_hover = { bg_color = '#d0d0d0', fg_color = '#403f53', italic = true },
-        new_tab = { bg_color = '#ebebeb', fg_color = '#787b8a' },
-        new_tab_hover = { bg_color = '#d0d0d0', fg_color = '#403f53', italic = true },
+        active_tab = { bg_color = '#FAFAFA', fg_color = '#1A1A2E' },
+        inactive_tab = { bg_color = '#E6E9EF', fg_color = '#9CA0B0' },
+        inactive_tab_hover = { bg_color = '#D0D5DD', fg_color = '#1A1A2E', italic = true },
+        new_tab = { bg_color = '#E6E9EF', fg_color = '#6C6F85' },
+        new_tab_hover = { bg_color = '#D0D5DD', fg_color = '#1A1A2E', italic = true },
     },
 }
 
@@ -130,12 +132,12 @@ local tmux_dark_theme = {
 }
 
 local tmux_light_theme = {
-    status_bg = '#fbfbfb',
-    status_fg = '#403f53',
-    pane_border = '#e0e0e0',
-    active_border = '#288ed7',
-    message_bg = '#288ed7',
-    mode_bg = '#d6438a',
+    status_bg = '#FAFAFA',
+    status_fg = '#1A1A2E',
+    pane_border = '#E6E9EF',
+    active_border = '#1E66F5',
+    message_bg = '#1E66F5',
+    mode_bg = '#8839EF',
 }
 
 local function toggle_theme(window, _)
@@ -162,13 +164,27 @@ local function toggle_theme(window, _)
 
     window:emit("theme-changed", is_light and "light" or "dark")
 
+    -- OSC 10 = text foreground color, OSC 11 = text background color
+    -- These are forwarded through tmux passthrough to update programs
+    -- that query terminal colors.
     if is_light then
-        window:emit("passthrough", "\x1b]10;#fbfbfb\x1b\\")
-        window:emit("passthrough", "\x1b]11;#403f53\x1b\\")
+        window:emit("passthrough", "\x1b]10;#1A1A2E\x1b\\")
+        window:emit("passthrough", "\x1b]11;#FAFAFA\x1b\\")
     else
         window:emit("passthrough", "\x1b]10;#d6deeb\x1b\\")
         window:emit("passthrough", "\x1b]11;#011627\x1b\\")
     end
+
+    -- Propagate theme state to local tmux and remote SSH hosts.
+    -- Calls propagate_state.sh which:
+    --   1. Writes state locally (already done, but idempotent)
+    --   2. Syncs local tmux if inside a tmux session
+    --   3. SSHes to each host in ~/.config/theme/remote-hosts and
+    --      writes state there + syncs their tmux
+    wezterm.run_child_process({
+        "bash", "-c",
+        "~/.config/theme/scripts/propagate_state.sh " .. (is_light and "light" or "dark")
+    })
 end
 
 ---------------------------------------------------------------
@@ -233,47 +249,76 @@ wezterm.on(
     end
 )
 
---- Window Frame ---
-config.window_frame = {
-    active_titlebar_bg = '#011627',
-    inactive_titlebar_bg = '#011627',
-}
-
-config.colors = {
-    tab_bar = {
-        -- The active tab is the one that has focus in the window
-        active_tab = {
-            bg_color = "#011627",
-            fg_color = "#82aaff",
-            intensity = 'Normal',
-            underline = 'None',
-            italic = false,
-            strikethrough = false,
+--- Window Frame & Tab Bar (respect theme state)
+if is_light then
+    config.window_background_opacity = 1.0
+    config.window_frame = light_window_frame
+    config.colors = {
+        tab_bar = {
+            active_tab = {
+                bg_color = "#FAFAFA",
+                fg_color = "#1A1A2E",
+                intensity = 'Normal',
+                underline = 'None',
+                italic = false,
+                strikethrough = false,
+            },
+            inactive_tab = {
+                bg_color = "#E6E9EF",
+                fg_color = "#9CA0B0",
+            },
+            inactive_tab_hover = {
+                bg_color = '#D0D5DD',
+                fg_color = '#1A1A2E',
+                italic = true,
+            },
+            new_tab = {
+                bg_color = '#E6E9EF',
+                fg_color = '#6C6F85',
+            },
+            new_tab_hover = {
+                bg_color = '#D0D5DD',
+                fg_color = '#1A1A2E',
+                italic = true,
+            },
         },
-
-        inactive_tab = {
-            bg_color = "#0b2942",
-            fg_color = "#565f89",
+    }
+else
+    config.window_frame = {
+        active_titlebar_bg = '#011627',
+        inactive_titlebar_bg = '#011627',
+    }
+    config.colors = {
+        tab_bar = {
+            active_tab = {
+                bg_color = "#011627",
+                fg_color = "#82aaff",
+                intensity = 'Normal',
+                underline = 'None',
+                italic = false,
+                strikethrough = false,
+            },
+            inactive_tab = {
+                bg_color = "#0b2942",
+                fg_color = "#565f89",
+            },
+            inactive_tab_hover = {
+                bg_color = '#0b2942',
+                fg_color = '#82aaff',
+                italic = true,
+            },
+            new_tab = {
+                bg_color = '#82aaff',
+                fg_color = '#011627',
+            },
+            new_tab_hover = {
+                bg_color = '#0b2942',
+                fg_color = '#82aaff',
+                italic = true,
+            },
         },
-
-        inactive_tab_hover = {
-            bg_color = '#0b2942',
-            fg_color = '#82aaff',
-            italic = true,
-        },
-
-        new_tab = {
-            bg_color = '#82aaff',
-            fg_color = '#011627',
-        },
-
-        new_tab_hover = {
-            bg_color = '#0b2942',
-            fg_color = '#82aaff',
-            italic = true,
-        },
-    },
-}
+    }
+end
 
 config.keys = {
     --- Theme Toggle --------------------

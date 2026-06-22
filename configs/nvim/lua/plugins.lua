@@ -321,4 +321,50 @@ return {
 	---------------------------------------------------------------
 	{ "samharju/synthweave.nvim" },
 	{ "maxmx03/fluoromachine.nvim", event = "VeryLazy" },
+
+	-- Catppuccin: used for light mode (latte flavour)
+	{
+		"catppuccin/nvim",
+		name = "catppuccin",
+		lazy = false,
+		priority = 1000,
+		config = function()
+			require("catppuccin").setup({
+				flavour = "latte",
+				transparent_background = false,
+				term_colors = true,
+				styles = {
+					comments = { "italic" },
+					functions = { "bold" },
+					keywords = { "italic" },
+				},
+				integrations = {
+					treesitter = true,
+					native_lsp = {
+						enabled = true,
+						virtual_text = {
+							errors = { "italic" },
+							hints = { "italic" },
+							warnings = { "italic" },
+							information = { "italic" },
+						},
+						underlines = {
+							errors = { "underline" },
+							hints = { "underline" },
+							warnings = { "underline" },
+							information = { "underline" },
+						},
+					},
+					cmp = true,
+					lsp_trouble = true,
+					telescope = true,
+					which_key = true,
+					indent_blankline = {
+						enabled = true,
+						colored_indent_levels = false,
+					},
+				},
+			})
+		end,
+	},
 }

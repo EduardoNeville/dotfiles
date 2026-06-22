@@ -1,30 +1,10 @@
---- Colorscheme config ----------------------------------------
+--- Colorscheme config
+---
+--- Dynamically switches between:
+---   - Dark mode:  synthweave-transparent
+---   - Light mode: catppuccin-latte
+---
+--- Theme detection via ~/.local/state/theme (written by wezterm's toggle).
+--- On FocusGained, re-checks state file and switches if needed.
 
---- Setup for synthweave
-local sw = require 'synthweave'
-sw.setup {
-    config = function()
-        local synthweave = require("synthweave")
-        synthweave.setup({
-            transparent = false,
-            overrides = {
-                -- override any group
-                Identifier = {
-                    fg = "#f22f52",
-                },
-            },
-            palette = {
-                -- override palette colors,
-                -- take a peek at synthweave/palette.lua
-            },
-        })
-        synthweave.load()
-    end,
-}
-
---- Setup for blue
-vim.cmd.colorscheme('synthweave-transparent')
-vim.cmd.highlight('Comment guifg=#7ceb9a')
-vim.cmd.highlight('LineNr guifg=#7ceb9a')
-
-
+require("theme-sync").init()
