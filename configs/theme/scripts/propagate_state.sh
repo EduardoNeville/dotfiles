@@ -4,7 +4,8 @@
 #
 # Remote hosts are listed in ~/.config/theme/remote-hosts, one per line.
 # Blank lines and # comments are ignored.
-# SSH key-based auth (or Tailscale SSH) must work for each host.
+# Uses Tailscale SSH (tailscale ssh) for authentication.
+# Regular SSH can also be used — swap tailscale ssh for ssh.
 
 THEME="${1:-dark}"
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}"
@@ -28,7 +29,7 @@ if [ -f "$REMOTE_HOSTS" ]; then
             ''|\#*) continue ;;
         esac
         (
-            ssh -o ConnectTimeout=3 -o BatchMode=yes "$host" \
+            timeout 5 tailscale ssh "$host" \
                 "mkdir -p $STATE_DIR && echo '$THEME' > $STATE_FILE && \
                  [ -f ~/.config/theme/scripts/tmux_theme_sync.sh ] && \
                  bash ~/.config/theme/scripts/tmux_theme_sync.sh" \
