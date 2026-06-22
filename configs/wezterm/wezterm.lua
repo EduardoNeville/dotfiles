@@ -176,14 +176,16 @@ local function toggle_theme(window, _)
     end
 
     -- Propagate theme state to local tmux and remote SSH hosts.
-    -- Calls propagate_state.sh which:
-    --   1. Writes state locally (already done, but idempotent)
+    -- Calls propagate_state.sh from the dotfiles repo (~/dotfiles is
+    -- always cloned on every machine so this path is always valid).
+    -- propagate_state.sh:
+    --   1. Writes state locally
     --   2. Syncs local tmux if inside a tmux session
     --   3. SSHes to each host in ~/.config/theme/remote-hosts and
     --      writes state there + syncs their tmux
     wezterm.run_child_process({
         "bash", "-c",
-        "~/.config/theme/scripts/propagate_state.sh " .. (is_light and "light" or "dark")
+        "~/dotfiles/configs/theme/scripts/propagate_state.sh " .. (is_light and "light" or "dark")
     })
 end
 

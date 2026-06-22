@@ -16,12 +16,13 @@ mkdir -p "$STATE_DIR"
 echo "$THEME" > "$STATE_FILE"
 
 # 2. Sync local tmux if running inside one
-if [ -n "$TMUX" ] && [ -f "$HOME/.config/theme/scripts/tmux_theme_sync.sh" ]; then
-    bash "$HOME/.config/theme/scripts/tmux_theme_sync.sh"
+DOTFILES_SCRIPTS="$HOME/dotfiles/configs/theme/scripts"
+if [ -n "$TMUX" ] && [ -f "$DOTFILES_SCRIPTS/tmux_theme_sync.sh" ]; then
+    bash "$DOTFILES_SCRIPTS/tmux_theme_sync.sh"
 fi
 
 # 3. Propagate to remote hosts (background, non-blocking)
-REMOTE_HOSTS="$HOME/.config/theme/remote-hosts"
+REMOTE_HOSTS="${XDG_CONFIG_HOME:-$HOME/.config}/theme/remote-hosts"
 if [ -f "$REMOTE_HOSTS" ]; then
     while IFS= read -r host || [ -n "$host" ]; do
         # Skip blank lines and comments
@@ -31,8 +32,8 @@ if [ -f "$REMOTE_HOSTS" ]; then
         (
             timeout 5 tailscale ssh "$host" \
                 "mkdir -p $STATE_DIR && echo '$THEME' > $STATE_FILE && \
-                 [ -f ~/.config/theme/scripts/tmux_theme_sync.sh ] && \
-                 bash ~/.config/theme/scripts/tmux_theme_sync.sh" \
+                 [ -f ~/dotfiles/configs/theme/scripts/tmux_theme_sync.sh ] && \
+                 bash ~/dotfiles/configs/theme/scripts/tmux_theme_sync.sh" \
                 2>/dev/null
         ) &
     done < "$REMOTE_HOSTS"
