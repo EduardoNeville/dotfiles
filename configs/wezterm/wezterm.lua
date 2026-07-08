@@ -38,6 +38,7 @@ end
 ----------------------------------------------------
 
 local dark_scheme = "Night Owl (Gogh)"
+local light_scheme = "catppuccin-latte"
 
 local dark_window_frame = {
     active_titlebar_bg = '#011627',
@@ -73,51 +74,11 @@ local dark_colors = {
     },
 }
 
--- ── Light Mode Colors (Catppuccin Latte-inspired) ──────────
--- Background: off-white #FAFAFA, Foreground: near-black #1A1A2E
+-- ── Light Mode Frame ──────────────────────────────────────
 
 local light_window_frame = {
-    active_titlebar_bg = '#FAFAFA',
-    inactive_titlebar_bg = '#FAFAFA',
-}
-
-local light_colors = {
-    background = '#FAFAFA',
-    foreground = '#1A1A2E',
-    cursor_bg = '#1E66F5',
-    cursor_border = '#1E66F5',
-    selection_bg = '#BEE3F8',
-    selection_fg = '#1A1A2E',
-    ansi = {
-        '#2D3748', -- black (dark gray)
-        '#D20F39', -- red
-        '#40A02B', -- green
-        '#DF8E1D', -- yellow
-        '#1E66F5', -- blue
-        '#EA76CB', -- magenta (pink)
-        '#179299', -- cyan (teal)
-        '#F5F5F9', -- white (near-white)
-    },
-    brights = {
-        '#4A5568', -- bright black
-        '#D20F39', -- bright red
-        '#40A02B', -- bright green
-        '#DF8E1D', -- bright yellow
-        '#1E66F5', -- bright blue
-        '#EA76CB', -- bright magenta
-        '#179299', -- bright cyan
-        '#FFFFFF', -- bright white
-    },
-    indexed = { [16] = '#DF8E1D', [17] = '#1A1A2E' },
-    scrollbar_thumb = '#E6E9EF',
-    split = '#E6E9EF',
-    tab_bar = {
-        active_tab = { bg_color = '#FAFAFA', fg_color = '#1A1A2E' },
-        inactive_tab = { bg_color = '#E6E9EF', fg_color = '#9CA0B0' },
-        inactive_tab_hover = { bg_color = '#D0D5DD', fg_color = '#1A1A2E', italic = true },
-        new_tab = { bg_color = '#E6E9EF', fg_color = '#6C6F85' },
-        new_tab_hover = { bg_color = '#D0D5DD', fg_color = '#1A1A2E', italic = true },
-    },
+    active_titlebar_bg = '#EFF1F5',
+    inactive_titlebar_bg = '#EFF1F5',
 }
 
 local is_light = read_theme_state()
@@ -132,8 +93,8 @@ local tmux_dark_theme = {
 }
 
 local tmux_light_theme = {
-    status_bg = '#FAFAFA',
-    status_fg = '#1A1A2E',
+    status_bg = '#EFF1F5',
+    status_fg = '#4C4F69',
     pane_border = '#E6E9EF',
     active_border = '#1E66F5',
     message_bg = '#1E66F5',
@@ -154,7 +115,8 @@ local function toggle_theme(window, _)
     }
 
     if is_light then
-        overrides.colors = light_colors
+        overrides.color_scheme = light_scheme
+        overrides.colors = nil
     else
         overrides.color_scheme = dark_scheme
         overrides.colors = dark_colors
@@ -168,8 +130,8 @@ local function toggle_theme(window, _)
     -- These are forwarded through tmux passthrough to update programs
     -- that query terminal colors.
     if is_light then
-        window:emit("passthrough", "\x1b]10;#1A1A2E\x1b\\")
-        window:emit("passthrough", "\x1b]11;#FAFAFA\x1b\\")
+        window:emit("passthrough", "\x1b]10;#4C4F69\x1b\\")
+        window:emit("passthrough", "\x1b]11;#EFF1F5\x1b\\")
     else
         window:emit("passthrough", "\x1b]10;#d6deeb\x1b\\")
         window:emit("passthrough", "\x1b]11;#011627\x1b\\")
@@ -254,12 +216,13 @@ wezterm.on(
 --- Window Frame & Tab Bar (respect theme state)
 if is_light then
     config.window_background_opacity = 1.0
+    config.color_scheme = light_scheme
     config.window_frame = light_window_frame
     config.colors = {
         tab_bar = {
             active_tab = {
-                bg_color = "#FAFAFA",
-                fg_color = "#1A1A2E",
+                bg_color = "#EFF1F5",
+                fg_color = "#1E66F5",
                 intensity = 'Normal',
                 underline = 'None',
                 italic = false,
@@ -267,11 +230,11 @@ if is_light then
             },
             inactive_tab = {
                 bg_color = "#E6E9EF",
-                fg_color = "#9CA0B0",
+                fg_color = "#6C6F85",
             },
             inactive_tab_hover = {
-                bg_color = '#D0D5DD',
-                fg_color = '#1A1A2E',
+                bg_color = '#CCD0DA',
+                fg_color = '#4C4F69',
                 italic = true,
             },
             new_tab = {
@@ -279,13 +242,14 @@ if is_light then
                 fg_color = '#6C6F85',
             },
             new_tab_hover = {
-                bg_color = '#D0D5DD',
-                fg_color = '#1A1A2E',
+                bg_color = '#CCD0DA',
+                fg_color = '#4C4F69',
                 italic = true,
             },
         },
     }
 else
+    config.color_scheme = dark_scheme
     config.window_frame = {
         active_titlebar_bg = '#011627',
         inactive_titlebar_bg = '#011627',
