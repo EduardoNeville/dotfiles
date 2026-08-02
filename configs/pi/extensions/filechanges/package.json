@@ -1,0 +1,21 @@
+{
+  "name": "pi-filechanges",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "keywords": ["pi-package"],
+  "description": "Track pi-made file changes with accept/decline and diff viewing",
+  "scripts": {
+    "test": "bun test"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-tui": "*"
+  },
+  "dependencies": {
+    "diff": "^5.2.0"
+  },
+  "pi": {
+    "extensions": ["./index.ts"]
+  }
+}
