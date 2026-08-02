@@ -6,17 +6,31 @@
 #   tmux_theme_sync.sh sync    — same as above (explicit)
 #   tmux_theme_sync.sh toggle  — flip state, then apply colors
 #
-# When called from Wezterm's toggle_theme() the state is already
-# updated by Wezterm — we just read and apply (sync mode).
-# When called from the tmux binding we must toggle the state
-# ourselves (toggle mode).
+# Callers:
+#   - Wezterm's toggle_theme() via propagate_state.sh — state already updated;
+#     we just read and apply (sync mode).
+#   - tmux.conf hook (client-focus-in) and run-shell  — sync mode.
+#   - tmux binding (Y)                                — toggle mode.
+#
+# `tmux set -g` / `tmux setw -g` set SERVER-WIDE options, so they work from a
+# NON-tmux shell and apply to every session on the server — but only when a
+# server is actually running. If no server exists we log a note and exit 0
+# cleanly (nothing to update is not an error).
 
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}"
 STATE_FILE="$STATE_DIR/theme"
+APPLIED_FILE="$STATE_DIR/theme-tmux-applied"
+LOG_FILE="$STATE_DIR/theme-propagate.log"
 
 MODE="${1:-sync}"
 
+_log() {
+    printf '%s [tmux-sync] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >> "$LOG_FILE"
+}
+
 # ── Handle toggle mode (called from tmux binding) ──────────────
+# Flip the state file first so the shared state stays consistent even when
+# no tmux server is running.
 if [ "$MODE" = "toggle" ]; then
     CURRENT=$(cat "$STATE_FILE" 2>/dev/null || echo "dark")
     if [ "$CURRENT" = "light" ]; then
@@ -26,7 +40,26 @@ if [ "$MODE" = "toggle" ]; then
     fi
 fi
 
+# ── Guard: only proceed when a tmux server is running ─────────
+if ! command -v tmux >/dev/null 2>&1; then
+    _log "tmux not installed; skipping sync"
+    exit 0
+fi
+mkdir -p "$STATE_DIR"
+if ! tmux has-session 2>/dev/null; then
+    _log "no tmux server running; skipping sync"
+    exit 0
+fi
+
 THEME=$(cat "$STATE_FILE" 2>/dev/null || echo "dark")
+
+# ── Skip re-apply when the theme is already applied ───────────
+# The client-focus-in hook fires on every focus change; re-applying identical
+# options is wasteful and would spam the log. A genuine flip (toggle mode or a
+# changed state file) always re-applies.
+if [ "$MODE" != "toggle" ] && [ -f "$APPLIED_FILE" ] && [ "$(cat "$APPLIED_FILE" 2>/dev/null)" = "$THEME" ]; then
+    exit 0
+fi
 
 TMUX_POWERSLINE_LEFT=""
 TMUX_POWERSLINE_RIGHT=""
@@ -107,3 +140,8 @@ else
     tmux setw -g window-status-bell-style fg='#ef5350',bg='#011627',bold
 
 fi
+
+# ── Record what we applied ────────────────────────────────────
+SESSIONS=$(tmux list-sessions -F '#{session_name}' 2>/dev/null | wc -l)
+echo "$THEME" > "$APPLIED_FILE"
+_log "applied '$THEME' to tmux ($SESSIONS session(s))"

@@ -1,0 +1,17 @@
+# One hostname per line. Lines starting with '#' are ignored.
+# Theme state is propagated to every host listed here by
+# configs/theme/scripts/propagate_state.sh.
+#
+# Each host needs ONE of these (see configs/theme/README.md):
+#   1. Tailscale SSH:
+#        on the host:        sudo tailscale up --ssh
+#        from this machine:  ssh-keyscan <host> >> ~/.ssh/known_hosts
+#   2. Plain SSH keys (fallback):
+#        ssh-copy-id <user>@<host>
+#        ssh-keyscan <host> >> ~/.ssh/known_hosts
+#
+# If a host name does not resolve to a reachable address (stale /etc/hosts
+# entry), list its Tailscale IP instead, e.g.:
+#   100.108.47.54
+#
+deep-blue

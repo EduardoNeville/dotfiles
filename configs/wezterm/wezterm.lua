@@ -124,18 +124,18 @@ local function toggle_theme(window, _)
 
     window:set_config_overrides(overrides)
 
-    window:emit("theme-changed", is_light and "light" or "dark")
+    -- window:emit() does not exist in wezterm's Lua API (see wezterm.emit in
+    -- https://wezterm.org/config/lua/wezterm/emit.html); the Window object has
+    -- no emit method. wezterm.emit() dispatches to handlers registered via
+    -- wezterm.on(). No 'theme-changed' handler is registered, so this is a
+    -- harmless no-op that keeps the toggle working.
+    wezterm.emit("theme-changed", is_light and "light" or "dark")
 
-    -- OSC 10 = text foreground color, OSC 11 = text background color
-    -- These are forwarded through tmux passthrough to update programs
-    -- that query terminal colors.
-    if is_light then
-        window:emit("passthrough", "\x1b]10;#4C4F69\x1b\\")
-        window:emit("passthrough", "\x1b]11;#EFF1F5\x1b\\")
-    else
-        window:emit("passthrough", "\x1b]10;#d6deeb\x1b\\")
-        window:emit("passthrough", "\x1b]11;#011627\x1b\\")
-    end
+    -- No 'passthrough' event exists in wezterm and window:emit() is not an API,
+    -- so the former OSC 10/11 passthrough block was dead code. It is not needed:
+    -- the palette is applied via set_config_overrides above, and wezterm answers
+    -- OSC 10/11 color queries automatically from its current palette.
+    -- Cross-host/tmux theme sync is handled below by propagate_state.sh.
 
     -- Propagate theme state to local tmux and remote SSH hosts.
     -- Calls propagate_state.sh from the dotfiles repo (~/dotfiles is

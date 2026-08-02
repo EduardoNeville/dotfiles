@@ -1,0 +1,29 @@
+{
+  "lastChangelogVersion": "0.83.0",
+  "defaultProvider": "commandcode",
+  "defaultModel": "deepseek/deepseek-v4-pro",
+  "defaultThinkingLevel": "high",
+  "hideThinkingBlock": false,
+  "theme": "dark",
+  "defaultProjectTrust": "ask",
+  "enableInstallTelemetry": false,
+  "collapseChangelog": false,
+  "externalEditor": "nvim",
+  "terminal": {
+    "showTerminalProgress": true
+  },
+  "packages": [
+    "npm:@hypabolic/pi-hypa",
+    "npm:pi-subagents",
+    "npm:@quintinshaw/pi-dynamic-workflows",
+    "npm:pi-web-access",
+    "npm:pi-commandcode-provider",
+    "../../pi-extensions/solarium",
+    "../../pi-extensions/pilum",
+    "npm:pi-hermes-memory",
+    "../../dotfiles/configs/pi/extensions/filechanges",
+    "../../dotfiles/configs/pi/extensions/ask-user-question",
+    "../../dotfiles/configs/pi/extensions/theme-sync",
+    "../../pi-extensions/pi-marshals"
+  ]
+}
