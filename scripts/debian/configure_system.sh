@@ -224,6 +224,33 @@ create_common_directories() {
     _success "Common directories created"
 }
 
+link_pi_config() {
+    _process "Linking Pi agent configuration"
+
+    local pi_agent_dir="${HOME}/.pi/agent"
+
+    if [ ! -d "$pi_agent_dir" ]; then
+        mkdir -p "$pi_agent_dir"
+    fi
+
+    local files=("settings.json" "trust.json")
+    for file in "${files[@]}"; do
+        local src="${DOTFILES_DIR}/configs/pi/agent/${file}"
+        local target="${pi_agent_dir}/${file}"
+
+        if [ -f "$src" ]; then
+            if [ -f "$target" ] && [ ! -L "$target" ]; then
+                mv "$target" "${target}.backup.$(date +%Y%m%d_%H%M%S)"
+            fi
+            [ -L "$target" ] && rm "$target"
+            ln -sf "$src" "$target"
+            echo "  ✓ Linked $file"
+        fi
+    done
+
+    _success "Pi agent configuration linked"
+}
+
 setup_systemd_user_services() {
     _process "Setting up systemd user services"
 
@@ -252,6 +279,9 @@ main() {
     link_zsh_config
     link_gitconfig
 
+    # Setup Pi agent config
+    link_pi_config
+
     # Setup shell
     install_zsh_plugins
     setup_zsh_as_default
@@ -271,6 +301,7 @@ main() {
     echo ""
     echo "Configuration Summary:"
     echo "  ✓ Dotfiles linked"
+    echo "  ✓ Pi agent configured"
     echo "  ✓ ZSH configured"
     echo "  ✓ Neovim set up"
     echo "  ✓ Starship prompt installed"
