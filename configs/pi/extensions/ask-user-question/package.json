@@ -1,0 +1,15 @@
+{
+  "name": "pi-ask-user-question",
+  "version": "0.1.0",
+  "private": true,
+  "keywords": ["pi-package"],
+  "description": "Ask the user a question and pause until they answer",
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-tui": "*",
+    "typebox": "*"
+  },
+  "pi": {
+    "extensions": ["./index.ts"]
+  }
+}
