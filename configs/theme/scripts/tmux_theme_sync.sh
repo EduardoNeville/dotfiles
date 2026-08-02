@@ -69,8 +69,8 @@ if [ "$THEME" = "light" ]; then
     # ── Light mode (Catppuccin Latte-inspired) ──────────────
     # Background: off-white #FAFAFA, foreground: near-black #1A1A2E
 
-    # Status bar base
-    tmux set -g status-style bg='#FAFAFA',fg='#1A1A2E'
+    # Status bar base — text in black (#1A1A2E was hard to read as gray)
+    tmux set -g status-style bg='#FAFAFA',fg='#000000'
 
     # Left status: [Session] [Hostname] [Git Branch]
     tmux set -g status-left ""
@@ -78,8 +78,8 @@ if [ "$THEME" = "light" ]; then
     tmux set -ga status-left "#[fg=#1E66F5,bg=#E6E9EF] 󰌢 #h #[fg=#E6E9EF,bg=#FAFAFA]${TMUX_POWERSLINE_LEFT}"
     tmux set -ga status-left "#[fg=#8839EF,bg=#FAFAFA] 󰘬 #(cd '#{pane_current_path}' && git branch --show-current 2>/dev/null || echo 'N/A') "
 
-    # Window status
-    tmux setw -g window-status-format "#[fg=#9CA0B0,bg=#FAFAFA] #I ${TMUX_SEPARATOR} #W #{?window_zoomed_flag,󰊓 ,}"
+    # Window status — inactive window names in black (was #9CA0B0 gray)
+    tmux setw -g window-status-format "#[fg=#000000,bg=#FAFAFA] #I ${TMUX_SEPARATOR} #W #{?window_zoomed_flag,󰊓 ,}"
     tmux setw -g window-status-current-format "#[fg=#FAFAFA,bg=#8839EF]${TMUX_POWERSLINE_LEFT}#[fg=#FAFAFA,bg=#8839EF,bold] #I #[fg=#8839EF,bg=#1E66F5]${TMUX_POWERSLINE_LEFT}#[fg=#FAFAFA,bg=#1E66F5] #W #{?window_zoomed_flag,󰊓 ,}#[fg=#1E66F5,bg=#FAFAFA]${TMUX_POWERSLINE_LEFT}"
 
     # Right status
@@ -93,7 +93,7 @@ if [ "$THEME" = "light" ]; then
 
     # Messages
     tmux set -g message-style bg='#1E66F5',fg='#FAFAFA'
-    tmux set -g message-command-style bg='#E6E9EF',fg='#1A1A2E'
+    tmux set -g message-command-style bg='#E6E9EF',fg='#000000'
 
     # Mode (copy-mode, etc.)
     tmux setw -g mode-style bg='#8839EF',fg='#FAFAFA'

@@ -116,7 +116,9 @@ local function toggle_theme(window, _)
 
     if is_light then
         overrides.color_scheme = light_scheme
-        overrides.colors = nil
+        -- Text must be black in light mode (catppuccin-latte's default
+        -- foreground #4C4F69 renders as hard-to-read gray).
+        overrides.colors = { foreground = "#000000" }
     else
         overrides.color_scheme = dark_scheme
         overrides.colors = dark_colors
@@ -219,6 +221,7 @@ if is_light then
     config.color_scheme = light_scheme
     config.window_frame = light_window_frame
     config.colors = {
+        foreground = "#000000", -- black text in light mode (see toggle_theme)
         tab_bar = {
             active_tab = {
                 bg_color = "#EFF1F5",
@@ -230,20 +233,20 @@ if is_light then
             },
             inactive_tab = {
                 bg_color = "#E6E9EF",
-                fg_color = "#6C6F85",
+                fg_color = "#000000",
             },
             inactive_tab_hover = {
                 bg_color = '#CCD0DA',
-                fg_color = '#4C4F69',
+                fg_color = '#000000',
                 italic = true,
             },
             new_tab = {
                 bg_color = '#E6E9EF',
-                fg_color = '#6C6F85',
+                fg_color = '#000000',
             },
             new_tab_hover = {
                 bg_color = '#CCD0DA',
-                fg_color = '#4C4F69',
+                fg_color = '#000000',
                 italic = true,
             },
         },

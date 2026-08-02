@@ -31,10 +31,10 @@ pink      = "#EA76CB"
 yellow    = "#DF8E1D"
 purple    = "#8839EF"
 orange    = "#D97437"
-overlay0  = "#9CA0B0"
-subtext0  = "#6C6F85"
+overlay0  = "#5F5F5F"
+subtext0  = "#333333"
 surface0  = "#E6E9EF"
-fg        = "#1A1A2E"
+fg        = "#000000"
 
 [palettes.dark]
 blue      = "#82aaff"

@@ -39,8 +39,9 @@ _theme_apply() {
 --color=fg+:#4c4f69,bg+:#ccd0da,hl+:#40a02b
 --color=info:#8839ef,prompt:#df8e1d,pointer:#8839ef
 --color=marker:#df8e1d,spinner:#8839ef,header:#179299'
-        # zsh-autosuggestions: readable dim gray on light bg
-        ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#6c6f85"
+        # zsh-autosuggestions: dark gray, clearly visible on light bg
+        # (#333333 — pure black would be indistinguishable from typed text)
+        ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#333333"
         # fast-syntax-highlighting: Catppuccin Latte styles
         if (( ${+functions[fast-theme]} )) \
             && [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/f-sy-h/light.ini" ]]; then
