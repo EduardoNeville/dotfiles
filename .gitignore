@@ -11,3 +11,15 @@ envs/
 legatio.md
 
 *-lock.json
+
+# Pi agent - secrets & transient data
+configs/pi/agent/auth.json
+configs/pi/agent/models-store.json
+configs/pi/agent/sessions/
+configs/.pi/
+configs/.pi-subagents/
+.pi/
+
+# Pi extension reports and caches
+configs/pi/extensions/SYNTHESIS_REPORT.md
+configs/pi/extensions/**/node_modules/
