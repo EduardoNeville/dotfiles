@@ -163,6 +163,24 @@ end)
 ---------------------------------------------------------------
 --- Config ----------------------------------------------------
 ---------------------------------------------------------------
+-- Pi integration notes (https://pi.dev/docs/latest/terminal-setup#wezterm)
+--
+-- 1. WezTerm "works out of the box for Shift+Enter via xterm
+--    modifyOtherKeys", so we deliberately do NOT set
+--    `enable_kitty_keyboard = true`. It is purely optional in the pi docs;
+--    leaving it off avoids re-encoding key events as CSI-u and keeps the
+--    xterm modifyOtherKeys path that already satisfies pi.
+--
+-- 2. The macOS `Option+Enter` fullscreen-override binding is macOS-only
+--    and does not apply here (Debian/Linux).
+--
+-- 3. If you ever see a pasted newline render as the literal text
+--    `[106;5u` (Kitty/CSI-u encoding of Ctrl+J), that is NOT this config.
+--    It is the tmux 3.5a paste bug with `extended-keys`/`extended-keys-
+--    format csi-u` (which the pi tmux docs recommend and tmux.conf has):
+--    tmux re-interprets the pasted LF byte as a Ctrl+J key and re-emits it
+--    as ESC[106;5u. Upgrade tmux to >= 3.5b (fix: "pasting no longer
+--    interprets input as key sequences") and `tmux kill-server` to apply.
 local home_dir = os.getenv("HOME") or "/home/" .. (os.getenv("USER") or "user")
 local color_scheme_dirs = { home_dir .. "/.config/wezterm/colors/" }
 
