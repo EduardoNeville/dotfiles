@@ -14,12 +14,18 @@ format = """$username$directory$git_branch$git_status$fill$time$all$character"""
 #right_format = """$all"""
 
 # Default palette (overridden by STARSHIP_PALETTE env var from zsh precmd)
-palette = "dark"
-
 # ============================================================
 # Light/Dark palettes
-# Selected via STARSHIP_PALETTE env var set by zsh's precmd
-# from ~/.local/state/theme (written by wezterm toggle).
+# The ACTIVE palette is chosen at render time by zsh's
+# theme-zsh.zsh, which generates ~/.config/starship/.active.toml
+# with the right root `palette = "light"|"dark"` line from
+# ~/.local/state/theme (written by the wezterm toggle) and sets
+# STARSHIP_CONFIG to it. The installed starship build ignores
+# STARSHIP_PALETTE and won't override a static root `palette`
+# key, so this file deliberately has NO root `palette` line;
+# the generated active config supplies it. Color names below
+# resolve through whichever palette is active (plain name, no
+# `@` prefix — `@name` refs render nothing in this build).
 # ============================================================
 [palettes.light]
 blue      = "#1E66F5"
@@ -54,25 +60,25 @@ fg        = "#d6deeb"
 # General config
 
 [username]
-style_user = "fg:@blue"
-style_root = "fg:@blue"
+style_user = "fg:blue"
+style_root = "fg:blue"
 format = '[\[$user\]]($style)'
 disabled = true 
 
 #  ❯ ❮ ✘
 [character]
-success_symbol = '[](bold @success)'
+success_symbol = '[](bold success)'
 error_symbol = '[](bold red)'
-vimcmd_symbol = '[](bold @success)'
+vimcmd_symbol = '[](bold success)'
 vimcmd_replace_one_symbol = '[ ](bold purple)'
 vimcmd_visual_symbol = '[ ](bold green)'
 
 [directory]
 truncation_length = 8 
 truncate_to_repo = false
-before_repo_root_style="fg:@blue"
-repo_root_style="fg:@teal"
-style="fg:@blue"
+before_repo_root_style="fg:blue"
+repo_root_style="fg:teal"
+style="fg:blue"
 read_only=" "
 read_only_style="red"
 repo_root_format ='\[[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style)\]'
@@ -87,16 +93,16 @@ disabled = false
 
 [fill]
 symbol = "·"
-style = "fg:@overlay0"
+style = "fg:overlay0"
 
 [git_branch]
 symbol = ""
-style = "fg:@pink"
+style = "fg:pink"
 format = '[\[$symbol $branch\]]($style)'
 disabled = false
 
 [git_status]
-style = "fg:@green"
+style = "fg:green"
 ahead ='󰞕 $count'
 behind ='󰞒 $count'
 modified = '!$count'
@@ -111,97 +117,97 @@ disabled = false
 [time]
 disabled = false
 time_format = "%T" # Hour:Minute Format
-style = "fg:@green"
+style = "fg:green"
 format = '([\[$time\]]($style))'
 
 [cmd_duration]
-style = "fg:@yellow"
+style = "fg:yellow"
 format = '([\[$duration\]]($style))'
 
 # Start languages and tools #
 
 [nix_shell]
 symbol = " "
-style = "fg:@blue"
+style = "fg:blue"
 format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [docker_context]
 symbol = "󰡨 "
-style = "fg:@blue"
+style = "fg:blue"
 format = '(via [\[$symbol $context\]]($style))'
 disabled = false
 
 [bun]
 symbol = "󱠶 "
-style = "fg:@yellow"
+style = "fg:yellow"
 version_format = "$raw"
 format = '(via [\[$symbol $context\]]($style))'
 disabled = false
 
 [c]
 symbol = ""
-style = "fg:@green"
+style = "fg:green"
 version_format = "$raw"
 format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [kubernetes]
-style = "fg:@blue"
+style = "fg:blue"
 format = '([\[ﴱ $cluster\($namespace\)\]]($style))'
 disabled = true
 
 [gcloud]
 symbol = " "
-style = "fg:@green"
+style = "fg:green"
 format = '([ \[on $symbol $account(@$domain)(\($region\))\]]($style) )'
 disabled = false
 
 [golang]
 symbol = ""
-style = "fg:@teal"
+style = "fg:teal"
 version_format = "$raw"
 format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [java]
 symbol = ""
-style = "fg:@orange"
+style = "fg:orange"
 version_format = "$raw"
 format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [lua]
 symbol = ""
-style = "fg:@blue"
+style = "fg:blue"
 version_format = "$raw"
 format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [nodejs]
 symbol = ""
-style = "fg:@green"
+style = "fg:green"
 version_format = "$raw"
 format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [package]
 symbol = " "
-style = "fg:@red"
+style = "fg:red"
 version_format = "$raw"
 format = '([\[$symbol ($version)\]]($style))'
 disabled = true
 
 [php]
 symbol = ''
-style = "fg:@purple"
+style = "fg:purple"
 version_format = "$raw"
 format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [python]
 symbol = ''
-style = "fg:@yellow"
+style = "fg:yellow"
 version_format = "$raw"
 format = '([\[$symbol ($version)\]]($style))'
 detect_files = ['pyproject.toml']
@@ -209,14 +215,14 @@ disabled = false
 
 [rust]
 symbol = ""
-style = "fg:@orange"
+style = "fg:orange"
 version_format = "$raw"
 format = '([\[$symbol ($version)\]]($style))'
 disabled = false
 
 [scala]
 symbol = ""
-style = "fg:@red"
+style = "fg:red"
 version_format = "$raw"
 format = '([\[$symbol ($version)\]]($style))'
 disabled = false

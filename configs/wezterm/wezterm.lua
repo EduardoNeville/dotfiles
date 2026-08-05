@@ -275,7 +275,19 @@ else
         active_titlebar_bg = '#011627',
         inactive_titlebar_bg = '#011627',
     }
+    -- Apply the SAME palette as toggle_theme()'s dark_colors so that a cold
+    -- dark start matches the toggled-to-dark appearance (background, cursor,
+    -- selection, ANSI). Without this, startup relied on the built-in Gogh
+    -- scheme defaults, which differed from the toggle's dark_colors override.
     config.colors = {
+        background = dark_colors.background,
+        foreground = dark_colors.foreground,
+        cursor_bg = dark_colors.cursor_bg,
+        cursor_border = dark_colors.cursor_border,
+        selection_bg = dark_colors.selection_bg,
+        selection_fg = dark_colors.selection_fg,
+        ansi = dark_colors.ansi,
+        brights = dark_colors.brights,
         tab_bar = {
             active_tab = {
                 bg_color = "#011627",

@@ -17,6 +17,29 @@
 typeset -g _theme_state_file="${XDG_STATE_HOME:-$HOME/.local/state}/theme"
 typeset -g _theme_applied=""
 
+# ── Starship active config ──────────────────────────────────
+# The installed starship build ignores STARSHIP_PALETTE and won't override a
+# static root `palette` key at runtime (only a root `palette = "name"` line
+# activates palette resolution; the STARSHIP_PALETTE env var does nothing).
+# So we generate a tiny "active" config whose root `palette = "light"|"dark"`
+# line follows ~/.local/state/theme, then point STARSHIP_CONFIG at it.
+# Starship re-reads STARSHIP_CONFIG on every prompt (each prompt is a fresh
+# subprocess), so the colors switch on the next prompt.
+typeset -g _starship_template="${STARSHIP_TEMPLATE:-$HOME/dotfiles/configs/starship/starship.toml}"
+[[ -r "$_starship_template" ]] || _starship_template="$HOME/.config/starship/starship.toml"
+# Active config lives in the XDG state dir (alongside theme / theme-tmux-applied),
+# NOT under ~/.config/starship (which is a symlink into the tracked dotfiles repo)
+# — keeping it out of the repo keeps git clean while starship re-reads it each prompt.
+typeset -g _starship_active="${XDG_STATE_HOME:-$HOME/.local/state}/starship-active.toml"
+
+_starship_build_active() {
+    local theme="$1"
+    local tmp="$_starship_active.tmp"
+    { printf 'palette = "%s"\n\n' "$theme"; cat "$_starship_template"; } > "$tmp" 2>/dev/null \
+        && mv "$tmp" "$_starship_active" \
+        && export STARSHIP_CONFIG="$_starship_active"
+}
+
 _theme_read() {
     local t
     [[ -r "$_theme_state_file" ]] || return 1
@@ -31,7 +54,8 @@ _theme_apply() {
     _theme_applied="$theme"
 
     if [[ "$theme" == "light" ]]; then
-        # starship: Catppuccin Latte palette
+        # starship: Catppuccin Latte palette (via generated active config)
+        _starship_build_active light
         export STARSHIP_PALETTE="light"
         # fzf: light-friendly colors (dark text on transparent/light bg)
         export FZF_DEFAULT_OPTS='
@@ -48,7 +72,8 @@ _theme_apply() {
             fast-theme -q CONFIG:light
         fi
     else
-        # starship: Night Owl palette
+        # starship: Night Owl palette (via generated active config)
+        _starship_build_active dark
         export STARSHIP_PALETTE="dark"
         # fzf: original dark colors
         export FZF_DEFAULT_OPTS='

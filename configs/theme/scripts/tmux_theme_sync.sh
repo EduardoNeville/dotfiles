@@ -142,6 +142,17 @@ else
 fi
 
 # ── Record what we applied ────────────────────────────────────
-SESSIONS=$(tmux list-sessions -F '#{session_name}' 2>/dev/null | wc -l)
-echo "$THEME" > "$APPLIED_FILE"
-_log "applied '$THEME' to tmux ($SESSIONS session(s))"
+# Only record the applied state when the tmux client actually worked and the
+# apply landed. A nested tmux client spawned from inside a run-shell can fail
+# ("server exited unexpectedly"); if we wrote the applied theme regardless, the
+# dedupe at the top would later SKIP a legitimate external sync (wezterm's
+# propagate_state.sh) and leave tmux stuck on the wrong theme. Probing
+# show-options keeps the marker honest and self-heals across runs.
+if tmux show-options -g status-style >/dev/null 2>&1; then
+    SESSIONS=$(tmux list-sessions -F '#{session_name}' 2>/dev/null | wc -l)
+    echo "$THEME" > "$APPLIED_FILE"
+    _log "applied '$THEME' to tmux ($SESSIONS session(s))"
+else
+    _log "WARN: tmux client unavailable/failed; NOT recording applied theme (state stays '$THEME')"
+    exit 1
+fi
