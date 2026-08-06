@@ -49,14 +49,43 @@ fi
 # TMUX_TMPDIR and let `tmux` discover the canonical default socket.
 unset TMUX TMUX_TMPDIR
 
+# ── Resolve the live tmux server socket ─────────────────┬───
+# The caller (e.g. wezterm's run_child_process) can inject a stale $TMUX or a
+# $TMPDIR/$TMUX_TMPDIR pointing at its own runtime dir, which makes `tmux` look
+# in the wrong place and fail has-session ("no tmux server running; skipping
+# sync") even though a server is up. We manage the default tmux server, so find
+# its actual socket file and force `tmux -S` — immune to inherited env.
+_TMUX_SOCK=""
+for _base in \
+    "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/tmux" "${TMPDIR:-/tmp}" /tmp; do
+    for _cand in "$_base/tmux-$(id -u)/default" "$_base/tmux-$(id -u)/"*/ \
+                 "$_base/tmux/default" "$_base/tmux/"*; do
+        if [ -S "$_cand" ] 2>/dev/null; then
+            _TMUX_SOCK="$_cand"
+            break 2
+        fi
+    done
+    [ -n "$_TMUX_SOCK" ] && break
+ done
+
+# Route every `tmux` call below through the resolved socket.
+tmux() {
+    if [ -n "$_TMUX_SOCK" ]; then
+        command tmux -S "$_TMUX_SOCK" "$@"
+    else
+        command tmux "$@"
+    fi
+}
+
 # ── Guard: only proceed when a tmux server is running ─────────
 if ! command -v tmux >/dev/null 2>&1; then
     _log "tmux not installed; skipping sync"
     exit 0
 fi
 mkdir -p "$STATE_DIR"
-if ! tmux has-session 2>/dev/null; then
-    _log "no tmux server running; skipping sync"
+if ! tmux has-session 2>/tmp/theme-hs.err; then
+    _log "no tmux server running; skipping sync (socket=${_TMUX_SOCK:-<not-found>})"
+    _log "  tmux error: $(head -c 300 /tmp/theme-hs.err 2>/dev/null | tr '\n' ' ')"
     exit 0
 fi
 
