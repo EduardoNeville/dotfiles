@@ -40,6 +40,15 @@ if [ "$MODE" = "toggle" ]; then
     fi
 fi
 
+# ── Target the user's default tmux server ──────────────────────
+# The caller (e.g. wezterm's run_child_process) may inherit a stale or foreign
+# $TMUX (pointing at a dead/mismatched socket), which makes the nested `tmux`
+# client fail to find the running server and log "no tmux server running; \
+# skipping sync" — leaving tmux stuck on the old theme. We manage the default
+# tmux server (socket /tmp/tmux-$UID/default), so drop the inherited TMUX/
+# TMUX_TMPDIR and let `tmux` discover the canonical default socket.
+unset TMUX TMUX_TMPDIR
+
 # ── Guard: only proceed when a tmux server is running ─────────
 if ! command -v tmux >/dev/null 2>&1; then
     _log "tmux not installed; skipping sync"
