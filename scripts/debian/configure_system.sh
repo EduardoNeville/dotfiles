@@ -227,28 +227,71 @@ create_common_directories() {
 link_pi_config() {
     _process "Linking Pi agent configuration"
 
-    local pi_agent_dir="${HOME}/.pi/agent"
-
-    if [ ! -d "$pi_agent_dir" ]; then
-        mkdir -p "$pi_agent_dir"
+    # Canonical source is ~/dotpi (system-agnostic, see dotpi/install.sh).
+    # Delegates there if present; falls back to legacy dotfiles/configs/pi/agent.
+    if [ -x "${HOME}/dotpi/install.sh" ]; then
+        _process "Delegating to dotpi/install.sh (canonical pi config)"
+        # --no-extensions: extension npm installs are handled by dotpi or
+        # caller explicitly; configure_system stays fast and offline-safe.
+        sh "${HOME}/dotpi/install.sh" --no-extensions || {
+            _error "dotpi/install.sh failed — check ~/dotpi/install.sh --dry-run"
+            return 1
+        }
+        _success "Pi agent configuration linked via dotpi"
+        return 0
     fi
 
+    if [ -d "${HOME}/dotpi" ] && [ -f "${HOME}/dotpi/settings.json" ]; then
+        _process "dotpi found but not executable — linking directly"
+        local pi_agent_dir="${HOME}/.pi/agent"
+        mkdir -p "$pi_agent_dir"
+        for file in settings.json trust.json; do
+            local src="${HOME}/dotpi/${file}"
+            local target="${pi_agent_dir}/${file}"
+            [ -f "$src" ] || continue
+            if [ -f "$target" ] && [ ! -L "$target" ]; then
+                mv "$target" "${target}.backup.$(date +%Y%m%d_%H%M%S)"
+            fi
+            [ -L "$target" ] && rm "$target"
+            ln -sf "$src" "$target"
+            echo "  ✓ Linked $file (from dotpi)"
+        done
+        # Render HOME-portable hypa/ponytail configs if dotpi script unavailable
+        if [ -f "${HOME}/dotpi/extensions/hypa/config.json" ]; then
+            mkdir -p "${HOME}/.hypa" "${HOME}/.hypa-pi"
+            sed "s|__HOME__|${HOME}|g; s|/home/eduardoneville|${HOME}|g" \
+                "${HOME}/dotpi/extensions/hypa/config.json" > "${HOME}/.hypa/config.json"
+            sed "s|__HOME__|${HOME}|g; s|/home/eduardoneville|${HOME}|g" \
+                "${HOME}/dotpi/extensions/hypa/pi-config.json" > "${HOME}/.hypa-pi/config.json"
+            echo "  ✓ Rendered hypa configs for $HOME"
+        fi
+        if [ -f "${HOME}/dotpi/extensions/ponytail/config.json" ]; then
+            mkdir -p "${HOME}/.config/ponytail"
+            ln -sf "${HOME}/dotpi/extensions/ponytail/config.json" "${HOME}/.config/ponytail/config.json"
+            echo "  ✓ Linked ponytail config"
+        fi
+        _success "Pi agent configuration linked via dotpi (fallback)"
+        return 0
+    fi
+
+    # Legacy fallback: dotfiles/configs/pi/agent (pre-dotpi era)
+    _process "dotpi not found — falling back to dotfiles/configs/pi/agent (legacy)"
+    local pi_agent_dir="${HOME}/.pi/agent"
+    mkdir -p "$pi_agent_dir"
     local files=("settings.json" "trust.json")
     for file in "${files[@]}"; do
         local src="${DOTFILES_DIR}/configs/pi/agent/${file}"
         local target="${pi_agent_dir}/${file}"
-
         if [ -f "$src" ]; then
             if [ -f "$target" ] && [ ! -L "$target" ]; then
                 mv "$target" "${target}.backup.$(date +%Y%m%d_%H%M%S)"
             fi
             [ -L "$target" ] && rm "$target"
             ln -sf "$src" "$target"
-            echo "  ✓ Linked $file"
+            echo "  ✓ Linked $file (legacy)"
         fi
     done
-
-    _success "Pi agent configuration linked"
+    _success "Pi agent configuration linked (legacy)"
 }
 
 setup_systemd_user_services() {
