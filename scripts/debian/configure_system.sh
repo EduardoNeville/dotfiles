@@ -182,6 +182,11 @@ setup_vim() {
 }
 
 add_user_to_groups() {
+    # ponytail: Linux-only (getent/usermod); macOS has no such group model here
+    if [ "$(uname)" != "Linux" ]; then
+        _process "Skipping user groups (not Linux)"
+        return 0
+    fi
     _process "Adding user to necessary groups"
 
     local groups=("video" "audio" "input" "docker" "storage")
@@ -199,6 +204,10 @@ add_user_to_groups() {
 }
 
 setup_fonts() {
+    if ! command -v fc-cache >/dev/null 2>&1; then
+        _process "Skipping font cache (fontconfig not installed)"
+        return 0
+    fi
     _process "Updating font cache"
 
     fc-cache -fv >/dev/null 2>&1
