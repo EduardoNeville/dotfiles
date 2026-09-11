@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# Author: Eduardo Neville <eduadoneville82@gmail.com>
-# Description: Setup GitHub authentication and SSH keys
+# Setup GitHub authentication + SSH keys. Auto-run-safe: skips everything
+# when already configured; non-interactive under install.sh (no TTY).
+# Manual bits (registering the pubkey on github.com) are printed, not waited on.
+# Optional token: envs/api_keys/GITHUB_TOKEN.txt → gh auth login --with-token.
 
 set -e
 
@@ -9,155 +11,80 @@ _success() { echo "$(tput setaf 2)✓ Success:$(tput sgr0) $1"; }
 _error() { echo "$(tput setaf 1)✗ Error:$(tput sgr0) $1"; }
 _prompt() { echo "$(tput setaf 3)? $1$(tput sgr0)"; }
 
-setup_github() {
-    _process "Setting up GitHub authentication"
+GIT_EMAIL="eduardoneville82@gmail.com"
 
-    # Check if gh CLI is installed
-    if ! command -v gh >/dev/null 2>&1; then
-        _error "GitHub CLI (gh) is not installed. Installing now..."
-
-        # Install gh CLI for Debian
-        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-        sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-        sudo apt update
-        sudo apt install -y gh
-
-        _success "GitHub CLI installed"
-    fi
-
-    # Check if already authenticated
-    if gh auth status >/dev/null 2>&1; then
-        _success "Already authenticated with GitHub"
+setup_git_config() {
+    # Identity lives in the linked configs/.gitconfig — no prompts needed.
+    if git config --global user.name >/dev/null 2>&1 && git config --global user.email >/dev/null 2>&1; then
+        _success "git identity present ($(git config --global user.name) <$(git config --global user.email)>)"
         return 0
     fi
-
-    _prompt "GitHub authentication required. Choose method:"
-    echo "1) Browser-based authentication (recommended)"
-    echo "2) Token authentication"
-    echo "3) SSH key setup"
-    read -p "Select (1-3): " auth_choice
-
-    case $auth_choice in
-        1)
-            _process "Authenticating via browser"
-            gh auth login -p https -w
-            ;;
-        2)
-            _process "Authenticating via token"
-            gh auth login -p https
-            ;;
-        3)
-            setup_ssh_key
-            ;;
-        *)
-            _error "Invalid choice. Defaulting to browser authentication"
-            gh auth login -p https -w
-            ;;
-    esac
-
-    _success "GitHub authentication complete"
+    _process "Setting git identity (defaults)"
+    git config --global user.name "EduardoNeville"
+    git config --global user.email "$GIT_EMAIL"
+    git config --global init.defaultBranch main
+    _success "git identity set"
 }
 
 setup_ssh_key() {
-    _process "Setting up SSH key for GitHub"
-
-    local email
-    read -p "Enter your GitHub email: " email
-
     local ssh_key="${HOME}/.ssh/id_ed25519"
-
     if [ -f "$ssh_key" ]; then
-        _prompt "SSH key already exists. Use existing key? (y/n)"
-        read -p "> " use_existing
-        if [[ ! "$use_existing" =~ ^[Yy]$ ]]; then
-            ssh_key="${HOME}/.ssh/id_ed25519_github_$(date +%Y%m%d)"
-            _process "Creating new SSH key at $ssh_key"
-            ssh-keygen -t ed25519 -C "$email" -f "$ssh_key"
-        fi
-    else
-        _process "Generating new SSH key"
-        ssh-keygen -t ed25519 -C "$email" -f "$ssh_key"
+        _success "SSH key present ($ssh_key)"
+        return 0
     fi
-
-    # Start ssh-agent and add key
-    eval "$(ssh-agent -s)"
-    ssh-add "$ssh_key"
-
-    # Copy public key to clipboard if possible
-    if command -v xclip >/dev/null 2>&1; then
-        cat "${ssh_key}.pub" | xclip -selection clipboard
-        _success "Public key copied to clipboard"
-    elif command -v wl-copy >/dev/null 2>&1; then
-        cat "${ssh_key}.pub" | wl-copy
-        _success "Public key copied to clipboard"
+    _process "Generating ed25519 key"
+    mkdir -p "${HOME}/.ssh" && chmod 700 "${HOME}/.ssh"
+    if [ -t 0 ]; then
+        # interactive terminal: allow passphrase
+        ssh-keygen -t ed25519 -C "$GIT_EMAIL" -f "$ssh_key"
     else
-        echo ""
-        echo "====== Your SSH Public Key ======"
-        cat "${ssh_key}.pub"
-        echo "================================="
-        echo ""
+        # ponytail: no-TTY install → empty passphrase; the key only guards
+        # git pushes (add passphrase later via ssh-keygen -p if wanted)
+        ssh-keygen -t ed25519 -N "" -C "$GIT_EMAIL" -f "$ssh_key"
     fi
+    eval "$(ssh-agent -s)" >/dev/null 2>&1 || true
+    ssh-add "$ssh_key" 2>/dev/null || true
+    echo ""
+    echo "====== Register this key: https://github.com/settings/ssh/new ======"
+    cat "${ssh_key}.pub"
+    echo "===================================================================="
+    _success "SSH key generated (register the .pub above once)"
+}
 
-    _prompt "Add this SSH key to your GitHub account:"
-    echo "1. Go to https://github.com/settings/keys"
-    echo "2. Click 'New SSH key'"
-    echo "3. Paste the key and save"
-    read -p "Press Enter when done..."
-
-    # Test SSH connection
-    _process "Testing SSH connection to GitHub"
-    if ssh -T git@github.com 2>&1 | grep -q "successfully authenticated"; then
-        _success "SSH authentication successful"
+setup_gh_auth() {
+    _process "Checking gh auth"
+    if ! has_gh; then
+        _error "gh not installed — install.sh installs it via the vendor repo; rerun after"
+        return 1
+    fi
+    if gh auth status >/dev/null 2>&1; then
+        _success "gh authenticated"
+        return 0
+    fi
+    local token_file="${DOTFILES_DIR:-$HOME/dotfiles}/envs/api_keys/GITHUB_TOKEN.txt"
+    if [ -f "$token_file" ]; then
+        _process "gh auth via token file"
+        gh auth login --with-token <"$token_file" && _success "gh authenticated (token)" && return 0
+    fi
+    if [ -t 0 ]; then
+        _prompt "Device flow — follow the printed code:"
+        gh auth login --hostname github.com --git-protocol ssh --web || true
     else
-        _error "SSH authentication failed. Please check your setup"
+        _error "gh not authenticated (no TTY, no GITHUB_TOKEN.txt) — run profiles/base/scripts/setup_github.sh once in a terminal"
     fi
 }
 
-setup_git_config() {
-    _process "Configuring git"
-
-    # Check if .gitconfig already has user info
-    if git config --global user.name >/dev/null 2>&1 && git config --global user.email >/dev/null 2>&1; then
-        local current_name=$(git config --global user.name)
-        local current_email=$(git config --global user.email)
-        _prompt "Current git config: $current_name <$current_email>"
-        read -p "Keep current configuration? (y/n): " keep_config
-        if [[ "$keep_config" =~ ^[Yy]$ ]]; then
-            _success "Keeping existing git configuration"
-            return 0
-        fi
-    fi
-
-    read -p "Enter your name for git commits: " git_name
-    read -p "Enter your email for git commits: " git_email
-
-    git config --global user.name "$git_name"
-    git config --global user.email "$git_email"
-
-    # Set up default branch name
-    git config --global init.defaultBranch main
-
-    # Use delta as pager if available
-    if command -v delta >/dev/null 2>&1; then
-        git config --global core.pager delta
-        git config --global interactive.diffFilter "delta --color-only"
-        git config --global delta.navigate true
-        git config --global delta.dark true
-        git config --global merge.conflictstyle zdiff3
-    fi
-
-    _success "Git configuration complete"
-}
+has_gh() { command -v gh >/dev/null 2>&1; }
 
 main() {
-    _process "GitHub Setup"
+    _process "GitHub Setup (auto-safe)"
     setup_git_config
-    setup_github
+    setup_ssh_key
+    # SSH key must exist for git@ github clones (dotpi); gh auth is best-effort.
+    setup_gh_auth || true
     _success "GitHub setup complete"
 }
 
-# Run if executed directly
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi

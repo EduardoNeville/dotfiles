@@ -321,10 +321,10 @@ These were absent:
    `envs/api_keys` stays out of git forever. Documented copy step in
    `hosts/README` + install.sh verifies the file exists and warns when
    missing (never blocks). Trade-off accepted: dead disk loses keys.
-2. **Git identity + SSH + gh auth not wired** — `scripts/debian/setup_github.sh`
-   exists but install.sh never calls it. Fresh machines get no
-   user.email/user.name, no SSH key, no gh login → repo itself can't be
-   pushed. Wire into base adapter (Phase 2/3).
+2. **Git identity + SSH + gh auth — RESOLVED** (2026-09): `setup_github.sh`
+   is auto-run-safe (skip when configured; keygen without prompts under no-TTY;
+   optional GITHUB_TOKEN.txt in envs/api_keys for gh; prints pubkey to register
+   once). Runs before the dotpi clone in both adapters.
 3. **Per-host service enablement** — nothing enables services: sshd, tailscale
    up (needs auth!), postgres/redis on deep-blue; bluetooth/tlp on hydra.
    Add `hosts/<h>/services` (unit names to enable) + adapter step.

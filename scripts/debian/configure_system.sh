@@ -80,6 +80,8 @@ main() {
     _process "Configuring system (Debian, profiles: $PROFILES)"
 
     link_dotfiles
+    # GitHub identity/key/gh-auth before dotpi clone (private repo needs the key)
+    bash "${DOTFILES_DIR}/profiles/base/scripts/setup_github.sh" || true
     ensure_dotpi || true
     link_gitconfig || true
     link_zsh_config || true
