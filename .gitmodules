@@ -13,30 +13,18 @@
 [submodule "configs/zsh-conf/plugins/zsh-fzf-history-search"]
 	path = configs/zsh-conf/plugins/zsh-fzf-history-search
 	url = https://github.com/joshskidmore/zsh-fzf-history-search.git
-[submodule "configs/tmux/plugins/tmux-battery"]
-        path = configs/tmux/plugins/tmux-battery
-        url = https://github.com/tmux-plugins/tmux-battery
-[submodule "configs/tmux/plugins/tmux-plugins/tpm"]
-        path = configs/tmux/plugins/tmux-plugins/tpm
-        url = https://github.com/tmux-plugins/tpm
-[submodule "configs/tmux/plugins/tmux-plugins/tmux-sensible"]
-        path = configs/tmux/'tmux-plugins/tmux-sensible'
-        url = https://github.com/'tmux-plugins/tmux-sensible'
-[submodule "configs/tmux/plugins/christoomey/vim-tmux-navigator"]
-        path = configs/tmux/plugins/christoomey/vim-tmux-navigator
-        url = https://github.com/christoomey/vim-tmux-navigator
-[submodule "configs/tmux/plugins/tmux-plugins/tmux-yank"]
-        path = configs/tmux/plugins/tmux-plugins/tmux-yank
-        url = https://github.com/tmux-plugins/tmux-yank
-[submodule "configs/tmux/plugins/sainnhe/tmux-fzf"]
-        path = configs/tmux/plugins/sainnhe/tmux-fzf
-        url = https://github.com/sainnhe/tmux-fzf
-[submodule "configs/tmux/plugins/tmux-plugins/tmux-resurrect"]
-        path = configs/tmux/plugins/tmux-plugins/tmux-resurrect
-        url = https://github.com/tmux-plugins/tmux-resurrect
-[submodule "configs/tmux/plugins/tmux-plugins/tmux-continuum"]
-        path = configs/tmux/plugins/tmux-plugins/tmux-continuum
-        url = https://github.com/tmux-plugins/tmux-continuum
+[submodule "configs/tmux/plugins/tpm"]
+	path = configs/tmux/plugins/tpm
+	url = https://github.com/tmux-plugins/tpm
+[submodule "configs/tmux/plugins/tmux-sensible"]
+	path = configs/tmux/plugins/tmux-sensible
+	url = https://github.com/tmux-plugins/tmux-sensible
+[submodule "configs/tmux/plugins/tmux-resurrect"]
+	path = configs/tmux/plugins/tmux-resurrect
+	url = https://github.com/tmux-plugins/tmux-resurrect
+[submodule "configs/tmux/plugins/tmux-continuum"]
+	path = configs/tmux/plugins/tmux-continuum
+	url = https://github.com/tmux-plugins/tmux-continuum
 [submodule "configs/suckless"]
         path = configs/suckless
         url = https://github.com/EduardoNeville/suckless
