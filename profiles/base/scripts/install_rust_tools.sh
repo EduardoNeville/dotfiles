@@ -68,24 +68,23 @@ install_cargo_packages() {
 
     _process "Installing ${#packages[@]} cargo packages"
 
-    # Check if cargo-binstall is available
+    # Batch: tools' own managers accept multiple targets in one call.
     if command -v cargo-binstall >/dev/null 2>&1; then
-        _process "Using cargo-binstall for faster installation"
-
-        for pkg in "${packages[@]}"; do
-            echo "Installing $pkg..."
-            cargo binstall -y "$pkg" || {
-                echo "Falling back to cargo install for $pkg"
-                cargo install "$pkg"
-            }
-        done
+        _process "Using cargo-binstall (one call, ${#packages[@]} packages)"
+        if ! cargo binstall -y "${packages[@]}"; then
+            _error "binstall batch failed — falling back per-package:"
+            for pkg in "${packages[@]}"; do
+                cargo binstall -y "$pkg" 2>/dev/null || cargo install "$pkg" || _error "failed: $pkg"
+            done
+        fi
     else
-        _process "Installing packages with cargo install"
-
-        for pkg in "${packages[@]}"; do
-            echo "Installing $pkg..."
-            cargo install "$pkg"
-        done
+        _process "Installing with cargo install (one call, ${#packages[@]} packages)"
+        if ! cargo install --locked "${packages[@]}"; then
+            _error "cargo batch failed — falling back per-package:"
+            for pkg in "${packages[@]}"; do
+                cargo install --locked "$pkg" || _error "failed: $pkg"
+            done
+        fi
     fi
 
     _success "All cargo packages installed"
