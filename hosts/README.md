@@ -19,8 +19,9 @@ Profile resolution order: `--profile` flag > `$PROFILE` env > `hosts/<hostname>`
    `~/.ssh/id_ed25519`, pi/opencode tokens — NOT in git. `install.sh` warns when missing.
 5. `cd ~/dotfiles && ./install.sh` — sudo password prompts expected; needs network.
    Desktop machine without a `hosts/<name>` file: `./install.sh --profile base,desktop`.
-6. Log out/in (groups, shell). Then once: `bash profiles/base/scripts/setup_github.sh`
-   (gh auth + SSH key), `tailscale up`.
+6. Log out/in (groups, shell). Register the printed SSH pubkey once at
+   https://github.com/settings/ssh/new (key is auto-generated during install;
+   gh auth auto-skips until then). `tailscale up`.
 7. Verify: `./install.sh --check` → ✓ Parity OK; `scripts/check_parity.sh --packages`.
 
 Weekly (automatic on Debian via `profiles/base/services/review-packages.timer`):
