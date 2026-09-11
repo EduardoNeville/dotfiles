@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Author: Eduardo Neville <eduadoneville82@gmail.com>
-# Description: Setup PipeWire audio system on Debian
+# setup_audio.sh — desktop audio/bt/wifi service wiring (packages are DECLARED
+# in profiles/desktop/packages.apt — this script only enables/verifies).
+# Trixie ships everything current (pipewire 1.4, bluez 5.82) — no source builds.
 
 set -e
 
@@ -8,180 +9,52 @@ _process() { echo "$(tput setaf 6)→ $1...$(tput sgr0)"; }
 _success() { echo "$(tput setaf 2)✓ Success:$(tput sgr0) $1"; }
 _error() { echo "$(tput setaf 1)✗ Error:$(tput sgr0) $1"; }
 
-check_pulseaudio() {
-    _process "Checking for existing PulseAudio installation"
-
-    if systemctl --user is-active --quiet pulseaudio.service 2>/dev/null; then
-        _process "PulseAudio is running. Stopping it..."
-        systemctl --user stop pulseaudio.service
-        systemctl --user disable pulseaudio.service
-        systemctl --user mask pulseaudio.service
-        _success "PulseAudio disabled"
-    fi
-
-    if dpkg -l | grep -q "^ii  pulseaudio "; then
-        read -p "Remove PulseAudio? (recommended) (y/n): " remove_pulse
-        if [[ "$remove_pulse" =~ ^[Yy]$ ]]; then
-            sudo apt remove -y pulseaudio
-            _success "PulseAudio removed"
-        fi
-    fi
-}
-
-install_pipewire() {
-    _process "Installing PipeWire and components"
-
-    local packages=(
-        "pipewire"
-        "pipewire-audio-client-libraries"
-        "pipewire-alsa"
-        "pipewire-pulse"
-        "wireplumber"
-        "pavucontrol"
-        "alsa-utils"
-    )
-
-    sudo apt update
-    sudo apt install -y "${packages[@]}"
-
-    _success "PipeWire packages installed"
-}
-
-install_bluetooth_audio() {
-    _process "Installing Bluetooth audio support"
-
-    local bt_packages=(
-        "bluetooth"
-        "bluez"
-        "bluez-tools"
-        "blueman"
-        "libspa-0.2-bluetooth"
-    )
-
-    sudo apt install -y "${bt_packages[@]}"
-
-    _success "Bluetooth audio support installed"
-}
-
 enable_pipewire() {
-    _process "Enabling PipeWire services"
-
-    # Enable and start PipeWire
-    systemctl --user --now enable pipewire.service
-    systemctl --user --now enable pipewire-pulse.service
-    systemctl --user --now enable wireplumber.service
-
-    # Wait a moment for services to start
-    sleep 2
-
-    _success "PipeWire services enabled and started"
-}
-
-configure_pipewire() {
-    _process "Configuring PipeWire"
-
-    # Create user config directory
-    mkdir -p "${HOME}/.config/pipewire"
-
-    # Copy default configs if they don't exist
-    if [ ! -f "${HOME}/.config/pipewire/pipewire.conf" ]; then
-        [ -f "/usr/share/pipewire/pipewire.conf" ] && \
-            cp /usr/share/pipewire/pipewire.conf "${HOME}/.config/pipewire/"
-    fi
-
-    if [ ! -f "${HOME}/.config/pipewire/pipewire-pulse.conf" ]; then
-        [ -f "/usr/share/pipewire/pipewire-pulse.conf" ] && \
-            cp /usr/share/pipewire/pipewire-pulse.conf "${HOME}/.config/pipewire/"
-    fi
-
-    _success "PipeWire configuration created"
+    _process "Enabling PipeWire user services (startx session has no login manager)"
+    systemctl --user --now enable pipewire.service 2>/dev/null || true
+    systemctl --user --now enable pipewire-pulse.service 2>/dev/null || true
+    systemctl --user --now enable wireplumber.service 2>/dev/null || true
+    _success "PipeWire services enabled"
 }
 
 setup_bluetooth() {
-    _process "Enabling Bluetooth service"
-
-    sudo systemctl enable bluetooth.service
-    sudo systemctl start bluetooth.service
-
-    # Add user to bluetooth group
-    sudo usermod -aG bluetooth ${USER}
-
+    _process "Enabling Bluetooth (system service)"
+    sudo systemctl enable bluetooth.service 2>/dev/null || true
+    sudo systemctl start bluetooth.service 2>/dev/null || true
+    sudo usermod -aG bluetooth "${USER}" 2>/dev/null || true
+    command -v rfkill >/dev/null 2>&1 && { rfkill unblock bluetooth 2>/dev/null || true; }
     _success "Bluetooth service enabled"
 }
 
+setup_wifi() {
+    _process "Enabling NetworkManager (system service)"
+    sudo systemctl enable NetworkManager.service 2>/dev/null || true
+    sudo systemctl start NetworkManager.service 2>/dev/null || true
+    command -v rfkill >/dev/null 2>&1 && { rfkill unblock wifi 2>/dev/null || true; }
+    _success "NetworkManager enabled"
+}
+
 test_audio() {
-    _process "Testing audio setup"
-
-    echo ""
-    echo "===== Audio System Status ====="
-
-    # Check PipeWire status
-    if systemctl --user is-active --quiet pipewire.service; then
-        echo "✓ PipeWire: Running"
-    else
-        echo "✗ PipeWire: Not running"
-    fi
-
-    if systemctl --user is-active --quiet pipewire-pulse.service; then
-        echo "✓ PipeWire Pulse: Running"
-    else
-        echo "✗ PipeWire Pulse: Not running"
-    fi
-
-    if systemctl --user is-active --quiet wireplumber.service; then
-        echo "✓ WirePlumber: Running"
-    else
-        echo "✗ WirePlumber: Not running"
-    fi
-
-    # Check Bluetooth
-    if systemctl is-active --quiet bluetooth.service; then
-        echo "✓ Bluetooth: Running"
-    else
-        echo "✗ Bluetooth: Not running"
-    fi
-
-    echo ""
-
-    # List audio devices
-    if command -v pactl >/dev/null 2>&1; then
-        echo "Audio sinks (output devices):"
-        pactl list short sinks
-        echo ""
-        echo "Audio sources (input devices):"
-        pactl list short sources
-    fi
-
-    echo "==============================="
-    echo ""
+    _process "Verifying audio/bluetooth/wifi"
+    echo "  $(systemctl --user is-active pipewire.service 2>/dev/null || echo 'pipewire: n/a')"
+    echo "  $(systemctl --user is-active pipewire-pulse.service 2>/dev/null || echo 'pulse: n/a')"
+    echo "  $(systemctl --user is-active wireplumber.service 2>/dev/null || echo 'wireplumber: n/a')"
+    echo "  bluetooth: $(systemctl is-active bluetooth.service 2>/dev/null || echo n/a)"
+    command -v nmcli >/dev/null 2>&1 && nmcli device status 2>/dev/null | sed 's/^/  /'
+    _success "Status printed above (wifi needing an SSID: nmtui)"
 }
 
 main() {
-    _process "Setting up PipeWire audio system"
-
-    check_pulseaudio
-    install_pipewire
-    install_bluetooth_audio
-    configure_pipewire
     enable_pipewire
     setup_bluetooth
-
+    setup_wifi
     test_audio
-
-    _success "Audio system setup complete"
-
+    _success "Desktop services setup complete"
     echo ""
-    echo "Audio setup complete!"
-    echo ""
-    echo "Notes:"
-    echo "  - Use 'pavucontrol' to adjust audio settings"
-    echo "  - Use 'blueman-manager' to manage Bluetooth devices"
-    echo "  - Restart your session for all changes to take effect"
-    echo "  - To connect Bluetooth audio: blueman-manager -> Pair device -> Set as audio output"
-    echo ""
+    echo "First-run wifi: nmtui (dwm has no tray; nm-applet needs one)."
+    echo "Bluetooth devices: blueman-manager. Volume: pavucontrol."
 }
 
-# Run if executed directly
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi

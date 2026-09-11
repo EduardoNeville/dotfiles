@@ -19,16 +19,28 @@ build-essential
 # Audio
 pipewire
 pipewire-pulse
+pipewire-audio-client-libraries
+pipewire-alsa
 wireplumber
 pavucontrol
 helvum
+alsa-utils
+libspa-0.2-bluetooth
 mpv
 vlc
 cmus
 
 # Bluetooth
 bluez
+bluez-tools
 blueman
+
+# WiFi / network (T480: iwlwifi — firmware from non-free-firmware, in debian.sources)
+firmware-iwlwifi
+network-manager
+wpasupplicant
+iw
+rfkill
 
 # Power (laptop)
 tlp
