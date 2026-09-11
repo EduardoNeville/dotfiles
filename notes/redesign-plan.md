@@ -186,13 +186,19 @@ that works.
 - Network: curl, wget, rsync, dnsutils, net-tools, tailscale (vendor)
 
 ### DESKTOP — hydra only (desktop profile)
-- WM: suckless (dwm/slstatus/st, source), rofi, xinit/xorg, libx11-dev/libxft-dev/libxinerama-dev, feh, xsel/xclip
+- WM: suckless (dwm/slstatus/st, **source — customization-driven**, existing
+  submodule + install_suckless.sh; not staleness), rofi, xinit/xorg,
+  libx11-dev/libxft-dev/libxinerama-dev, feh, xsel/xclip
 - Audio: pipewire, wireplumber, pipewire-pulse, pavucontrol, mpv, vlc, cmus, helvum
 - Bluetooth: bluez, blueman
 - Power: tlp (+rdw), powertop, brightnessctl, acpi, acpid
-- GUI apps: obs-studio, keepassxc, gparted (if not base), solaar, redshift(+gtk), fonts
-- Media: mpd, rmpc, fbterm, usbmuxd/libmtp (iOS/MTP mount)
+- GUI apps: obs-studio, keepassxc, gparted, solaar, redshift(+gtk), fonts
+- Media: mpd, rmpc (**cargo install — not packaged in trixie**, checked
+  2026-09; goes in opt/cargoPkgs), fbterm, usbmuxd, libmtp libs
 - Services: pipewire user units (configs/services)
+- **Desktop source count: 1 set (suckless) + 1 cargo (rmpc); ~33 apt.**
+  All versions verified current on trixie (pipewire 1.4.2, bluez 5.82,
+  obs 30.2, keepassxc 2.7.10, rofi 1.7.5).
 
 ### PER-HOST — deep-blue only (hosts/deep-blue/packages.apt)
 - HP server tooling: amsd, hponcfg, ssacli, ssaducli, storcli, ipmitool, python3-hpilo
