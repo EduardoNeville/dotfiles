@@ -47,6 +47,10 @@ setup_systemd_user_services() {
         done
     done
     systemctl --user daemon-reload
+    # Weekly review timer (idempotent, no sudo)
+    if [ -f "${HOME}/.config/systemd/user/review-packages.timer" ]; then
+        systemctl --user enable review-packages.timer 2>/dev/null && echo "  ✓ enabled review-packages.timer"
+    fi
     _success "Systemd user services configured"
 }
 
