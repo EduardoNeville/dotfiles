@@ -28,7 +28,7 @@ setup_apt_sources() {
     fi
 
     bootstrap_keyring docker /etc/apt/keyrings/docker.asc https://download.docker.com/linux/debian/gpg
-    bootstrap_keyring tailscale /usr/share/keyrings/tailscale-archive-keyring.gpg https://pkgs.tailscale.com/stable/debian/trixie/pubkey.gpg
+    bootstrap_keyring tailscale /usr/share/keyrings/tailscale-archive-keyring.gpg https://pkgs.tailscale.com/stable/debian/trixie.noarmor.gpg
     bootstrap_keyring githubcli /etc/apt/keyrings/githubcli-archive-keyring.gpg https://cli.github.com/packages/githubcli-archive-keyring.gpg
 
 
