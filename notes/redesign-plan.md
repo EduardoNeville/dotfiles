@@ -120,8 +120,8 @@ Per-tool decision ladder (applied during triage, per package):
    - docker → docker-ce vendor repo (already in use on deep-blue), never source
    - nodejs → fnm/nvm toolchain (Debian's node 20 is end-of-lifing; apt and
      source are both wrong tiers)
-   - yq 3.4 → backports candidate or drop-if-unused, not source
-   - yazi → git checkout (already a submodule), no build needed
+   - yq/yazi: removed 2026-09 (unused — not installed on any machine, no
+     config references; submodule configs/yazi deinit'd)
    - gh/rust/py tools → vendor repo / rustup+uv, their own updaters
    Entry rule for opt/source: upstream ships NO repo/deb/toolchain AND apt is
    unusable. That's why the set stays at two.
@@ -165,8 +165,6 @@ that works.
 | neovim, tmux (+libevent, bison) | **source — frozen {neovim, tmux}** | only genuinely stale: apt 0.10.4/3.5a vs built 0.13-dev/3.7b |
 | docker-ce, gh, tailscale, chrome | vendor repo | official repos, auto-update via apt |
 | nodejs | fnm/nvm toolchain | apt node 20 is EOL-ing; source = hours of upkeep |
-| yq (3.4) | backports candidate, else drop | ancient, maybe unused |
-| yazi | git checkout (submodule) | zero builds |
 | git 2.51, rg 14.1, fzf 0.67, fd, bat, eza, zoxide, btop, delta, starship, lazygit, jq | apt — fine | trixie is current enough |
 
 ### BASE — every machine (deep-blue, hydra base layer, i-mac via brew)

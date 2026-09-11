@@ -186,6 +186,5 @@ bat
 trash-cli
 ncdu
 jq
-yq
 httpie
 stow
