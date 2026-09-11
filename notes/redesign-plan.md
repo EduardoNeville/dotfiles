@@ -154,8 +154,56 @@ burden, promote it to `opt/debs/` (vendor .deb) — the ladder is bidirectional.
 Why not real .debs for everything? `dpkg-buildpackage` needs a maintained
 `debian/` tree per tool; checkinstall is unmaintained; fpm wraps this exact
 prefix flow in a Ruby gem and apt-tracks build artifacts dpkg can't reason
-about. For 4 pinned tools, the formalized prefix system is the smallest thing
+about. For 2 pinned tools, the formalized prefix system is the smallest thing
 that works.
+
+## Package classification (2026-09 — grounded in live apt-cache + deep-blue snapshot)
+
+### Tier assignment, per tool (the full decision)
+| tool | tier | why |
+|---|---|---|
+| neovim, tmux (+libevent, bison) | **source — frozen {neovim, tmux}** | only genuinely stale: apt 0.10.4/3.5a vs built 0.13-dev/3.7b |
+| docker-ce, gh, tailscale, chrome | vendor repo | official repos, auto-update via apt |
+| nodejs | fnm/nvm toolchain | apt node 20 is EOL-ing; source = hours of upkeep |
+| yq (3.4) | backports candidate, else drop | ancient, maybe unused |
+| yazi | git checkout (submodule) | zero builds |
+| git 2.51, rg 14.1, fzf 0.67, fd, bat, eza, zoxide, btop, delta, starship, lazygit, jq | apt — fine | trixie is current enough |
+
+### BASE — every machine (deep-blue, hydra base layer, i-mac via brew)
+- Shells & prompt: zsh + plugins, bash-completion, starship, tmux (source-built)
+- Editor & git: vim, nvim (source-built), git, gh (vendor), lazygit, tree-sitter, delta
+- Build: build-essential, gcc/g++, gdb, make, cmake, ninja-build, meson, pkg-config, autoconf, automake, libtool
+- Languages: python3 (+venv/pip/dev), golang, default-jdk, luarocks, node via fnm/nvm, rust via rustup, pipx, uv
+- Containers: docker-ce (vendor) + compose plugin
+- TUI utils: nnn, fzf, ripgrep, fd-find, bat, eza, zoxide, btop, fastfetch, tree, jq
+- FS & partitions: btrfs-progs, e2fsprogs, xfsprogs, dosfstools, ntfs-3g, exfatprogs, lvm2, cryptsetup, parted, gparted, smartmontools
+- Compression: zip, unzip, p7zip-full, tar, gzip, bzip2, xz-utils, zstd
+- Media core: ffmpeg, imagemagick-adjacent (chafa)
+- Docs: texlive (+extras/xetex), pandoc, zathura + mupdf
+- Monitoring: btop, iotop, sysstat, lm-sensors, smartmontools, fastfetch
+- Security: gnupg, pass, openssl, openssh client+server, shellcheck
+- Dev libs: libssl-dev, libreadline-dev, libsqlite3-dev, libncurses-dev, libffi-dev, libbz2-dev, liblzma-dev, zlib1g-dev
+- Network: curl, wget, rsync, dnsutils, net-tools, tailscale (vendor)
+
+### DESKTOP — hydra only (desktop profile)
+- WM: suckless (dwm/slstatus/st, source), rofi, xinit/xorg, libx11-dev/libxft-dev/libxinerama-dev, feh, xsel/xclip
+- Audio: pipewire, wireplumber, pipewire-pulse, pavucontrol, mpv, vlc, cmus, helvum
+- Bluetooth: bluez, blueman
+- Power: tlp (+rdw), powertop, brightnessctl, acpi, acpid
+- GUI apps: obs-studio, keepassxc, gparted (if not base), solaar, redshift(+gtk), fonts
+- Media: mpd, rmpc, fbterm, usbmuxd/libmtp (iOS/MTP mount)
+- Services: pipewire user units (configs/services)
+
+### PER-HOST — deep-blue only (hosts/deep-blue/packages.apt)
+- HP server tooling: amsd, hponcfg, ssacli, ssaducli, storcli, ipmitool, python3-hpilo
+- Services: postgresql, redis, certbot, cloudflared, bind9-dnsutils
+- Vendor repos (hosts/<h>/apt-vendor.list): docker-ce + chrome on deep-blue;
+  tailscale vendor repo is base-wide (all 3 machines use it)
+
+### i-mac
+Same BASE toolset via brew (Brewfile triage: coreutils, openjdk, sqlite, rust,
+pyenv, bun, casks font-hack-nerd-font/maccy/multipass; zathura via tap). No
+desktop profile, no source layer.
 
 ## The periodic review loop (imperative packages)
 
@@ -235,6 +283,8 @@ rewrite README around profiles.
 ## Decisions (locked)
 - **Wayland stack retired** (2026-09): `configs/sway`, `configs/waybar`, `configs/wofi`
   deleted. Desktop profile = dwm/X11 (suckless + rofi) only. `configs/rofi` stays.
+- **Package classification locked** (2026-09, see section above): source set =
+  {neovim, tmux}; mpd/rmpc → desktop profile.
 
 ## Open decisions (triage phase, no structural impact)
 - `theme/` (colors, remote-hosts) — universal or desktop?
