@@ -269,49 +269,36 @@ diff:
 
 ## Phases
 
-### Phase 1 — Baseline snapshot (data first)
-✅ deep-blue done (2026-09): `notes/packages-deep-blue-2026-09.md` (300 manual pkgs).
-Key finds: docker-ce family installed but `debianPkgs` declares `docker.io`;
-HP server tooling (amsd/hponcfg/ssacli/storcli/hpilo/ipmitool) is deep-blue-only
-→ motivated the `hosts/<hostname>/packages.*` layer.
-⬜ hydra: `cd ~/dotfiles && apt-mark showmanual | sort > notes/packages-hydra-2026-09.md`
-⬜ i-mac: `brew leaves --installed-on-request | sort > notes/packages-imac-2026-09.md`
+### Phase 1 — Baseline snapshot ✅ (2026-09)
+✅ deep-blue snapshot in notes/. hydra = blank slate (no snapshot needed);
+i-mac snapshot deferred until online.
 
-### Phase 2 — Structure (engine, no behavior change to packages, ~2 h)
-- Create `hosts/`, `profiles/base|desktop/`, move desktop configs + debian
-  desktop scripts into `profiles/desktop/`.
-- Make `install.sh`, `link.sh`, `check_parity.sh` profile-aware.
-- Wire tier-1/2 plumbing into the apt adapter: `opt/backports.txt` +
-  `hosts/<h>/apt-sources/` incl. keyring bootstrap (`setup_apt_sources`),
-  idempotent.
-- **Acceptance:** `install.sh --check` identical output on all 3 machines
-  (desktop configs ignored on deep-blue).
+### Phase 2 — Structure ✅ implemented (commit ce30f9a)
+Profiles, hosts/, apt-sources, ssh config, source layer, review loop, engine.
+See layout above.
 
-### Phase 3 — Package triage (the real work, ~3 h)
-Split `debianPkgs` (191 lines) → `base/packages.apt` + `desktop/packages.apt`
-using the Phase 1 snapshots; split `Brewfile` → `base/packages.brew` + casks +
-taps; grow `packages.common`. Kill `debianPkgs`, `Brewfile`, `common.txt`.
-Also run the tier ladder per package (0→5) using the snapshots — this is
-where nvim/tmux/… get classified, and `apt-cache policy` shows which
-backports candidates exist to declare.
-- **Acceptance:** `check_parity.sh --packages` green on all 3 machines.
+### Phase 3 — Package triage ✅ implemented
+Legacy lists retired (debianPkgs/common.txt/Brewfile); classified per tier incl.
+ecosystem-manager-first rule.
 
-### Phase 4 — Source layer (~2 h)
-Migrate `~/pkgs` manifests+scripts into `opt/source/`, add `pkg_sha256`,
-pin git branches to tags, wire `ensure_source_pkgs` into the apt adapter.
-- **Acceptance:** hydra reproduces deep-blue's nvim+tmux from the repo
-  (`build.sh` + `update.sh` work, parity green).
+### Phase 4 — Source layer ✅ implemented
+opt/source (nvim pinned v0.12.5, sha256 on all tarballs, pkg_bin checks).
 
-### Phase 5 — Review loop (~1 h)
-`review_packages.sh` + `configs/services/review-packages.{service,timer}` on the
-Debians; wire the first review rounds (Phase 1 confirmations). `check_parity
---packages` covers drift; review covers candidates.
-- **Acceptance:** weekly timer produces a review file; first round applied.
+### Phase 5 — Review loop ✅ implemented
+review_packages.sh + weekly systemd timer (profiles/base/services) + parity
+--packages. First drift report on deep-blue produced 2026-09.
 
-### Phase 6 — Rollout in place (~1 h + machine time)
-deep-blue first (base), then hydra (base+desktop), then i-mac (brew). Verify
-parity, delete `dotnix` (archive tag first), delete `full_install.sh` shim,
-rewrite README around profiles.
+### Phase 6 — Rollout
+- deep-blue: relinked + parity ✅ (2026-09); full package install + timer
+  enable pending (run ./install.sh with sudo; needs the .bak cleanup from
+  the apt-sources section earlier).
+- hydra: blank-slate install via USB tarball — pending (see hosts/README).
+- i-mac: pending (snapshot + brew rollout when online).
+- dotnix: delete when hydra is up.
+
+### Phase 7 — Optional guardrails
+Clean-room test: run install.sh --check in a trixie docker container before
+big changes (cheap CI).
 
 ## Decisions (locked)
 - **Wayland stack retired** (2026-09): `configs/sway`, `configs/waybar`, `configs/wofi`
