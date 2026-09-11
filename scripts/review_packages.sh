@@ -57,7 +57,7 @@ noise_re="${noise_re%|}"
         pkg_name="" pkg_bin="" pkg_branch="" pkg_src_dir=""
         # shellcheck disable=SC1090
         source "$conf"
-        if [ -n "$pkg_bin" ] && has "$pkg_bin"; then
+        if [ -x "$HOME/pkgs/bin/$pkg_bin" ]; then
             printf '  ✓ %s (%s)\n' "$pkg_name" "$("$pkg_bin" --version 2>/dev/null | head -1 || true)"
         else
             printf '  ✗ %s missing (%s) — build: PKGS_ROOT=~/pkgs opt/source/scripts/build.sh %s\n' "$pkg_name" "$pkg_bin" "$pkg_name"

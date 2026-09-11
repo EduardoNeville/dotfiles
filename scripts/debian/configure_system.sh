@@ -56,19 +56,22 @@ setup_systemd_user_services() {
 
 ensure_source_pkgs() {
     # Tier 4: opt/source manifests; builds live in $HOME/pkgs (gitignored).
+    # Presence is judged against ~/pkgs/bin (not PATH — that dir isn't on
+    # PATH inside the install session; zshrc adds it for login shells).
     [ -d "${DOTFILES_DIR}/opt/source/packages" ] || return 0
     _process "Ensuring source-built tools (opt/source)"
     local conf bin
     for conf in "${DOTFILES_DIR}"/opt/source/packages/*.conf; do
         [ -f "$conf" ] || continue
-        bin=""
         # shellcheck disable=SC1090
         source "$conf"
-        if [ -n "$pkg_bin" ] && ! has "$pkg_bin"; then
-            _process "Building $pkg_name from source (missing $pkg_bin)"
-            PKGS_ROOT="${HOME}/pkgs" bash "${DOTFILES_DIR}/opt/source/scripts/build.sh" "$pkg_name"
+        [ -n "$pkg_bin" ] || continue
+        if [ -x "${HOME}/pkgs/bin/${pkg_bin}" ]; then
+            echo "  ✓ $pkg_name ($pkg_bin)"
         else
-            echo "  ✓ $pkg_name ($(has "$pkg_bin" && echo present))"
+            _process "Building $pkg_name from source (missing $pkg_bin)"
+            PKGS_ROOT="${HOME}/pkgs" bash "${DOTFILES_DIR}/opt/source/scripts/build.sh" "$pkg_name" || \
+                _error "$pkg_name build failed — see output; deps: gettext/cmake/ninja/gcc (base list)"
         fi
     done
     _success "Source packages ensured"

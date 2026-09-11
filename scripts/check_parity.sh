@@ -95,7 +95,7 @@ if [ "$CHECK_PACKAGES" = "1" ]; then
         # shellcheck disable=SC1090
         source "$conf"
         [ -n "$pkg_bin" ] || continue
-        if has "$pkg_bin"; then
+        if [ -x "$HOME/pkgs/bin/$pkg_bin" ]; then
             ok "$pkg_name ($pkg_bin)"
         else
             bad "$pkg_name missing ($pkg_bin) — build with opt/source/scripts/build.sh"

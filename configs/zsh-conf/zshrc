@@ -1,6 +1,7 @@
 ### ---- PATH config ----------------------------------------
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/pkgs/bin:$PATH"   # source-built tools (opt/source → ~/pkgs)
 export PATH="$PATH:/opt/nvim-linux-x86_64/bin"
 
 ### ZSH HOME

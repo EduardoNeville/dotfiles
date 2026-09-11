@@ -30,6 +30,10 @@ bash-completion
 vim
 tree-sitter-cli
 
+# nvim source build (opt/source) hard-requires gettext — fresh installs
+# don't have it otherwise
+gettext
+
 # Terminal Utils
 nnn
 
