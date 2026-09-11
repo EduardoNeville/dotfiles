@@ -16,6 +16,17 @@ backup_then_link() {
     ln -sf "$src" "$target"
 }
 
+# ensure_dotpi — clone the pi agent config repo (separate repo, canonical
+# source for settings/trust/extensions). Try ssh (keyed) then https.
+ensure_dotpi() {
+    [ -d "${HOME}/dotpi" ] && return 0
+    _process "Cloning dotpi (pi agent config repo)"
+    git clone --recurse-submodules git@github.com:EduardoNeville/dotpi.git "${HOME}/dotpi" 2>/dev/null \
+        || git clone --recurse-submodules https://github.com/EduardoNeville/dotpi.git "${HOME}/dotpi" 2>/dev/null \
+        || { _error "dotpi clone failed — run profiles/base/scripts/setup_github.sh first (private repo), then re-run install.sh"; return 1; }
+    _success "dotpi cloned"
+}
+
 link_dotfiles() {
     _process "Symlinking dotfiles"
 

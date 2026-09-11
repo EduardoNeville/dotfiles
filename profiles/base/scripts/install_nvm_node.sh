@@ -65,6 +65,8 @@ install_js_packages() {
     # Core set + opt/nodePkgs (the declared list), deduped, batched.
     local pkgs=(
         "@anthropic-ai/claude-code"
+        "@earendil-works/pi-coding-agent"
+        "@earendil-works/pi-ai"
         "typescript"
         "ts-node"
         "yarn"

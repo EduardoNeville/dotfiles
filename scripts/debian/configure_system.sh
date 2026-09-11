@@ -80,6 +80,10 @@ main() {
     _process "Configuring system (Debian, profiles: $PROFILES)"
 
     link_dotfiles
+    ensure_dotpi || true
+    link_gitconfig || true
+    link_zsh_config || true
+    link_pi_config || true
     setup_zsh_as_default || true
     install_zsh_plugins || true
 

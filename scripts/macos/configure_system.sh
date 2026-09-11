@@ -21,6 +21,10 @@ main() {
     fi
 
     link_dotfiles
+    ensure_dotpi || true
+    link_gitconfig || true
+    link_zsh_config || true
+    link_pi_config || true
     setup_zsh_as_default || true
 
     _success "System configuration complete (macOS)"
