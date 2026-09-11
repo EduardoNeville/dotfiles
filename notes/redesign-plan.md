@@ -106,7 +106,7 @@ DontBreakDebian/Debian-backports contract:
 | 2 | vendor repos (official only) | docker-ce, tailscale, google-chrome, gh. Per-host `hosts/<h>/apt-sources/*.sources` (deb822). Keyring: official URL fetched at bootstrap (docker/tailscale/gh) or shipped by vendor .deb (chrome/hpe/redis) — never curl\|bash. |
 | 3 | vendor .deb in `opt/debs/` | no repo exists; `apt install -y ./opt/debs/*.deb` (deps resolve). |
 | 4 | source build via `opt/source/` | nothing newer exists packaged; keep tiny (nvim, tmux + private deps). macOS never: brew is tier-0-4 all at once. |
-| 5 | language toolchains — NEVER apt | rustup, fnm/nvm, uv/pipx, go. Updated by their own managers, not the dotfiles engine. |
+| 5 | ecosystem managers — win over apt | rustup+cargo, npm/bun, pipx/uv, fnm/nvm, go. **Rule (locked 2026-09): if a tool ships through its own ecosystem manager, install through it even when apt has it.** apt only for distro/system packages (libs, services, GUI, desktop components). |
 
 Desktop GUI apps that Debian lacks or stales (hydra only): flatpak/Flathub —
 the Debian-recommended GUI route; adopt when a GUI app actually needs it.
@@ -167,7 +167,8 @@ that works.
 | neovim, tmux (+libevent, bison) | **source — frozen {neovim, tmux}** | only genuinely stale: apt 0.10.4/3.5a vs built 0.13-dev/3.7b |
 | docker-ce, gh, tailscale, chrome | vendor repo | official repos, auto-update via apt |
 | nodejs | fnm/nvm toolchain | apt node 20 is EOL-ing; source = hours of upkeep |
-| git 2.51, rg 14.1, fzf 0.67, fd, bat, eza, zoxide, btop, delta, starship, lazygit, jq | apt — fine | trixie is current enough |
+| git 2.51, fzf 0.67, btop 1.4, lazygit 0.50 | apt — fine | distro/system-adjacent tools; no ecosystem manager in play |
+| bat/eza/starship/zoxide/ripgrep/fd/git-delta/du-dust/dysk | **cargo** (Tier 5) | Rust tools — ecosystem manager FIRST even though trixie packages them |
 
 ### BASE — every machine (deep-blue, hydra base layer, i-mac via brew)
 - Shells & prompt: zsh + plugins, bash-completion, starship, tmux (source-built)

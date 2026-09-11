@@ -1,29 +1,25 @@
 #!/usr/bin/env bash
-# Author: Eduardo Neville <eduardoneville82@gmail.com>
-# Description: Debian adapter — Linux-only system setup.
-# All config linking lives in the shared engine: scripts/lib/link.sh
+# scripts/debian/configure_system.sh — Debian adapter (profile-aware).
+# Everything here runs on full installs; guards keep it idempotent.
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-# shellcheck source=../lib/link.sh
+source "${SCRIPT_DIR}/../lib/os.sh"
 source "${SCRIPT_DIR}/../lib/link.sh"
+
+has_profile() { case " $PROFILES " in *" $1 "*) return 0 ;; *) return 1 ;; esac; }
 
 add_user_to_groups() {
     _process "Adding user to necessary groups"
-
-    local groups=("video" "audio" "input" "docker" "storage")
-
+    local groups=(video audio input docker storage)
     for group in "${groups[@]}"; do
-        if getent group "$group" >/dev/null; then
-            if ! groups ${USER} | grep -q "$group"; then
-                sudo usermod -aG "$group" ${USER}
-                echo "  ✓ Added to $group"
+        if getent group "$group" >/dev/null 2>&1; then
+            if ! groups "${USER}" | grep -q "$group"; then
+                sudo usermod -aG "$group" "${USER}" && echo "  ✓ Added to $group"
             fi
         fi
     done
-
     _success "User groups configured"
 }
 
@@ -33,50 +29,80 @@ setup_fonts() {
         return 0
     fi
     _process "Updating font cache"
-
     fc-cache -fv >/dev/null 2>&1
-
     _success "Font cache updated"
 }
 
 setup_systemd_user_services() {
+    # Base units (review timer) + desktop units (pipewire etc.).
+    local services_dir
     _process "Setting up systemd user services"
-
-    local services_dir="${DOTFILES_DIR}/configs/services"
-
-    if [ -d "$services_dir" ]; then
-        mkdir -p "${HOME}/.config/systemd/user"
-
-        for service in "$services_dir"/*.service; do
-            [ -f "$service" ] || continue
-            local service_name=$(basename "$service")
-            ln -sf "$service" "${HOME}/.config/systemd/user/$service_name"
-            echo "  ✓ Linked $service_name"
+    mkdir -p "${HOME}/.config/systemd/user"
+    for services_dir in "${DOTFILES_DIR}/profiles/base/services" "${DOTFILES_DIR}/profiles/desktop/configs/services"; do
+        [ -d "$services_dir" ] || continue
+        for unit in "$services_dir"/*; do
+            [ -f "$unit" ] || continue
+            ln -sf "$unit" "${HOME}/.config/systemd/user/$(basename "$unit")"
+            echo "  ✓ Linked $(basename "$unit")"
         done
+    done
+    systemctl --user daemon-reload
+    _success "Systemd user services configured"
+}
 
-        systemctl --user daemon-reload
-        _success "Systemd user services configured"
-    fi
+ensure_source_pkgs() {
+    # Tier 4: opt/source manifests; builds live in $HOME/pkgs (gitignored).
+    [ -d "${DOTFILES_DIR}/opt/source/packages" ] || return 0
+    _process "Ensuring source-built tools (opt/source)"
+    local conf bin
+    for conf in "${DOTFILES_DIR}"/opt/source/packages/*.conf; do
+        [ -f "$conf" ] || continue
+        bin=""
+        # shellcheck disable=SC1090
+        source "$conf"
+        if [ -n "$pkg_bin" ] && ! has "$pkg_bin"; then
+            _process "Building $pkg_name from source (missing $pkg_bin)"
+            PKGS_ROOT="${HOME}/pkgs" bash "${DOTFILES_DIR}/opt/source/scripts/build.sh" "$pkg_name"
+        else
+            echo "  ✓ $pkg_name ($(has "$pkg_bin" && echo present))"
+        fi
+    done
+    _success "Source packages ensured"
 }
 
 main() {
-    _process "Configuring system (Debian)"
+    _process "Configuring system (Debian, profiles: $PROFILES)"
 
-    # Engine: link all configs (shared, identical on every OS)
-    link_all
+    link_dotfiles
+    setup_zsh_as_default || true
+    install_zsh_plugins || true
 
-    # Debian-specific system configuration
+    # Toolchains (Tier 5) — idempotent guards
+    if ! has rustc && [ -f "${DOTFILES_DIR}/profiles/base/scripts/install_rust_tools.sh" ]; then
+        bash "${DOTFILES_DIR}/profiles/base/scripts/install_rust_tools.sh" || true
+    fi
+    if ! has fnm && ! has nvm && [ -f "${DOTFILES_DIR}/profiles/base/scripts/install_nvm_node.sh" ]; then
+        bash "${DOTFILES_DIR}/profiles/base/scripts/install_nvm_node.sh" || true
+    fi
+
+    if has_profile desktop; then
+        [ -f "${DOTFILES_DIR}/profiles/desktop/scripts/build_suckless.sh" ] &&
+            bash "${DOTFILES_DIR}/profiles/desktop/scripts/build_suckless.sh" || true
+        [ -f "${DOTFILES_DIR}/profiles/desktop/scripts/setup_audio.sh" ] &&
+            bash "${DOTFILES_DIR}/profiles/desktop/scripts/setup_audio.sh" || true
+    fi
+
     add_user_to_groups
     setup_fonts
     setup_systemd_user_services
+    ensure_source_pkgs
 
     _success "System configuration complete (Debian)"
-
     echo ""
-    echo "NOTE: Log out and log back in for all changes to take effect"
+    echo "NOTE: log out and back in for groups/shell to take effect."
+    echo "One-time: run profiles/base/scripts/setup_github.sh for gh auth + SSH key."
 }
 
-# Run if executed directly
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi

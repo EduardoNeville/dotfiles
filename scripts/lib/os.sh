@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 # scripts/lib/os.sh — OS detection + package dispatcher (portable, no sudo assumptions)
 
+_process() { echo "$(tput setaf 6)→ $1...$(tput sgr0)"; }
+_success() { echo "$(tput setaf 2)✓ Success:$(tput sgr0) $1"; }
+_error() { echo "$(tput setaf 1)✗ Error:$(tput sgr0) $1"; }
+_prompt() { echo "$(tput setaf 3)? $1$(tput sgr0)"; }
+
 detect_os() {
     if [ -f /etc/os-release ]; then
         # shellcheck disable=SC1091
@@ -22,10 +27,22 @@ detect_os() {
     esac
 }
 
+HOST="$(hostname 2>/dev/null || echo unknown)"
+
+# detect_profile — which profiles this machine activates.
+# Order: $PROFILE env/--profile flag > hosts/<hostname> file > default "base".
+detect_profile() {
+    PROFILES="${PROFILE:-}"
+    if [ -z "$PROFILES" ] && [ -f "${DOTFILES_DIR}/hosts/${HOST}" ]; then
+        PROFILES="$(grep '^PROFILE=' "${DOTFILES_DIR}/hosts/${HOST}" | head -1 | cut -d= -f2- | tr -d '"')"
+    fi
+    PROFILES="${PROFILES:-base}"
+    _process "Profiles: $PROFILES ($OS / $PKG)"
+}
+
 has() { command -v "$1" >/dev/null 2>&1; }
 
 # pkg_install <name> — install one package with the native package manager.
-# Returns non-zero on failure; caller decides whether to continue.
 pkg_install() {
     case "$PKG" in
     brew) brew install "$1" ;;

@@ -4,11 +4,6 @@
 
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 
-_process() { echo "$(tput setaf 6)→ $1...$(tput sgr0)"; }
-_success() { echo "$(tput setaf 2)✓ Success:$(tput sgr0) $1"; }
-_error() { echo "$(tput setaf 1)✗ Error:$(tput sgr0) $1"; }
-_prompt() { echo "$(tput setaf 3)? $1$(tput sgr0)"; }
-
 # backup_then_link <existing-target> <source> — replace real files with a
 # timestamped backup, replace symlinks silently.
 backup_then_link() {
@@ -27,21 +22,32 @@ link_dotfiles() {
     # Create .config directory if it doesn't exist
     mkdir -p "${HOME}/.config"
 
-    # Symlink each config directory
+    # Symlink each universal config directory
     for item in "${DOTFILES_DIR}/configs"/*; do
         [ -d "$item" ] || continue # Skip if not a directory
-
         local basename=$(basename "$item")
-        local target="${HOME}/.config/${basename}"
-
-        # Skip certain directories
-        case "$basename" in
-        "suckless" | "services") continue ;;
-        esac
-
-        backup_then_link "$target" "$item"
+        [ "$basename" = "ssh" ] && continue # special-cased below
+        backup_then_link "${HOME}/.config/${basename}" "$item"
         echo "  ✓ Linked $basename"
     done
+
+    # Symlink each active profile's config directories
+    local p item
+    for p in $PROFILES; do
+        for item in "${DOTFILES_DIR}/profiles/$p/configs"/*; do
+            [ -d "$item" ] || continue
+            local basename=$(basename "$item")
+            backup_then_link "${HOME}/.config/${basename}" "$item"
+            echo "  ✓ Linked $basename ($p)"
+        done
+    done
+
+    # ssh config lives at ~/.ssh/config, not ~/.config/ssh
+    if [ -f "${DOTFILES_DIR}/configs/ssh/config" ]; then
+        mkdir -p "${HOME}/.ssh"
+        backup_then_link "${HOME}/.ssh/config" "${DOTFILES_DIR}/configs/ssh/config"
+        echo "  ✓ Linked .ssh/config"
+    fi
 
     _success "Config directories linked"
 }

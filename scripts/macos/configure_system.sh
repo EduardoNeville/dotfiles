@@ -1,25 +1,29 @@
 #!/usr/bin/env bash
-# scripts/macos/configure_system.sh — macOS adapter.
-# Engine (linking) is shared: scripts/lib/link.sh. macOS-specific extras here.
+# scripts/macos/configure_system.sh — macOS adapter (brew).
+# Taps + formulae are handled by install.sh; here: casks, links, default shell.
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-# shellcheck source=../lib/link.sh
+source "${SCRIPT_DIR}/../lib/os.sh"
 source "${SCRIPT_DIR}/../lib/link.sh"
 
 main() {
     _process "Configuring system (macOS)"
 
-    link_all
+    if [ -f "${DOTFILES_DIR}/opt/casks.txt" ]; then
+        _process "Installing casks"
+        while read -r cask; do
+            [ -n "$cask" ] && case "$cask" in \#*) ;; *) brew install --cask "$cask" ;; esac
+        done <"${DOTFILES_DIR}/opt/casks.txt"
+    fi
+
+    link_dotfiles
+    setup_zsh_as_default || true
 
     _success "System configuration complete (macOS)"
-    echo ""
-    echo "NOTE: Log out and log back in for all changes to take effect"
 }
 
-# Run if executed directly
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi

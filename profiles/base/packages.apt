@@ -1,3 +1,5 @@
+# Base layer — Debian (deep-blue, hydra). Server+dev core, no GUI.
+# Triage of legacy opt/debianPkgs (2026-09); GUI/laptop items → desktop profile.
 # Core System & Development
 build-essential
 gcc
@@ -31,15 +33,8 @@ tree-sitter-cli
 # Terminal Utils
 nnn
 
-# Multimedia
+# Multimedia core
 ffmpeg
-vlc
-obs-studio
-
-# Document Viewers
-zathura
-mupdf
-mupdf-tools
 
 # PDF & LaTeX
 texlive
@@ -58,20 +53,11 @@ ntfs-3g
 exfat-fuse
 exfatprogs
 f2fs-tools
-gparted
 parted
 lvm2
 cryptsetup
 cryptsetup-initramfs
-udisks2
-udiskie
-
-# Media Device Support (MTP, iOS, Cameras)
-gvfs
-gvfs-backends
-gvfs-fuse
-libmtp-runtime
-usbmuxd
+smartmontools
 
 # Compression & Archives
 zip
@@ -81,6 +67,7 @@ tar
 gzip
 bzip2
 xz-utils
+zstd
 
 # System Monitoring
 btop
@@ -89,53 +76,32 @@ sysstat
 lm-sensors
 smartmontools
 fastfetch
-
-# Power Management
-tlp
-tlp-rdw
-powertop
-
-# Hardware Control
-brightnessctl
-acpi
-acpid
-
-# Fonts
-fonts-dejavu
-fonts-dejavu-core
-fonts-liberation
-fonts-liberation2
-fonts-noto
-fonts-noto-color-emoji
-fonts-roboto
-fonts-font-awesome
-fonts-hack
-fonts-firacode
-fonts-inconsolata
+fio
 
 # Programming Languages
 python3
 python3-pip
 python3-venv
 python3-dev
-nodejs
-npm
-default-jdk
 golang
+default-jdk
 luarocks
+pipx
 
 # Linters
 shellcheck
 yamllint
 
-# Container & Virtualization
-docker.io
-docker-compose
+# Containers & Virtualization (docker via vendor repo — Tier 2)
+docker-ce
+docker-ce-cli
+containerd.io
+docker-buildx-plugin
+docker-compose-plugin
 qemu-system
 qemu-utils
 libvirt-daemon-system
 libvirt-clients
-virt-manager
 bridge-utils
 
 # Security & Encryption
@@ -143,7 +109,6 @@ gnupg
 gnupg2
 gpg
 pass
-keepassxc
 openssh-client
 openssh-server
 openssl
@@ -160,31 +125,20 @@ zlib1g-dev
 libxml2-dev
 libxmlsec1-dev
 
-# Graphics Libraries
-mesa-utils
-libgl1-mesa-dri
-libglx-mesa0
-libglu1-mesa
-vulkan-tools
-mesa-vulkan-drivers
-libvulkan1
+# Network
+tailscale
+gh
+dnsutils
+net-tools
+ufw
 
-# Clipboard & Utilities
-clipit
-xsel
-
-# Color Temperature
-redshift
-redshift-gtk
-
-# Misc Utilities
+# Misc Utilities (Rust tools → cargo, Tier 5: bat/eza/starship/zoxide/ripgrep/fd/git-delta/du-dust/dysk)
 tree
 fzf
-ripgrep
-fd-find
-bat
+btop
+fastfetch
+lazygit
 trash-cli
 ncdu
 jq
-httpie
 stow
