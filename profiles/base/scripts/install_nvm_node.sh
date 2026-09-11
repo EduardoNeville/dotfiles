@@ -1,151 +1,103 @@
 #!/usr/bin/env bash
-# Author: Eduardo Neville <eduadoneville82@gmail.com>
-# Description: Install NVM and Node.js
+# Install NVM (node version manager) + Node LTS + bun (JS package manager).
+# Global JS packages install via `bun add -g` — never npm (preference 2026-09).
+# Non-interactive + idempotent: safe under install.sh (no prompts).
 
 set -e
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 
 _process() { echo "$(tput setaf 6)→ $1...$(tput sgr0)"; }
 _success() { echo "$(tput setaf 2)✓ Success:$(tput sgr0) $1"; }
 _error() { echo "$(tput setaf 1)✗ Error:$(tput sgr0) $1"; }
 
-install_nvm() {
-    _process "Installing NVM (Node Version Manager)"
+has() { command -v "$1" >/dev/null 2>&1; }
 
-    # Check if NVM is already installed
+load_nvm() {
+    export NVM_DIR="${HOME}/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+}
+
+bootstrap_nvm() {
+    _process "Installing NVM (Node Version Manager)"
     if [ -d "${HOME}/.nvm" ]; then
-        _success "NVM is already installed"
+        _success "NVM already installed"
+        load_nvm
         return 0
     fi
-
-    # Install NVM
     local NVM_VERSION="v0.40.1"
-    curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh" | bash
-
-    # Load NVM
-    export NVM_DIR="${HOME}/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-
-    _success "NVM installed successfully"
+    # PROFILE=/dev/null: we source nvm from the repo zshrc, not from the
+    # installer's rc-append (which would dirty the linked dotfile).
+    PROFILE=/dev/null curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh" | bash
+    load_nvm
+    _success "NVM installed"
 }
 
-install_nodejs() {
-    _process "Installing Node.js"
-
-    # Load NVM
-    export NVM_DIR="${HOME}/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-
-    if ! command -v nvm >/dev/null 2>&1; then
-        _error "NVM not found. Please install NVM first"
-        return 1
+bootstrap_node() {
+    _process "Installing Node.js (latest LTS, default)"
+    load_nvm
+    if nvm ls 2>/dev/null | grep -q "->"; then
+        _success "Node already active ($(nvm current))"
+        return 0
     fi
-
-    # Check if a Node version is already installed
-    if nvm ls | grep -q "->"; then
-        local current_version=$(nvm current)
-        _success "Node.js is already installed ($current_version)"
-        read -p "Install a different version? (y/n): " install_different
-        if [[ ! "$install_different" =~ ^[Yy]$ ]]; then
-            return 0
-        fi
-    fi
-
-    # Ask which version to install
-    echo "Which Node.js version would you like to install?"
-    echo "1) Latest LTS (recommended)"
-    echo "2) Latest stable"
-    echo "3) Specific version (e.g., 24.9.0)"
-    read -p "Select (1-3): " version_choice
-
-    case $version_choice in
-        1)
-            _process "Installing latest LTS version"
-            nvm install --lts
-            nvm use --lts
-            nvm alias default 'lts/*'
-            ;;
-        2)
-            _process "Installing latest stable version"
-            nvm install node
-            nvm use node
-            nvm alias default node
-            ;;
-        3)
-            read -p "Enter Node.js version (e.g., 24.9.0): " specific_version
-            _process "Installing Node.js $specific_version"
-            nvm install "$specific_version"
-            nvm use "$specific_version"
-            nvm alias default "$specific_version"
-            ;;
-        *)
-            _error "Invalid choice. Installing latest LTS"
-            nvm install --lts
-            nvm use --lts
-            nvm alias default 'lts/*'
-            ;;
-    esac
-
-    _success "Node.js installed successfully"
+    nvm install --lts
+    nvm use --lts
+    nvm alias default 'lts/*'
+    _success "Node LTS installed"
 }
 
-install_global_packages() {
-    _process "Installing global npm packages"
+bootstrap_bun() {
+    _process "Installing bun (JS package manager)"
+    if has bun; then
+        _success "bun already installed ($(bun --version 2>/dev/null))"
+        return 0
+    fi
+    curl -fsSL https://bun.sh/install | bash
+    export BUN_INSTALL="${HOME}/.bun"
+    export PATH="${BUN_INSTALL}/bin:${PATH}"
+    _success "bun installed"
+}
 
-    # Load NVM
-    export NVM_DIR="${HOME}/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+install_js_packages() {
+    _process "Installing global JS packages via bun (one call)"
+    export BUN_INSTALL="${HOME}/.bun"
+    export PATH="${BUN_INSTALL}/bin:${PATH}"
 
-    # Essential global packages
-    local packages=(
+    # Core set + opt/nodePkgs (the declared list), deduped, batched.
+    local pkgs=(
         "@anthropic-ai/claude-code"
         "typescript"
         "ts-node"
         "yarn"
         "pnpm"
     )
-
-    for pkg in "${packages[@]}"; do
-        _process "Installing $pkg"
-        npm install -g "$pkg"
+    if [ -f "${DOTFILES_DIR}/opt/nodePkgs" ]; then
+        while read -r p; do
+            [ -n "$p" ] && case "$p" in \#*) ;; *) pkgs+=("$p") ;; esac
+        done <"${DOTFILES_DIR}/opt/nodePkgs"
+    fi
+    local unique=()
+    local p
+    for p in "${pkgs[@]}"; do
+        case " ${unique[*]} " in *" $p "*) ;; *) unique+=("$p") ;; esac
     done
 
-    _success "Global npm packages installed"
-}
-
-show_node_info() {
-    # Load NVM
-    export NVM_DIR="${HOME}/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-
-    echo ""
-    echo "===== Node.js Information ====="
-    echo "Node version: $(node --version)"
-    echo "npm version: $(npm --version)"
-    echo "nvm version: $(nvm --version)"
-    echo ""
-    echo "Installed global packages:"
-    npm list -g --depth=0
-    echo "==============================="
+    if ! bun add -g "${unique[@]}"; then
+        _error "bun batch failed — falling back per package:"
+        for p in "${unique[@]}"; do
+            bun add -g "$p" || _error "failed: $p"
+        done
+    fi
+    _success "Global JS packages installed"
 }
 
 main() {
-    _process "Node.js/NVM Installation"
-
-    install_nvm
-    install_nodejs
-    install_global_packages
-
-    show_node_info
-
-    _success "Node.js/NVM installation complete"
-
-    echo ""
-    echo "Note: NVM has been added to your shell configuration."
-    echo "Restart your terminal or run:"
-    echo "  source ~/.zshrc  # or ~/.bashrc"
+    bootstrap_nvm
+    bootstrap_node
+    bootstrap_bun
+    install_js_packages
+    _success "Node/bun setup complete"
 }
 
-# Run if executed directly
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi

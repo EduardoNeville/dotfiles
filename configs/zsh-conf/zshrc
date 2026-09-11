@@ -278,6 +278,10 @@ export PATH=$PATH:/opt/texlive/2025/bin/x86_64-linux
 export PATH=~/.npm-global/bin:$PATH
 export PATH="$HOME/.local/bin:$PATH"
 
+# nvm — node version manager (loaded here, not by installer rc-append)
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
 # bun completions
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
