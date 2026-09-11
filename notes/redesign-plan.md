@@ -322,11 +322,10 @@ rewrite README around profiles.
 Walked the full lifecycle (fresh install → daily use) against the plan.
 These were absent:
 
-1. **Secrets provisioning** — `envs/api_keys` is gitignored, so fresh machines
-   get NO api keys (pi/opencode/gh). Decide & implement: age-encrypt + commit
-   (pro pattern, decrypt with key from pass/tailscale at install), or manual
-   copy + parity check "secrets present". **Open decision** — blocks i-mac
-   and any reinstall.
+1. **Secrets provisioning — DECIDED: manual + presence check** (2026-09).
+   `envs/api_keys` stays out of git forever. Documented copy step in
+   `hosts/README` + install.sh verifies the file exists and warns when
+   missing (never blocks). Trade-off accepted: dead disk loses keys.
 2. **Git identity + SSH + gh auth not wired** — `scripts/debian/setup_github.sh`
    exists but install.sh never calls it. Fresh machines get no
    user.email/user.name, no SSH key, no gh login → repo itself can't be
