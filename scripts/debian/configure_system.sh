@@ -75,6 +75,8 @@ ensure_source_pkgs() {
 }
 
 main() {
+    detect_os
+    detect_profile
     _process "Configuring system (Debian, profiles: $PROFILES)"
 
     link_dotfiles

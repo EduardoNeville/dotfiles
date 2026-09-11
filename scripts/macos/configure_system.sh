@@ -9,7 +9,9 @@ source "${SCRIPT_DIR}/../lib/os.sh"
 source "${SCRIPT_DIR}/../lib/link.sh"
 
 main() {
-    _process "Configuring system (macOS)"
+    detect_os
+    detect_profile
+    _process "Configuring system (macOS, profiles: $PROFILES)"
 
     if [ -f "${DOTFILES_DIR}/opt/casks.txt" ]; then
         _process "Installing casks"
