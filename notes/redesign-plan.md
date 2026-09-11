@@ -112,9 +112,19 @@ the Debian-recommended GUI route; adopt when a GUI app actually needs it.
 ## Source-build layer (Tier 4 — details)
 
 Per-tool decision ladder (applied during triage, per package):
-1. Tier 0–2 covers it? Done there.
-2. Otherwise → source build via `opt/source/` — keep the list tiny (today:
-   nvim, tmux + their private deps libevent, bison).
+1. Tier 0–2 covers it? Done there. Trixie reality (2026-09 snapshot): git 2.51,
+   rg 14.1, fzf 0.67, starship 1.22, lazygit 0.50, btop 1.4 → tier 0 covers
+   most tools fine.
+2. Otherwise → source build — **frozen at {neovim, tmux}** (+ libevent, bison
+   as build-only deps). Nothing joins without a reason; the known non-candidates:
+   - docker → docker-ce vendor repo (already in use on deep-blue), never source
+   - nodejs → fnm/nvm toolchain (Debian's node 20 is end-of-lifing; apt and
+     source are both wrong tiers)
+   - yq 3.4 → backports candidate or drop-if-unused, not source
+   - yazi → git checkout (already a submodule), no build needed
+   - gh/rust/py tools → vendor repo / rustup+uv, their own updaters
+   Entry rule for opt/source: upstream ships NO repo/deb/toolchain AND apt is
+   unusable. That's why the set stays at two.
 
 `opt/source/` = the existing `~/pkgs` system formalized; logic unchanged:
 ```
