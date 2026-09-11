@@ -26,5 +26,5 @@
 	path = configs/tmux/plugins/tmux-continuum
 	url = https://github.com/tmux-plugins/tmux-continuum
 [submodule "configs/suckless"]
-        path = configs/suckless
+        path = profiles/desktop/configs/suckless
         url = https://github.com/EduardoNeville/suckless

@@ -42,7 +42,7 @@ check_dependencies() {
 install_dwm() {
     _process "Installing dwm"
 
-    local dwm_dir="${DOTFILES_DIR}/configs/suckless/dwm"
+    local dwm_dir="${DOTFILES_DIR}/profiles/desktop/configs/suckless/dwm"
 
     if [ ! -d "$dwm_dir" ]; then
         _error "dwm source directory not found at $dwm_dir"
@@ -71,7 +71,7 @@ install_dwm() {
 install_slstatus() {
     _process "Installing slstatus"
 
-    local slstatus_dir="${DOTFILES_DIR}/configs/suckless/slstatus"
+    local slstatus_dir="${DOTFILES_DIR}/profiles/desktop/configs/suckless/slstatus"
 
     if [ ! -d "$slstatus_dir" ]; then
         _error "slstatus source directory not found at $slstatus_dir"
@@ -100,11 +100,11 @@ install_slstatus() {
 install_st() {
     _process "Installing st (simple terminal)"
 
-    local st_dir="${DOTFILES_DIR}/configs/suckless/st"
+    local st_dir="${DOTFILES_DIR}/profiles/desktop/configs/suckless/st"
 
     if [ ! -d "$st_dir" ]; then
         _process "st source not found, cloning from suckless.org"
-        mkdir -p "${DOTFILES_DIR}/configs/suckless"
+        mkdir -p "${DOTFILES_DIR}/profiles/desktop/configs/suckless"
         git clone https://git.suckless.org/st "$st_dir"
     fi
 
@@ -131,8 +131,8 @@ install_dmenu() {
     _process "Installing dmenu"
 
     # dmenu is usually in repos, but we can build from source if preferred
-    if [ -d "${DOTFILES_DIR}/configs/suckless/dmenu" ]; then
-        local dmenu_dir="${DOTFILES_DIR}/configs/suckless/dmenu"
+    if [ -d "${DOTFILES_DIR}/profiles/desktop/configs/suckless/dmenu" ]; then
+        local dmenu_dir="${DOTFILES_DIR}/profiles/desktop/configs/suckless/dmenu"
         cd "$dmenu_dir"
         make clean 2>/dev/null || true
         make && sudo make install
@@ -140,7 +140,7 @@ install_dmenu() {
         _success "dmenu installed from source"
     else
         _process "Installing dmenu from repository"
-        sudo apt install -y dmenu
+        sudo apt install -y suckless-tools
         _success "dmenu installed from repository"
     fi
 }
@@ -172,20 +172,33 @@ install_slock() {
     fi
 }
 
+install_helpers() {
+    _process "Desktop helpers (clipmenu, firefox alias)"
+    # clipmenu — clipboard picker (not packaged in trixie; bash script, clone+make)
+    if ! has clipmenu; then
+        git clone -q https://github.com/cdown/clipmenu /tmp/clipmenu 2>/dev/null || true
+        [ -d /tmp/clipmenu ] && (cd /tmp/clipmenu && sudo make install >/dev/null 2>&1) || \
+            _error "clipmenu install failed — dwm mod+shift+v needs it"
+        rm -rf /tmp/clipmenu
+    fi
+    # firefox — Debian ships the binary as firefox-esr; dwm config calls `firefox`
+    if [ -x /usr/bin/firefox-esr ] && ! has firefox; then
+        mkdir -p "${HOME}/.local/bin"
+        ln -sf /usr/bin/firefox-esr "${HOME}/.local/bin/firefox"
+        echo "  ✓ firefox -> firefox-esr"
+    fi
+    _success "Desktop helpers done"
+}
+
 setup_xinitrc() {
     _process "Setting up .xinitrc"
 
-    local xinitrc="${DOTFILES_DIR}/configs/.xinitrc"
+    local xinitrc="${DOTFILES_DIR}/profiles/desktop/configs/xinitrc"
 
     if [ -f "$xinitrc" ]; then
-        # Backup existing .xinitrc if present
-        [ -f "${HOME}/.xinitrc" ] && mv "${HOME}/.xinitrc" "${HOME}/.xinitrc.backup"
-
-        # Create symlink
+        [ -e "${HOME}/.xinitrc" ] && ! [ -L "${HOME}/.xinitrc" ] && mv "${HOME}/.xinitrc" "${HOME}/.xinitrc.backup"
         ln -sf "$xinitrc" "${HOME}/.xinitrc"
         _success ".xinitrc linked"
-    else
-        _error ".xinitrc not found in dotfiles"
     fi
 }
 
@@ -217,15 +230,18 @@ main() {
     install_dmenu
     install_slock
 
-    # Optional: install st (simple terminal)
-    read -p "Install st (simple terminal)? (y/n): " install_st_choice
-    if [[ "$install_st_choice" =~ ^[Yy]$ ]]; then
-        install_st
+    # Optional: install st only when asked interactively (dwm's term is wezterm)
+    if [ -t 0 ]; then
+        read -p "Install st (simple terminal)? (y/n): " install_st_choice
+        if [[ "$install_st_choice" =~ ^[Yy]$ ]]; then
+            install_st
+        fi
     fi
 
     # Setup configuration files
     setup_xinitrc
     create_dwm_desktop_entry
+    install_helpers
 
     _success "Suckless tools installation complete"
     echo ""

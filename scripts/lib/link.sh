@@ -46,8 +46,15 @@ link_dotfiles() {
     local p item
     for p in $PROFILES; do
         for item in "${DOTFILES_DIR}/profiles/$p/configs"/*; do
-            [ -d "$item" ] || continue
+            [ -e "$item" ] || continue
             local basename=$(basename "$item")
+            # xinitrc is a file-level dotfile (~/.xinitrc), not ~/.config/
+            if [ "$basename" = "xinitrc" ]; then
+                backup_then_link "${HOME}/.xinitrc" "$item"
+                echo "  ✓ Linked .xinitrc ($p)"
+                continue
+            fi
+            [ -d "$item" ] || continue
             backup_then_link "${HOME}/.config/${basename}" "$item"
             echo "  ✓ Linked $basename ($p)"
         done

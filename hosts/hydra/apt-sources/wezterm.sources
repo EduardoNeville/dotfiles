@@ -1,0 +1,8 @@
+# WezTerm — official vendor repo (Tier 2). Not in Debian; the fury.io repo is
+# the documented install path. Keyring bootstrapped (dearmored) by
+# setup_apt_sources from https://apt.fury.io/wezterm/gpg.key.
+Types: deb
+URIs: https://apt.fury.io/wezterm/
+Suites: *
+Components: packages
+Signed-By: /usr/share/keyrings/wezterm-archive-keyring.gpg

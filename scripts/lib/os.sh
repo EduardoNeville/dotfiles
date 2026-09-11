@@ -30,10 +30,13 @@ detect_os() {
 HOST="$(hostname 2>/dev/null || echo unknown)"
 
 # detect_profile — which profiles this machine activates.
-# Order: $PROFILE env/--profile flag > hosts/<hostname> file > default "base".
+# Order: $PROFILE env/--profile flag > hosts/<hostname>/PROFILE (dir style)
+# or hosts/<hostname> file (legacy) > default "base".
 detect_profile() {
     PROFILES="${PROFILE:-}"
-    if [ -z "$PROFILES" ] && [ -f "${DOTFILES_DIR}/hosts/${HOST}" ]; then
+    if [ -z "$PROFILES" ] && [ -f "${DOTFILES_DIR}/hosts/${HOST}/PROFILE" ]; then
+        PROFILES="$(sed "s/^PROFILE=//" "${DOTFILES_DIR}/hosts/${HOST}/PROFILE" | tr -d '"')"
+    elif [ -z "$PROFILES" ] && [ -f "${DOTFILES_DIR}/hosts/${HOST}" ]; then
         PROFILES="$(grep '^PROFILE=' "${DOTFILES_DIR}/hosts/${HOST}" | head -1 | cut -d= -f2- | tr -d '"')"
     fi
     PROFILES="${PROFILES:-base}"

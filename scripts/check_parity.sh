@@ -52,6 +52,7 @@ for p in $PROFILES; do
         name=$(basename "$d")
         chk_link "$HOME/.config/$name" "${d%/}"
     done
+    [ -f "$DOTFILES/profiles/$p/configs/xinitrc" ] && chk_link "$HOME/.xinitrc" "$DOTFILES/profiles/$p/configs/xinitrc"
 done
 
 echo "== shadowed configs (real dirs blocking repo symlinks) =="

@@ -49,6 +49,11 @@ zathura
 mupdf
 mupdf-tools
 clipit
+dunst
+firefox-esr
+wezterm
+suckless-tools
+slock
 
 # Media/MTP
 mpd
