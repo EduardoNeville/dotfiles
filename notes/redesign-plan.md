@@ -215,6 +215,13 @@ vendor repos. All deb822, one mechanism. Captured+normalized from deep-blue
 2026-09 (live box had mixed one-line/deb822, a duplicate bookworm docker
 list, and stray .bak files — all fixed in the repo copy).
 
+**Naming scheme (locked):** `<vendor-shortname>.sources` everywhere, deb822
+only. Repo basename == deployed basename, 1:1 copy into
+`/etc/apt/sources.list.d/`. Base = `debian.sources`; per-host vendors =
+`docker|tailscale|google-chrome|github-cli|hpe-mcp|pgdg|redis.sources`.
+Setup step deletes any managed `*.list` / `*.bak` strays — one file per
+repo, no rename games at deploy time.
+
 Bootstrap order on a fresh install (`setup_apt_sources`, built in Phase 2):
 1. Keyrings FIRST: fetch official keyring URLs (docker gpg, tailscale pubkey,
    gh keyring) or install vendor .deb (chrome/hpe/redis) — never curl|bash.
