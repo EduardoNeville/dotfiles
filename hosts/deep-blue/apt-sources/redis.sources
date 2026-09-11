@@ -1,0 +1,7 @@
+# Redis — official vendor repo (per-host service).
+# Keyring: redis-archive-keyring.gpg (installed by the redis .deb).
+Types: deb
+URIs: https://packages.redis.io/deb
+Suites: trixie
+Components: main
+Signed-By: /usr/share/keyrings/redis-archive-keyring.gpg

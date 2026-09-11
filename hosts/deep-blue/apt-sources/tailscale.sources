@@ -1,0 +1,8 @@
+# Tailscale — official vendor repo (Tier 2), base-wide (all 3 machines ssh via tailscale).
+# Keyring: https://pkgs.tailscale.com/stable/debian/trixie/pubkey.gpg (official URL) →
+# /usr/share/keyrings/tailscale-archive-keyring.gpg
+Types: deb
+URIs: https://pkgs.tailscale.com/stable/debian/
+Suites: trixie
+Components: main
+Signed-By: /usr/share/keyrings/tailscale-archive-keyring.gpg

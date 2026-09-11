@@ -1,0 +1,9 @@
+# GitHub CLI — official vendor repo (Tier 2).
+# Keyring: https://cli.github.com/packages/githubcli-archive-keyring.gpg (official URL) →
+# /etc/apt/keyrings/githubcli-archive-keyring.gpg
+Types: deb
+URIs: https://cli.github.com/packages
+Suites: stable
+Components: main
+Architectures: amd64
+Signed-By: /etc/apt/keyrings/githubcli-archive-keyring.gpg

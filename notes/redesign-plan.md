@@ -30,8 +30,10 @@ GUI apps). i-mac gets the same *tools* as base, installed by brew.
 ```
 dotfiles/
 ├── install.sh                  # entrypoint: os detect → profile resolve → packages → links → parity
+├── apt-sources/debian.sources  # base apt sources: trixie + updates + security + backports (deb822)
 ├── hosts/<hostname>            # optional, e.g. hosts/hydra:  PROFILE="base desktop"
 │                               #   plus hosts/<hostname>/packages.{apt,brew} for per-host extras
+│                               #   plus hosts/<hostname>/apt-sources/*.sources (per-host vendor repos)
 │                               #   (deep-blue: HP tools amsd/hponcfg/ssacli/storcli, docker-ce, postgres)
 ├── profiles/
 │   ├── base/
@@ -101,7 +103,7 @@ DontBreakDebian/Debian-backports contract:
 |------|--------|------|
 | 0 | Debian stable | default. Versions float within release (security-tracked); 99% of packages. |
 | 1 | trixie-backports | per-package **declared** opt-in in `opt/backports.txt`; installed `-t trixie-backports`; backports stay pinned at priority 100 so nothing upgrades implicitly. |
-| 2 | vendor repos (official only) | docker-ce, tailscale, google-chrome. Per-host `hosts/<h>/apt-vendor.list` + apt_preferences pin. Vendor keyring shipped by the .deb — never curl|bash. |
+| 2 | vendor repos (official only) | docker-ce, tailscale, google-chrome, gh. Per-host `hosts/<h>/apt-sources/*.sources` (deb822). Keyring: official URL fetched at bootstrap (docker/tailscale/gh) or shipped by vendor .deb (chrome/hpe/redis) — never curl\|bash. |
 | 3 | vendor .deb in `opt/debs/` | no repo exists; `apt install -y ./opt/debs/*.deb` (deps resolve). |
 | 4 | source build via `opt/source/` | nothing newer exists packaged; keep tiny (nvim, tmux + private deps). macOS never: brew is tier-0-4 all at once. |
 | 5 | language toolchains — NEVER apt | rustup, fnm/nvm, uv/pipx, go. Updated by their own managers, not the dotfiles engine. |
@@ -201,8 +203,26 @@ that works.
 ### PER-HOST — deep-blue only (hosts/deep-blue/packages.apt)
 - HP server tooling: amsd, hponcfg, ssacli, ssaducli, storcli, ipmitool, python3-hpilo
 - Services: postgresql, redis, certbot, cloudflared, bind9-dnsutils
-- Vendor repos (hosts/<h>/apt-vendor.list): docker-ce + chrome on deep-blue;
-  tailscale vendor repo is base-wide (all 3 machines use it)
+- Vendor repos (hosts/<h>/apt-sources/): docker-ce, chrome, gh, hpe, pgdg,
+  redis on deep-blue; tailscale is base-wide (all 3 machines). hydra's set
+  captured from the machine when online.
+
+## Apt sources (Debian bootstrap)
+
+`apt-sources/debian.sources` = base (trixie, updates, security, declared
+backports) for every Debian machine; `hosts/<h>/apt-sources/` = per-host
+vendor repos. All deb822, one mechanism. Captured+normalized from deep-blue
+2026-09 (live box had mixed one-line/deb822, a duplicate bookworm docker
+list, and stray .bak files — all fixed in the repo copy).
+
+Bootstrap order on a fresh install (`setup_apt_sources`, built in Phase 2):
+1. Keyrings FIRST: fetch official keyring URLs (docker gpg, tailscale pubkey,
+   gh keyring) or install vendor .deb (chrome/hpe/redis) — never curl|bash.
+2. Copy `apt-sources/debian.sources` + active profiles' + host's `.sources`
+   → `/etc/apt/sources.list.d/` (union, idempotent).
+3. `apt-get update`; backports stay opt-in via `-t trixie-backports`.
+4. Cleanup rule: one source file per repo, no .bak/strays — repo copy is the
+   source of truth (checked by check_parity --packages).
 
 ### i-mac
 Same BASE toolset via brew (Brewfile triage: coreutils, openjdk, sqlite, rust,
@@ -254,7 +274,8 @@ HP server tooling (amsd/hponcfg/ssacli/storcli/hpilo/ipmitool) is deep-blue-only
   desktop scripts into `profiles/desktop/`.
 - Make `install.sh`, `link.sh`, `check_parity.sh` profile-aware.
 - Wire tier-1/2 plumbing into the apt adapter: `opt/backports.txt` +
-  `hosts/<h>/apt-vendor.list` (+ pin files), idempotent.
+  `hosts/<h>/apt-sources/` incl. keyring bootstrap (`setup_apt_sources`),
+  idempotent.
 - **Acceptance:** `install.sh --check` identical output on all 3 machines
   (desktop configs ignored on deep-blue).
 
