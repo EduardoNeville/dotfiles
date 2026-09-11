@@ -317,6 +317,36 @@ rewrite README around profiles.
 - `virt-manager` (GUI) → desktop, while qemu/libvirt stay base?
 - `vim` vs `nvim` — keep both in base or retire vim?
 
+## Steps we were missing (2026-09 gap review)
+
+Walked the full lifecycle (fresh install → daily use) against the plan.
+These were absent:
+
+1. **Secrets provisioning** — `envs/api_keys` is gitignored, so fresh machines
+   get NO api keys (pi/opencode/gh). Decide & implement: age-encrypt + commit
+   (pro pattern, decrypt with key from pass/tailscale at install), or manual
+   copy + parity check "secrets present". **Open decision** — blocks i-mac
+   and any reinstall.
+2. **Git identity + SSH + gh auth not wired** — `scripts/debian/setup_github.sh`
+   exists but install.sh never calls it. Fresh machines get no
+   user.email/user.name, no SSH key, no gh login → repo itself can't be
+   pushed. Wire into base adapter (Phase 2/3).
+3. **Per-host service enablement** — nothing enables services: sshd, tailscale
+   up (needs auth!), postgres/redis on deep-blue; bluetooth/tlp on hydra.
+   Add `hosts/<h>/services` (unit names to enable) + adapter step.
+4. **~/.ssh/config + host aliases** — none in repo; tailscale names are
+   `deep-blue`, `hydra`, `imac-de-carlos`. Commit a base `configs/ssh/` with
+   aliases + proxy\(tailscale) template so `ssh hydra` works everywhere.
+5. **dotpi provisioning** — check_parity verifies links, but nothing CLONES
+   `~/dotpi` (separate repo: settings, trust, extensions) on a fresh machine.
+   Add bootstrap step: clone + init submodules (Phase 2).
+6. **Clean-room test** — no CI: run `install.sh --check` in a trixie docker
+   container as the Phase 2/3 acceptance (catches missing sudo/git/hostname
+   assumptions cheaply; container build is one Dockerfile).
+7. **hosts/ mapping doc** — machine → tailscale name → profile → notes
+   (hostnames/ i-mac = `imac-de-carlos`) + `hosts/README` so fresh installs
+   know what to name the box and which flag to pass.
+
 ## Rules of engagement (post-mortem from dotnix)
 1. One package manager per OS. No nix layer.
 2. Lists are the single source of truth for packages; imperative installs are
