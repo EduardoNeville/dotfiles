@@ -54,8 +54,9 @@ dotfiles/
 │   ├── review_packages.sh          # NEW: imperative-package review (see below)
 │   └── macos/configure_system.sh   # taps, casks, chsh
 └── opt/
-    ├── debs/                    # local .deb pins: install.sh runs `apt install -y ./debs/*.deb`
-    ├── source/                  # SOURCE-BUILD manifests+scripts (formalized ~/pkgs, see section below)
+    ├── backports.txt            # Tier 1 opt-in: one pkg per line → `apt-get -t trixie-backports install`
+    ├── debs/                    # Tier 3 local .deb pins: `apt install -y ./debs/*.deb`
+    ├── source/                  # Tier 4 SOURCE-BUILD manifests+scripts (formalized ~/pkgs)
     ├── cargoPkgs, nodePkgs, pip, zsh_plugins   # unchanged
     └── (debianPkgs, Brewfile, common.txt → deleted after triage)
 
@@ -90,12 +91,29 @@ on deep-blue are *expected*, not drift.
 - Heavy tooling (cargo/npm/pip lists) stays as today: installed by the adapter
   script after the package manager, guarded by `has()`.
 
-## Source-build layer (Tier 3 — the cure for outdated apt)
+## Version policy — tiered freshness (how the pros keep Debian fresh)
+
+Per-tool tier decision (applied during triage), documented so every package has
+a declared home. One source per tier, no implicit mixing — the
+DontBreakDebian/Debian-backports contract:
+
+| Tier | Source | Rule |
+|------|--------|------|
+| 0 | Debian stable | default. Versions float within release (security-tracked); 99% of packages. |
+| 1 | trixie-backports | per-package **declared** opt-in in `opt/backports.txt`; installed `-t trixie-backports`; backports stay pinned at priority 100 so nothing upgrades implicitly. |
+| 2 | vendor repos (official only) | docker-ce, tailscale, google-chrome. Per-host `hosts/<h>/apt-vendor.list` + apt_preferences pin. Vendor keyring shipped by the .deb — never curl|bash. |
+| 3 | vendor .deb in `opt/debs/` | no repo exists; `apt install -y ./opt/debs/*.deb` (deps resolve). |
+| 4 | source build via `opt/source/` | nothing newer exists packaged; keep tiny (nvim, tmux + private deps). macOS never: brew is tier-0-4 all at once. |
+| 5 | language toolchains — NEVER apt | rustup, fnm/nvm, uv/pipx, go. Updated by their own managers, not the dotfiles engine. |
+
+Desktop GUI apps that Debian lacks or stales (hydra only): flatpak/Flathub —
+the Debian-recommended GUI route; adopt when a GUI app actually needs it.
+
+## Source-build layer (Tier 4 — details)
 
 Per-tool decision ladder (applied during triage, per package):
-1. apt version acceptable? → `packages.*` list.
-2. Vendor ships a current .deb (docker-ce, gh, neovim releases)? → `opt/debs/`.
-3. Otherwise → source build via `opt/source/` — keep the list tiny (today:
+1. Tier 0–2 covers it? Done there.
+2. Otherwise → source build via `opt/source/` — keep the list tiny (today:
    nvim, tmux + their private deps libevent, bison).
 
 `opt/source/` = the existing `~/pkgs` system formalized; logic unchanged:
@@ -146,6 +164,11 @@ diff:
   source     = opt/source confs vs binaries:
                stale  → git pkg local tag ≠ pkg_branch (run update.sh)
                missing → conf present, binary absent (build needed)
+  fresh      = advisory staleness report (the single-user Renovate):
+               Debian: `apt list --upgradable`; per declared pkg
+               `apt-cache policy` → "newer in trixie-backports?" (then:
+               add to opt/backports.txt or leave — declared decision);
+               brew: `brew outdated`; source: git describe vs remote tags.
 ```
 
 - Output: `~/dotfiles-review-$(hostname).md`, plus exit code for drift.
@@ -168,6 +191,8 @@ HP server tooling (amsd/hponcfg/ssacli/storcli/hpilo/ipmitool) is deep-blue-only
 - Create `hosts/`, `profiles/base|desktop/`, move desktop configs + debian
   desktop scripts into `profiles/desktop/`.
 - Make `install.sh`, `link.sh`, `check_parity.sh` profile-aware.
+- Wire tier-1/2 plumbing into the apt adapter: `opt/backports.txt` +
+  `hosts/<h>/apt-vendor.list` (+ pin files), idempotent.
 - **Acceptance:** `install.sh --check` identical output on all 3 machines
   (desktop configs ignored on deep-blue).
 
@@ -175,8 +200,9 @@ HP server tooling (amsd/hponcfg/ssacli/storcli/hpilo/ipmitool) is deep-blue-only
 Split `debianPkgs` (191 lines) → `base/packages.apt` + `desktop/packages.apt`
 using the Phase 1 snapshots; split `Brewfile` → `base/packages.brew` + casks +
 taps; grow `packages.common`. Kill `debianPkgs`, `Brewfile`, `common.txt`.
-Also run the 3-tier ladder per package (apt-vs-deb-vs-source) using the
-snapshots — this is where nvim/tmux/… get classified.
+Also run the tier ladder per package (0→5) using the snapshots — this is
+where nvim/tmux/… get classified, and `apt-cache policy` shows which
+backports candidates exist to declare.
 - **Acceptance:** `check_parity.sh --packages` green on all 3 machines.
 
 ### Phase 4 — Source layer (~2 h)
