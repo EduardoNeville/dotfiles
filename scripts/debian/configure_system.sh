@@ -102,6 +102,8 @@ main() {
             bash "${DOTFILES_DIR}/profiles/desktop/scripts/build_suckless.sh" || true
         [ -f "${DOTFILES_DIR}/profiles/desktop/scripts/setup_audio.sh" ] &&
             bash "${DOTFILES_DIR}/profiles/desktop/scripts/setup_audio.sh" || true
+        [ -f "${DOTFILES_DIR}/profiles/desktop/scripts/install_wezterm.sh" ] &&
+            bash "${DOTFILES_DIR}/profiles/desktop/scripts/install_wezterm.sh" || true
     fi
 
     add_user_to_groups
