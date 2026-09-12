@@ -1,0 +1,6 @@
+[Unit]
+Description=Dotfiles package drift review (candidates + parity + freshness)
+
+[Service]
+Type=oneshot
+ExecStart=%h/dotfiles/scripts/review_packages.sh

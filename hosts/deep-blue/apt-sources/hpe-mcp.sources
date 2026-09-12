@@ -1,0 +1,7 @@
+# HPE Management Component Pack — deep-blue only (DL360 G9 hardware).
+# Keyring shipped by the hpe deb (hpe-archive-keyring.gpg).
+Types: deb
+URIs: https://downloads.linux.hpe.com/SDR/repo/mcp
+Suites: bookworm/current
+Components: non-free
+Signed-By: /usr/share/keyrings/hpe-archive-keyring.gpg

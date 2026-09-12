@@ -1,0 +1,39 @@
+# Base layer — macOS (i-mac). Brew formulae, triage of legacy opt/Brewfile.
+# Taps → opt/taps.txt, casks → opt/casks.txt. node: nvm formula only (Tier 5
+# toolchain — actual node versions via nvm). rust stays a brew formula here;
+# Debian uses rustup (existing script).
+openssl@3
+gcc
+sqlite
+cookiecutter
+coreutils
+openjdk
+coursier
+docker
+diff-so-fancy
+fd
+bat
+eza
+starship
+zoxide
+ripgrep
+git-delta
+googletest
+hyperfine
+lazygit
+lua-language-server
+navi
+ncspot
+neovim
+nvm
+pyenv
+pyenv-pip-migrate
+rust
+sbt
+scala
+nvc
+tmux
+bun
+scullionw/tap/dirstat-rs
+zegervdv/zathura/zathura
+zegervdv/zathura/zathura-pdf-poppler

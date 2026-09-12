@@ -1,0 +1,25 @@
+#!/bin/sh
+# Volume keys for dwm: PipeWire (wpctl) + dunst OSD.
+# Called from dwm config.h: dunst_audio toggle | +5% | -5%
+
+case "$1" in
+    toggle) wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle ;;
+    +*)     wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ "${1#+}+" ;;
+    -*)     wpctl set-volume @DEFAULT_AUDIO_SINK@ "${1#-}-" ;;
+esac
+
+read -r _ vol stat <<EOF
+$(wpctl get-volume @DEFAULT_AUDIO_SINK@)
+EOF
+pct=$(awk -v v="$vol" 'BEGIN { printf "%d", v * 100 }')
+if [ "$stat" = "[MUTED]" ]; then
+    icon=audio-volume-muted
+elif [ "$pct" -gt 60 ]; then
+    icon=audio-volume-high
+elif [ "$pct" -gt 20 ]; then
+    icon=audio-volume-medium
+else
+    icon=audio-volume-low
+fi
+command -v notify-send >/dev/null 2>&1 && \
+    notify-send -r 7001 -h int:value:"$pct" -i "$icon" "Volume: $pct%"

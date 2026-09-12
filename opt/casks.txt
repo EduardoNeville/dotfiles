@@ -1,0 +1,4 @@
+# macOS casks (was part of Brewfile). Applied by the macos adapter.
+font-hack-nerd-font
+maccy
+multipass

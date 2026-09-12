@@ -1,0 +1,276 @@
+#                                 
+
+# ============================================================
+# Root-level settings (must come before any [table] header)
+# ============================================================
+
+# Increase scan_timeout to avoid "Scanning current directory timed out" warnings
+# especially in large repos or on slow filesystems
+scan_timeout = 100
+
+# Format
+format = """$username$directory$git_branch$git_status$fill$time$all$character"""
+
+#right_format = """$all"""
+
+# Default palette (overridden by STARSHIP_PALETTE env var from zsh precmd)
+# ============================================================
+# Light/Dark palettes
+# The ACTIVE palette is chosen at render time by zsh's
+# theme-zsh.zsh, which generates ~/.config/starship/.active.toml
+# with the right root `palette = "light"|"dark"` line from
+# ~/.local/state/theme (written by the wezterm toggle) and sets
+# STARSHIP_CONFIG to it. The installed starship build ignores
+# STARSHIP_PALETTE and won't override a static root `palette`
+# key, so this file deliberately has NO root `palette` line;
+# the generated active config supplies it. Color names below
+# resolve through whichever palette is active (plain name, no
+# `@` prefix — `@name` refs render nothing in this build).
+# ============================================================
+[palettes.light]
+blue      = "#1E66F5"
+teal      = "#179299"
+green     = "#40A02B"
+success   = "#40A02B"
+red       = "#D20F39"
+pink      = "#EA76CB"
+yellow    = "#DF8E1D"
+purple    = "#8839EF"
+orange    = "#D97437"
+overlay0  = "#5F5F5F"
+subtext0  = "#333333"
+surface0  = "#E6E9EF"
+fg        = "#000000"
+
+[palettes.dark]
+blue      = "#82aaff"
+teal      = "#21c7a8"
+green     = "#22da6e"
+success   = "#0ae4a4"
+red       = "#ef5350"
+pink      = "#c792ea"
+yellow    = "#c5e478"
+purple    = "#c792ea"
+orange    = "#ffeb95"
+overlay0  = "#565f89"
+subtext0  = "#565f89"
+surface0  = "#0b2942"
+fg        = "#d6deeb"
+
+# General config
+
+[username]
+style_user = "fg:blue"
+style_root = "fg:blue"
+format = '[\[$user\]]($style)'
+disabled = true 
+
+#  ❯ ❮ ✘
+[character]
+success_symbol = '[](bold success)'
+error_symbol = '[](bold red)'
+vimcmd_symbol = '[](bold success)'
+vimcmd_replace_one_symbol = '[ ](bold purple)'
+vimcmd_visual_symbol = '[ ](bold green)'
+
+[directory]
+truncation_length = 8 
+truncate_to_repo = false
+before_repo_root_style="fg:blue"
+repo_root_style="fg:teal"
+style="fg:blue"
+read_only=" "
+read_only_style="red"
+repo_root_format ='\[[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style)\]'
+format='\[[$path]($style)[$read_only]($read_only_style)\]'
+disabled = false
+
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = " "
+"Music" = " "
+"Pictures" = " "
+
+[fill]
+symbol = "·"
+style = "fg:overlay0"
+
+[git_branch]
+symbol = ""
+style = "fg:pink"
+format = '[\[$symbol $branch\]]($style)'
+disabled = false
+
+[git_status]
+style = "fg:green"
+ahead ='󰞕 $count'
+behind ='󰞒 $count'
+modified = '!$count'
+untracked = '?$count'
+stashed = '\$$count'
+staged = '+$count'
+deleted = '✘$count'
+conflicted = '=$count'
+format = '([\[$all_status$ahead_behind\]]($style))'
+disabled = false
+
+[time]
+disabled = false
+time_format = "%T" # Hour:Minute Format
+style = "fg:green"
+format = '([\[$time\]]($style))'
+
+[cmd_duration]
+style = "fg:yellow"
+format = '([\[$duration\]]($style))'
+
+# Start languages and tools #
+
+[nix_shell]
+symbol = " "
+style = "fg:blue"
+format = '([\[$symbol ($version)\]]($style))'
+disabled = false
+
+[docker_context]
+symbol = "󰡨 "
+style = "fg:blue"
+format = '(via [\[$symbol $context\]]($style))'
+disabled = false
+
+[bun]
+symbol = "󱠶 "
+style = "fg:yellow"
+version_format = "$raw"
+format = '(via [\[$symbol $context\]]($style))'
+disabled = false
+
+[c]
+symbol = ""
+style = "fg:green"
+version_format = "$raw"
+format = '([\[$symbol ($version)\]]($style))'
+disabled = false
+
+[kubernetes]
+style = "fg:blue"
+format = '([\[ﴱ $cluster\($namespace\)\]]($style))'
+disabled = true
+
+[gcloud]
+symbol = " "
+style = "fg:green"
+format = '([ \[on $symbol $account(@$domain)(\($region\))\]]($style) )'
+disabled = false
+
+[golang]
+symbol = ""
+style = "fg:teal"
+version_format = "$raw"
+format = '([\[$symbol ($version)\]]($style))'
+disabled = false
+
+[java]
+symbol = ""
+style = "fg:orange"
+version_format = "$raw"
+format = '([\[$symbol ($version)\]]($style))'
+disabled = false
+
+[lua]
+symbol = ""
+style = "fg:blue"
+version_format = "$raw"
+format = '([\[$symbol ($version)\]]($style))'
+disabled = false
+
+[nodejs]
+symbol = ""
+style = "fg:green"
+version_format = "$raw"
+format = '([\[$symbol ($version)\]]($style))'
+disabled = false
+
+[package]
+symbol = " "
+style = "fg:red"
+version_format = "$raw"
+format = '([\[$symbol ($version)\]]($style))'
+disabled = true
+
+[php]
+symbol = ''
+style = "fg:purple"
+version_format = "$raw"
+format = '([\[$symbol ($version)\]]($style))'
+disabled = false
+
+[python]
+symbol = ''
+style = "fg:yellow"
+version_format = "$raw"
+format = '([\[$symbol ($version)\]]($style))'
+detect_files = ['pyproject.toml']
+disabled = false
+
+[rust]
+symbol = ""
+style = "fg:orange"
+version_format = "$raw"
+format = '([\[$symbol ($version)\]]($style))'
+disabled = false
+
+[scala]
+symbol = ""
+style = "fg:red"
+version_format = "$raw"
+format = '([\[$symbol ($version)\]]($style))'
+disabled = false
+
+[hostname]
+ssh_symbol = "󰱠 "
+format = '(\[$ssh_symbol$hostname\])'
+
+# End languages and tools #
+
+# OS SYMBOLS
+[os.symbols]
+Alpaquita = " "
+Alpine = " "
+Amazon = " "
+Android = " "
+Arch = " "
+Artix = " "
+CentOS = " "
+Debian = " "
+DragonFly = " "
+Emscripten = " "
+EndeavourOS = " "
+Fedora = " "
+FreeBSD = " "
+Garuda = "󰛓 "
+Gentoo = " "
+HardenedBSD = "󰞌 "
+Illumos = "󰈸 "
+Linux = " "
+Mabox = " "
+Macos = " "
+Manjaro = " "
+Mariner = " "
+MidnightBSD = " "
+Mint = " "
+NetBSD = " "
+NixOS = " "
+OpenBSD = "󰈺 "
+openSUSE = " "
+OracleLinux = "󰌷 "
+Pop = " "
+Raspbian = " "
+Redhat = " "
+RedHatEnterprise = " "
+Redox = "󰀘 "
+Solus = "󰠳 "
+SUSE = " "
+Ubuntu = " "
+Unknown = " "
+Windows = "󰍲 "

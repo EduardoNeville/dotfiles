@@ -1,0 +1,7 @@
+# PostgreSQL — official PGDG repo (per-host service).
+# Keyring installed by postgresql-common (apt package), not fetched.
+Types: deb
+URIs: https://apt.postgresql.org/pub/repos/apt
+Suites: trixie-pgdg
+Components: main
+Signed-By: /usr/share/postgresql-common/pgdg/apt.postgresql.org.gpg

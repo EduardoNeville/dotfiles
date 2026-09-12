@@ -1,0 +1,7 @@
+# ~/.zprofile — login shells only. Auto-start X on tty1: boot → login → dwm.
+# `exec startx` ties the TTY session to X, so quitting dwm (Mod4+Shift+q)
+# returns to getty, which re-logs-in and re-enters dwm automatically.
+# Guarded: ssh logins and other TTYs stay in the shell.
+if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
+    exec startx
+fi

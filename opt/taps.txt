@@ -1,0 +1,11 @@
+# macOS taps (was opt/brew_tap). Applied by the macos adapter before installs.
+homebrew/bundle
+homebrew/cask-fonts
+homebrew/cask-versions
+homebrew/cask-drivers
+vitorgalvao/tiny-scripts
+zegervdv/zathura
+jesseduffield/lazygit
+jesseduffield/lazydocker
+oven-sh/bun
+scullionw/tap

@@ -1,0 +1,39 @@
+[colors]
+foreground = "#4C4F69"
+background = "#EFF1F5"
+cursor_bg = "#DC8A78"
+cursor_border = "#DC8A78"
+cursor_fg = "#EFF1F5"
+selection_bg = "#ACB0BE"
+selection_fg = "#4C4F69"
+
+ansi = ["#5C5F77", "#D20F39", "#40A02B", "#DF8E1D", "#1E66F5", "#EA76CB", "#179299", "#ACB0BE"]
+brights = ["#6C6F85", "#D20F39", "#40A02B", "#DF8E1D", "#1E66F5", "#EA76CB", "#179299", "#BCC0CC"]
+
+[colors.tab_bar]
+background = "#E6E9EF"
+
+[colors.tab_bar.active_tab]
+bg_color = "#EFF1F5"
+fg_color = "#1E66F5"
+
+[colors.tab_bar.inactive_tab]
+bg_color = "#E6E9EF"
+fg_color = "#6C6F85"
+
+[colors.tab_bar.inactive_tab_hover]
+bg_color = "#CCD0DA"
+fg_color = "#4C4F69"
+
+[colors.tab_bar.new_tab]
+bg_color = "#E6E9EF"
+fg_color = "#6C6F85"
+
+[colors.tab_bar.new_tab_hover]
+bg_color = "#CCD0DA"
+fg_color = "#4C4F69"
+
+[metadata]
+aliases = ["catppuccin-latte"]
+author = "Catppuccin"
+name = "Catppuccin Latte"

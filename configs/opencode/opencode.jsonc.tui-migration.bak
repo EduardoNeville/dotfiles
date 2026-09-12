@@ -1,0 +1,74 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "autoupdate": true,
+  "theme": "system",
+  "skills": {
+    "paths": ["/home/eduardoneville/skills/remotion-video-toolkit", "/home/eduardoneville/skills/logo-generator-skill"]
+  },
+  "mcp": {
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp"
+    }
+  },
+  "lsp": {
+    "pyright": {
+      "command": ["pyrefly", "lsp"]
+    }
+  },
+  "agent": {
+    "plan": {
+      "mode": "primary",
+      "prompt": "{file:~/.config/opencode/prompts/plan.txt}",
+      "temperature": 0.1,
+      "steps": 40,
+      "permission": {
+        "edit": "deny",
+        "bash": "allow",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "todowrite": "deny",
+        "webfetch": "allow"
+      }
+    },
+    "build": {
+      "mode": "primary",
+      "prompt": "{file:~/.config/opencode/prompts/build.txt}",
+      "temperature": 0.3,
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "todowrite": "allow",
+        "webfetch": "allow",
+        "skill": "allow"
+      }
+    },
+    "super": {
+      "description": "Unrestricted development with destructive command safeguards",
+      "mode": "primary",
+      "prompt": "{file:~/.config/opencode/prompts/super.txt}",
+      "temperature": 0.25,
+      "steps": 25,
+      "permission": {
+        "edit": "allow",
+        "bash": {
+          "*": "allow",
+          "rm -rf *": "ask",
+          "git push --force *": "ask",
+          "git reset --hard *": "ask",
+          "sudo rm *": "ask",
+          "chmod -R 777 *": "ask"
+        },
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "todowrite": "allow",
+        "webfetch": "allow"
+      }
+    }
+  }
+}

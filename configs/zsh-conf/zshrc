@@ -1,0 +1,299 @@
+### ---- PATH config ----------------------------------------
+export PATH=$HOME/bin:/usr/local/bin:$PATH
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="$PATH:/opt/nvim-linux-x86_64/bin"
+
+### ZSH HOME
+export ZSH=$HOME/.config/zsh-conf
+
+### DOTFILES HOME
+export DOTFILES=$HOME/dotfiles
+
+### ---- Editor ---------------------------------------------
+export EDITOR='nvim'
+
+### ---- history config -------------------------------------
+export HISTFILE=$ZSH/.zsh_history
+
+# How many commands zsh will load to memory.
+export HISTSIZE=10000
+
+# How many commands history will save on file.
+export SAVEHIST=10000
+
+# FZF Theme
+# Managed by theme-zsh.zsh (dark/light variants); not set here anymore.
+# See $ZSH/theme-zsh.zsh for the FZF_DEFAULT_OPTS definitions.
+
+# History won't save duplicates.
+setopt HIST_IGNORE_ALL_DUPS
+
+# History won't show duplicates on search.
+setopt HIST_FIND_NO_DUPS
+
+### ----- configs ------------------------------------------
+bindkey -v
+export CLICOLOR=1
+
+# cd without cd
+setopt autocd
+### ----- Completion init -----------------------------------
+# Add custom completions to fpath
+fpath=($ZSH/plugins/zsh-completions/src $ZSH/plugins/openclaw $fpath)
+
+# Only run compinit once per day to speed up startup
+autoload -Uz compinit
+if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
+    compinit -i
+    touch ~/.zcompdump
+else
+    compinit -C -i
+fi
+
+# glob
+setopt extended_glob
+setopt dot_glob
+
+### ----- ENV KEYS ------------------------------------------
+api_keys=$DOTFILES/envs/api_keys
+load_env() {
+  if [ -f ${api_keys} ]; then
+    set -a
+    source ${api_keys}
+    set +a
+  fi
+}
+load_env
+
+### ---- Plugins & Themes -----------------------------------
+
+# ZSH PLUGINS
+source $ZSH/plugins/fzf-tab/fzf-tab.plugin.zsh
+source $ZSH/plugins/fast-syntax-highlighting/F-Sy-H.plugin.zsh
+source $ZSH/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $ZSH/plugins/zsh-fzf-history-search/zsh-fzf-history-search.zsh
+
+### ----- fzf-tab config ------------------------------------------
+# disable sort when completing `git checkout`
+zstyle ':completion:*:git-checkout:*' sort false
+# set descriptions format to enable group support
+zstyle ':completion:*:descriptions' format '[%d]'
+# set list-colors to enable filename colorizing
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+# preview directory's content with eza when completing cd
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
+# switch group using `,` and `.`
+zstyle ':fzf-tab:*' switch-group ',' '.'
+# fzf-bindings
+zstyle ':fzf-tab:*' fzf-bindings 'space:toggle' 'ctrl-a:accept' 'ctrl-A:toggle-all'
+
+### ------
+### --- Aliases -----------------
+### ------
+
+### ----- zoxide config ------------------------------------------
+# Preview all past directories stored in zoxide
+zq_func() {
+    dir=`zoxide query --interactive`
+    if [ -n "${dir}" ]; then
+        cd ${dir}
+    fi
+}
+alias zq='zq_func'
+
+alias zhelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%%
+zoxide COMMANDS
+%%%%%%%%%%%%%%%%%%%%%%%%%% \n
+zq -> zoxide query --interactive and cd there \n'"
+
+# ----- NNN SETUP -------------------------------
+export NNN_PLUG='p:preview-tui;f:fzcd;g:gitroot;c:cdpath;a:autojump'
+export NNN_FIFO='/tmp/nnn.fifo'
+#export NNN_OPENER='~/.config/nnn/plugins/nuke'
+#export NNN_USE_EDITOR='nvim'
+
+#{XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd
+#
+## Quit nnn after chdir
+#if [ -f /usr/share/nnn/quitcd/quitcd.bash_zsh ]; then
+#    source /usr/share/nnn/quitcd/quitcd.bash_zsh
+#fi
+
+# ---
+# --- CLI -----------------------------------
+# ---
+
+# --- Markdown on zathura -------------------
+mdtozar_func() {
+  local file=$1
+  if [ -f "$file" ]; then
+    cat $file | pandoc -f markdown -t pdf | zathura -
+  else
+    echo "File $file does not exist"
+  fi
+}
+alias mdtozar='mdtozar_func'
+
+# -------------------------------
+# --- SHORTCUTS -----------------
+# -------------------------------
+
+alias xo="xdg-open"
+
+# --- cd shortcuts -------------------------------
+alias .1="cd .."
+alias .2="cd ../.."
+alias .3="cd ../../.."
+alias .4="cd ../../../.."
+alias .5="cd ../../../../.."
+alias .6="cd ../../../../../.."
+
+# --- ls shortcuts -------------------------------
+alias ls0="eza --icons --tree --level=1 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache|.next|.yarn'"
+alias lse="eza --icons --tree --level=2 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache|.next|.yarn'"
+alias ls3="eza --icons --tree --level=3 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache|.next|.yarn'"
+alias ls4="eza --icons --tree --level=4 --sort='size' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache|.next|.yarn'"
+alias lsn="eza --icons --tree --level=2 --sort='name' --reverse -a -I '.git|__pycache__|.mypy_cache|.ipynb_checkpoints|node_modules|.venv|.ruff_cache|.uv_cache|.pytest_cache|.next|.yarn'"
+alias lss="dust -d 2 -z 5MB -brC"
+
+ignore_dirs="-I .git -I __pycache__ -I .mypy_cache -I .ipynb_checkpoints -I node_modules -I .venv -I .pytest_cache -I .ruff_cache -I .uv_cache -I .next -I .yarn"
+alias ls="ls --color=auto"
+alias la="ls --color=auto -al ${ignore_dirs}"
+
+alias lshelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%%
+ls COMMANDS
+%%%%%%%%%%%%%%%%%%%%%%%%%% \n
+ls  -> eza all files in a tree of depth 2 sorted by size \n
+ls3 -> eza all files in a tree of depth 3 sorted by size \n
+ls4 -> eza all files in a tree of depth 4 sorted by size \n'"
+
+export EZA_COLORS="*csv=32:*.md=38;5;141"
+
+# --- tv shortcuts -------------------------------
+alias fp='file=$(tv); [ -n "$file" ] && echo "$file"; nvim "$file"'
+alias fcd='dir=$(tv dirs); [ -n "$dir" ] && echo "$dir"; z "$dir" || :'
+
+# --- Tmux shortcuts -------------------------------
+alias tmux="TERM=xterm-256color tmux"
+alias tms="$DOTFILES/scripts/tmux-ssh.sh"
+alias tma="tmux attach"
+alias tmn="tmux new -s"
+alias tmk="tmux kill-session -t"
+alias tml="tmux list-sessions"
+
+# SSH into tmux session
+tmssh() {
+    local host="$1"
+    local session="${2:-ssh-$(echo $host | cut -d'@' -f2 | cut -d'.' -f1)}"
+    
+    if [ -z "$host" ]; then
+        echo "Usage: tmssh <user@host> [session-name]"
+        return 1
+    fi
+    
+    # Auto-add .tailnet.ts.net if no domain specified
+    if [[ ! "$host" =~ \. ]]; then
+        host="${host}.tailnet.ts.net"
+    fi
+    
+    tmux new-session -d -s "$session" 2>/dev/null || true
+    tmux send-keys -t "$session" "ssh $host" Enter
+    tmux attach -t "$session"
+}
+
+alias tmshelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%%
+Tmux SSH COMMANDS
+%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+tmssh <host> [session] -> SSH into new tmux session 
+tms -> Tmux SSH manager menu 
+tma -> Attach to last session 
+tmn <name> -> New tmux session 
+tml -> List all sessions 
+tmk <name> -> Kill session 
+'"
+
+
+# --- Git shortchuts -------------------------------
+alias ga='git add .'
+alias gc='git commit'
+alias gac='git add . && git commit'
+alias gps='git push'
+alias gpl='git pull'
+alias gf='git fetch'
+alias gl='git log'
+alias gst='git status'
+alias gss='git stash'
+alias gco='git checkout'
+alias gt='gitui'
+alias ghelp="echo '%%%%%%%%%%%%%%%%%%%%%%%%%%
+github COMMANDS
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+ga -> git add . \n
+gc -> git commit \n
+gac -> git add . && git commit \n
+gps -> git push \n
+gpl -> git pull \n
+gf -> git fetch \n
+gl -> git log \n
+gst -> git status \n
+gss -> git stash \n
+gco -> git checkout\n
+gt -> git tui\n'"
+
+# --- Neovim  ----------------------------------
+export PATH="$PATH:/opt/nvim-linux-x86_64/bin"
+
+# --- Docker ----------------------------------
+alias ld='lazydocker'
+
+# --- evals config ----------------------------------
+# rust export (must precede zoxide init so zoxide is on PATH)
+export PATH="$HOME/.cargo/bin:$PATH"
+
+eval "$(zoxide init zsh)"
+
+# Starship 
+export STARSHIP_CONFIG=~/.config/starship/starship.toml
+export STARSHIP_CACHE=~/.starship/cache
+# Theme hook: starship palette, FZF colors, zsh-autosuggestions and
+# fast-syntax-highlighting all follow ~/.local/state/theme (dark|light).
+source $ZSH/theme-zsh.zsh
+eval "$(starship init zsh)"
+
+# Python local environment check
+[[ -f .venv/bin/activate ]] && source .venv/bin/activate && [[ -n "$VIRTUAL_ENV" ]] || true
+
+# AUDIO
+export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+
+# ClipMenu
+export CM_LAUNCHER=rofi
+
+# WASM
+export WASMTIME_HOME="$HOME/.wasmtime"
+export PATH="$WASMTIME_HOME/bin:$PATH"
+
+export PATH=$PATH:/opt/texlive/2025/bin/x86_64-linux
+export PATH=~/.npm-global/bin:$PATH
+export PATH="$HOME/.local/bin:$PATH"
+
+# nvm — node version manager (loaded here, not by installer rc-append)
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+# bun completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# Lazy load NVM (only when node/npm is called)
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+# opencode
+export PATH=$HOME/.opencode/bin:$PATH
+
+# OpenClaw Completion (cached in $ZSH/plugins/openclaw/)

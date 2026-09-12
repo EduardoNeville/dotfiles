@@ -1,0 +1,8 @@
+http.server
+numpy
+scipy
+pandas
+cookiecutter
+beautifulsoup4
+openai
+websockets

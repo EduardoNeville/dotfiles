@@ -1,0 +1,89 @@
+# Desktop layer — hydra only (profile: "base desktop").
+# Debian 13 (trixie). Verified apt candidates 2026-09 — all current enough.
+# Source-built: suckless (dwm/st/slstatus, customization-driven) + rmpc (cargo, not packaged).
+# WM & display
+xinit
+xorg
+libx11-dev
+libxft-dev
+libxinerama-dev
+libxrandr-dev
+libxfixes-dev
+feh
+xsel
+xclip
+rofi
+
+# Suckless build tooling (dwm/st/slstatus via profiles/desktop/scripts/build_suckless.sh)
+build-essential
+
+# Audio
+pipewire
+pipewire-pulse
+pipewire-audio-client-libraries
+pipewire-alsa
+wireplumber
+pavucontrol
+helvum
+alsa-utils
+libspa-0.2-bluetooth
+mpv
+vlc
+cmus
+
+# Bluetooth
+bluez
+bluez-tools
+blueman
+
+# WiFi / network (T480: iwlwifi — firmware from non-free-firmware, in debian.sources)
+firmware-iwlwifi
+network-manager
+wpasupplicant
+iw
+rfkill
+
+# Power (laptop)
+tlp
+tlp-rdw
+powertop
+brightnessctl
+acpi
+acpid
+
+# GUI apps
+obs-studio
+keepassxc
+gparted
+solaar
+redshift
+redshift-gtk
+zathura
+mupdf
+mupdf-tools
+clipit
+dunst
+firefox-esr
+suckless-tools
+
+# Media/MTP
+mpd
+fbterm
+usbmuxd
+libmtp-runtime
+gvfs
+gvfs-backends
+gvfs-fuse
+
+# Fonts
+fonts-dejavu
+fonts-dejavu-core
+fonts-liberation
+fonts-liberation2
+fonts-noto
+fonts-noto-color-emoji
+fonts-roboto
+fonts-font-awesome
+fonts-hack
+fonts-firacode
+fonts-inconsolata

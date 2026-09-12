@@ -1,0 +1,25 @@
+configs/nvim/pack/github/
+configs/nvim/plugin/packer_compiled.lua
+configs/zsh-conf/.zsh_history
+configs/btop/btop.log
+configs/wireguard
+
+envs/
+
+.DS_Store
+
+legatio.md
+
+*-lock.json
+
+# Pi agent - secrets & transient data
+configs/pi/agent/auth.json
+configs/pi/agent/models-store.json
+configs/pi/agent/sessions/
+configs/.pi/
+configs/.pi-subagents/
+.pi/
+
+# Pi extension reports and caches
+configs/pi/extensions/SYNTHESIS_REPORT.md
+configs/pi/extensions/**/node_modules/

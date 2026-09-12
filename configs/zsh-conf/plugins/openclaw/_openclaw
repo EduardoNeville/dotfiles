@@ -1,0 +1,87 @@
+#compdef openclaw
+
+_openclaw_root_completion() {
+  local -a commands
+
+  commands=(
+    'completion:Generate completion script for your shell'
+    'generate:Generate various artifacts from OpenAPI specs'
+    'help:Print this message or the help of the given subcommand(s)'
+  )
+
+  _describe -t commands 'openclaw commands' commands "$@"
+}
+
+_openclaw_completion_completion() {
+  local -a commands
+
+  commands=()
+
+  _describe -t commands 'openclaw completion commands' commands "$@"
+}
+
+_openclaw_completion_zsh_completion() {
+  local -a commands
+
+  commands=()
+
+  _describe -t commands 'openclaw completion zsh commands' commands "$@"
+}
+
+_openclaw_completion_bash_completion() {
+  local -a commands
+
+  commands=()
+
+  _describe -t commands 'openclaw completion bash commands' commands "$@"
+}
+
+_openclaw_completion_fish_completion() {
+  local -a commands
+
+  commands=()
+
+  _describe -t commands 'openclaw completion fish commands' commands "$@"
+}
+
+_openclaw_generate_completion() {
+  local -a commands
+
+  commands=()
+
+  _describe -t commands 'openclaw generate commands' commands "$@"
+}
+
+_openclaw_generate_client_completion() {
+  local -a commands
+
+  commands=()
+
+  _describe -t commands 'openclaw generate client commands' commands "$@"
+}
+
+_openclaw_generate_models_completion() {
+  local -a commands
+
+  commands=()
+
+  _describe -t commands 'openclaw generate models commands' commands "$@"
+}
+
+_openclaw_generate_server_completion() {
+  local -a commands
+
+  commands=()
+
+  _describe -t commands 'openclaw generate server commands' commands "$@"
+}
+
+_openclaw_help_completion() {
+  local -a commands
+
+  commands=()
+
+  _describe -t commands 'openclaw help commands' commands "$@"
+}
+
+compdef _openclaw_root_completion openclaw

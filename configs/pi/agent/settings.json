@@ -1,0 +1,4 @@
+{
+  "_migrated": "pi configuration moved to ~/dotpi/ — see github.com/EduardoNeville/dotpi",
+  "_note": "~/.pi/agent/settings.json now symlinks to ~/dotpi/settings.json"
+}

@@ -1,0 +1,56 @@
+- 1.1.14-4
+- _NAME: MX Master 4
+  _absent: [hi-res-scroll, lowres-scroll-mode, onboard_profiles, report_rate, report_rate_extended, pointer_speed, dpi_extended, speed-change, backlight,
+    backlight_level, backlight_duration_hands_out, backlight_duration_hands_in, backlight_duration_powered, backlight-timed, led_control, led_zone_, rgb_control,
+    rgb_zone_, brightness_control, per-key-lighting, fn-swap, persistent-remappable-keys, disable-keyboard-keys, crown-smooth, divert-crown, divert-gkeys,
+    m-key-leds, mr-key-led, multiplatform, gesture2-gestures, gesture2-divert, gesture2-params, sidetone, equalizer, adc_power_management]
+  _battery: 4100
+  _modelId: B04200000000
+  _sensitive: {divert-keys: false, dpi: false, hires-smooth-invert: false, hires-smooth-resolution: false, reprogrammable-keys: false, smart-shift: false,
+    thumb-scroll-mode: false}
+  _unitId: 7DF8D3E3
+  change-host: null
+  divert-keys: {82: 0, 83: 0, 86: 0, 195: 0, 196: 0, 416: 1}
+  dpi: 1300
+  hires-scroll-mode: false
+  hires-smooth-invert: false
+  hires-smooth-resolution: true
+  reprogrammable-keys: {82: 82, 83: 86, 86: 195, 195: 83, 196: 196, 416: 416}
+  scroll-ratchet: 2
+  smart-shift: 10
+  thumb-scroll-invert: false
+  thumb-scroll-mode: false
+- _NAME: MX Anywhere 3
+  _absent: [hi-res-scroll, lowres-scroll-mode, thumb-scroll-invert, thumb-scroll-mode, onboard_profiles, report_rate, report_rate_extended, pointer_speed,
+    dpi_extended, speed-change, backlight, backlight_level, backlight_duration_hands_out, backlight_duration_hands_in, backlight_duration_powered, backlight-timed,
+    led_control, led_zone_, rgb_control, rgb_zone_, brightness_control, per-key-lighting, fn-swap, persistent-remappable-keys, disable-keyboard-keys, crown-smooth,
+    divert-crown, divert-gkeys, m-key-leds, mr-key-led, multiplatform, gesture2-gestures, gesture2-divert, gesture2-params, sidetone, equalizer, adc_power_management]
+  _battery: 0
+  _dpi-sliding: 16
+  _modelId: B02540900000
+  _sensitive: {divert-keys: true}
+  _unitId: 4625B2A7
+  change-host: null
+  divert-keys: {82: 0, 83: 0, 86: 0, 196: 0}
+  dpi: 1000
+  hires-scroll-mode: false
+  hires-smooth-invert: false
+  hires-smooth-resolution: true
+  reprogrammable-keys: {80: 80, 81: 81, 82: 82, 83: 83, 86: 86, 196: 196}
+  scroll-ratchet: 1
+  smart-shift: 10
+- _NAME: G203 LIGHTSYNC Gaming Mouse
+  _absent: [hi-res-scroll, lowres-scroll-mode, hires-smooth-invert, hires-smooth-resolution, hires-scroll-mode, scroll-ratchet, smart-shift, thumb-scroll-invert,
+    thumb-scroll-mode, report_rate_extended, pointer_speed, dpi_extended, speed-change, backlight, backlight_level, backlight_duration_hands_out, backlight_duration_hands_in,
+    backlight_duration_powered, backlight-timed, led_control, led_zone_, rgb_control, rgb_zone_, brightness_control, per-key-lighting, fn-swap, reprogrammable-keys,
+    persistent-remappable-keys, divert-keys, disable-keyboard-keys, crown-smooth, divert-crown, divert-gkeys, m-key-leds, mr-key-led, multiplatform, change-host,
+    gesture2-gestures, gesture2-divert, gesture2-params, sidetone, equalizer, adc_power_management]
+  _battery: 0
+  _modelId: C09200000000
+  _sensitive: {hires-scroll-mode: ignore, hires-smooth-invert: ignore, hires-smooth-resolution: ignore}
+  _unitId: 1C002F00
+  dpi: 800
+  onboard_profiles: 1
+  per-key-lighting: {1: -1, 2: -1, 3: -1}
+  report_rate: 1
+  rgb_control: 0
