@@ -23,3 +23,6 @@ configs/.pi-subagents/
 # Pi extension reports and caches
 configs/pi/extensions/SYNTHESIS_REPORT.md
 configs/pi/extensions/**/node_modules/
+
+# suckless st build dir (vendored sources, binary artifacts)
+profiles/desktop/configs/suckless/st/
