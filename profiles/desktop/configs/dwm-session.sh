@@ -13,6 +13,12 @@
 [ -f "${DOTFILES_DIR:-$HOME/dotfiles}/assets/hands_of_god.png" ] && \
     feh --bg-fill "${DOTFILES_DIR:-$HOME/dotfiles}/assets/hands_of_god.png" &
 
+# Compositor — exists to kill X11 tearing (glx + vsync, no effects). The config
+# is passed explicitly rather than relying on ~/.config/picom being linked, so
+# the session cannot silently fall back to built-in defaults (no vsync).
+command -v picom >/dev/null 2>&1 && \
+    picom -b --config "${DOTFILES_DIR:-$HOME/dotfiles}/configs/picom/picom.conf" &
+
 # Status bar + notifications (dwm's config.h does not spawn these)
 command -v slstatus >/dev/null 2>&1 && slstatus &
 command -v dunst >/dev/null 2>&1 && dunst &
