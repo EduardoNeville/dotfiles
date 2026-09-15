@@ -114,15 +114,25 @@ for m in / /var /home; do
 done
 
 # ── 3. boot trims ────────────────────────────────────────────
-# The .socket units stay enabled, so docker/virsh still start their daemons on
-# first use — only the boot-time cost goes away.
-sudo systemctl enable docker.socket libvirtd.socket virtlogd.socket virtlockd.socket 2>/dev/null || true
+# e2scrub_reap: 25.7 s of every boot spent scrubbing the HDD.
+# docker/libvirt daemons: not needed at boot. Their .socket units ARE, and they
+# must be re-enabled AFTER the services are disabled: libvirtd.service (and
+# virtlogd/virtlockd) carry `[Install] Also=<their>.socket`, so disabling the
+# service takes the socket with it. docker.service has no Also=, which is why
+# docker.socket survived. Socket-activated daemons still start on first use.
 for u in e2scrub_reap.service docker.service libvirtd.service virtlogd.service virtlockd.service; do
     if systemctl is-enabled "$u" >/dev/null 2>&1; then
         sudo systemctl disable "$u" >/dev/null 2>&1 && echo "  ✓ $u disabled at boot" || echo "  ! $u disable failed"
     else
         echo "  ✓ $u already disabled"
     fi
+done
+
+sudo systemctl enable docker.socket libvirtd.socket virtlogd.socket virtlockd.socket >/dev/null 2>&1 || true
+for s in docker.socket libvirtd.socket virtlogd.socket virtlockd.socket; do
+    state="$(systemctl is-enabled "$s" 2>&1)"
+    printf "  %-18s %s\n" "$s" "$state"
+    [ "$state" = enabled ] || echo "      ! $s not enabled — on-demand start is broken; run: sudo systemctl enable $s"
 done
 
 echo
