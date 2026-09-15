@@ -158,6 +158,10 @@ main() {
         # login/lock screen — no-op unless lightdm + slick-greeter are installed
         [ -f "${DOTFILES_DIR}/profiles/desktop/scripts/setup_lightdm.sh" ] &&
             bash "${DOTFILES_DIR}/profiles/desktop/scripts/setup_lightdm.sh"
+        # initial theme state for the consumers that read it (rofi palette,
+        # greeter config, tmux); later every toggle refreshes them
+        [ -f "${DOTFILES_DIR}/configs/theme/scripts/rofi_theme.sh" ] &&
+            bash "${DOTFILES_DIR}/configs/theme/scripts/rofi_theme.sh"
         # storage/boot tuning — rotation-guarded, idempotent
         [ -f "${DOTFILES_DIR}/profiles/desktop/scripts/setup_perf.sh" ] &&
             bash "${DOTFILES_DIR}/profiles/desktop/scripts/setup_perf.sh"

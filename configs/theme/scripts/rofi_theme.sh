@@ -16,10 +16,12 @@
 #   active           active surface              #c792ea     #8839EF
 #   urgent           urgent surface              #ef5350     #D20F39
 #
-# RoFI's own config lives outside this repo, so the original colors.rasi is
-# kept as colors.rasi.dotfiles-bak on first run. A config.rasi is created if
-# missing: invocations that pass no -theme (clipmenu does not) would otherwise
-# fall back to rofi's built-in defaults.
+# The rofi config is linked from this repo
+# (profiles/desktop/configs/rofi -> ~/.config/rofi), so this writes into linked
+# content: the palette is *generated state*, untracked and gitignored because it
+# changes on every toggle. The generator is the source of truth. config.rasi
+# (tracked, static) makes -theme-less invocations theme-aware too — clipmenu
+# passes no -theme and would otherwise use rofi's built-in defaults.
 #
 # Prints "applied <theme>"; exits 0 when rofi is not configured on this host.
 
@@ -42,7 +44,6 @@ else
 fi
 
 mkdir -p "$ROFI_DIR/shared"
-[ -f "$COLORS" ] && [ ! -f "$COLORS.dotfiles-bak" ] && cp -p "$COLORS" "$COLORS.dotfiles-bak"
 
 cat >"$COLORS.tmp" <<EOF
 /**

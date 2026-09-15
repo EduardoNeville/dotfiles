@@ -23,6 +23,10 @@ configs/.pi-subagents/
 # Theme propagation: per-machine remote host list (setup_theme_remotes.sh)
 configs/theme/remote-hosts
 
+# Generated per-theme state inside the linked rofi config
+# (configs/theme/scripts/rofi_theme.sh rewrites it on every toggle)
+profiles/desktop/configs/rofi/shared/colors.rasi
+
 # Pi extension reports and caches
 configs/pi/extensions/SYNTHESIS_REPORT.md
 configs/pi/extensions/**/node_modules/
