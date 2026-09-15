@@ -11,9 +11,9 @@ Needs a running X session with dwm — run it on the desktop machine.
     dwm_bar_probe.py                        # list the bar colours (debugging)
     dwm_bar_probe.py --expect light|dark    # assert, exit 1 on mismatch
 
-Signatures (config.h: col_secondary = bar surface, col_primary = focused tab):
-    dark   surface #1c1f26   tab #505151
-    light  surface #FAFAFA   tab #1A1A2E
+Signatures (config.h: col_night_bg / col_latte_bg = bar surface):
+    dark   surface #011627   chips #82aaff / #c792ea
+    light  surface #FAFAFA   chips #1E66F5 / #8839EF
 """
 
 import collections
@@ -21,7 +21,7 @@ import struct
 import subprocess
 import sys
 
-SURFACE = {"dark": "1C1F26", "light": "FAFAFA"}
+SURFACE = {"dark": "011627", "light": "FAFAFA"}
 ROWS = (2, 5, 10, 15, 20)  # inside dwm's bar (bh = font height + 2, ~25px)
 
 
