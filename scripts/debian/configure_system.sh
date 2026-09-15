@@ -51,6 +51,10 @@ setup_systemd_user_services() {
     if [ -f "${HOME}/.config/systemd/user/review-packages.timer" ]; then
         systemctl --user enable review-packages.timer 2>/dev/null && echo "  ✓ enabled review-packages.timer"
     fi
+    # Battery level notifications (30/20/10% discharging, >80% charging)
+    if [ -f "${HOME}/.config/systemd/user/battery-notify.timer" ]; then
+        systemctl --user enable --now battery-notify.timer 2>/dev/null && echo "  ✓ enabled battery-notify.timer"
+    fi
     _success "Systemd user services configured"
 }
 
