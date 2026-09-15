@@ -121,6 +121,13 @@ if [ -f "$DOTFILES_SCRIPTS/greeter_theme.sh" ]; then
     fi
 fi
 
+# ── 1d. Re-apply the wallpaper for the new theme ─────────────
+# The mapping lives in wallpaper.sh (also used at session start); on a host
+# without feh it reports "skipped" and changes nothing.
+if [ -f "$DOTFILES_SCRIPTS/wallpaper.sh" ]; then
+    _log "wallpaper: $(bash "$DOTFILES_SCRIPTS/wallpaper.sh" 2>&1 | tail -1)"
+fi
+
 # ── 2. Sync local tmux (server-wide; safe from any shell) ─────
 # No "$TMUX" check needed: the sync script itself guards for a running
 # server and exits 0 with a log note when there is none.

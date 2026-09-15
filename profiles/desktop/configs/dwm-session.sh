@@ -9,9 +9,10 @@
 # A display manager runs the .desktop Exec= verbatim, so without this split a
 # DM session would be a bare dwm: no bar, no notifications, no wallpaper.
 
-# Wallpaper (feh ships with desktop packages; wallpapers in dotfiles/assets)
-[ -f "${DOTFILES_DIR:-$HOME/dotfiles}/assets/hands_of_god.png" ] && \
-    feh --bg-fill "${DOTFILES_DIR:-$HOME/dotfiles}/assets/hands_of_god.png" &
+# Wallpaper — theme-aware: wallpaper.sh reads the state file and picks the
+# asset, so the same mapping is used here and on every toggle.
+[ -f "${DOTFILES_DIR:-$HOME/dotfiles}/configs/theme/scripts/wallpaper.sh" ] && \
+    bash "${DOTFILES_DIR:-$HOME/dotfiles}/configs/theme/scripts/wallpaper.sh" >/dev/null 2>&1 &
 
 # Compositor — exists to kill X11 tearing (glx + vsync, no effects). The config
 # is passed explicitly rather than relying on ~/.config/picom being linked, so
