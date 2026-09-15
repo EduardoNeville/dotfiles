@@ -25,14 +25,6 @@ local function read_theme_state()
     return false
 end
 
-local function write_theme_state(is_light)
-    local f = io.open(STATE_FILE, "w")
-    if f then
-        f:write(is_light and "light" or "dark")
-        f:close()
-    end
-end
-
 ----------------------------------------------------
 --- Theme Switcher ---------------------------------
 ----------------------------------------------------
@@ -82,39 +74,18 @@ local light_window_frame = {
 }
 
 local is_light = read_theme_state()
+local applied_light = is_light
 
-local tmux_dark_theme = {
-    status_bg = '#011627',
-    status_fg = '#d6deeb',
-    pane_border = '#1d3b53',
-    active_border = '#82aaff',
-    message_bg = '#82aaff',
-    mode_bg = '#c792ea',
-}
-
-local tmux_light_theme = {
-    status_bg = '#EFF1F5',
-    status_fg = '#4C4F69',
-    pane_border = '#E6E9EF',
-    active_border = '#1E66F5',
-    message_bg = '#1E66F5',
-    mode_bg = '#8839EF',
-}
-
-local function toggle_theme(window, _)
-    is_light = not is_light
-    write_theme_state(is_light)
-
-    local new_opacity = is_light and 1.0 or 0.85
-    local new_frame = is_light and light_window_frame or dark_window_frame
-    local tmux_theme = is_light and tmux_light_theme or tmux_dark_theme
-
+-- Apply a palette to a live window. set_config_overrides() is per-window, so
+-- the caller passes the window; `applied_light` records what is on screen so
+-- redundant applies can be skipped (see the state-file poll below).
+local function apply_theme(window, light)
     local overrides = {
-        window_background_opacity = new_opacity,
-        window_frame = new_frame,
+        window_background_opacity = light and 1.0 or 0.85,
+        window_frame = light and light_window_frame or dark_window_frame,
     }
 
-    if is_light then
+    if light then
         overrides.color_scheme = light_scheme
         -- Text must be black in light mode (catppuccin-latte's default
         -- foreground #4C4F69 renders as hard-to-read gray).
@@ -125,32 +96,20 @@ local function toggle_theme(window, _)
     end
 
     window:set_config_overrides(overrides)
+    applied_light = light
+end
 
-    -- window:emit() does not exist in wezterm's Lua API (see wezterm.emit in
-    -- https://wezterm.org/config/lua/wezterm/emit.html); the Window object has
-    -- no emit method. wezterm.emit() dispatches to handlers registered via
-    -- wezterm.on(). No 'theme-changed' handler is registered, so this is a
-    -- harmless no-op that keeps the toggle working.
-    wezterm.emit("theme-changed", is_light and "light" or "dark")
-
-    -- No 'passthrough' event exists in wezterm and window:emit() is not an API,
-    -- so the former OSC 10/11 passthrough block was dead code. It is not needed:
-    -- the palette is applied via set_config_overrides above, and wezterm answers
-    -- OSC 10/11 color queries automatically from its current palette.
-    -- Cross-host/tmux theme sync is handled below by propagate_state.sh.
-
-    -- Propagate theme state to local tmux and remote SSH hosts.
-    -- Calls propagate_state.sh from the dotfiles repo (~/dotfiles is
-    -- always cloned on every machine so this path is always valid).
-    -- propagate_state.sh:
-    --   1. Writes state locally
-    --   2. Syncs local tmux if inside a tmux session
-    --   3. SSHes to each host in ~/.config/theme/remote-hosts and
-    --      writes state there + syncs their tmux
+-- The toggle entry point. It delegates to propagate_state.sh — the very script
+-- dwm's Ctrl+Shift+Y binding runs — which flips ~/.local/state/theme, syncs local
+-- tmux, nudges dwm (SIGWINCH) and pushes to every host in
+-- ~/.config/theme/remote-hosts. wezterm reads the resulting state back instead of
+-- flipping its own flag, so dwm-initiated and wezterm-initiated toggles agree.
+local function toggle_theme(window, _)
     wezterm.run_child_process({
         "bash", "-c",
-        "~/dotfiles/configs/theme/scripts/propagate_state.sh " .. (is_light and "light" or "dark")
+        "~/dotfiles/configs/theme/scripts/propagate_state.sh toggle"
     })
+    apply_theme(window, read_theme_state())
 end
 
 ---------------------------------------------------------------
@@ -158,6 +117,15 @@ end
 ---------------------------------------------------------------
 wezterm.on('update-right-status', function(window, pane)
     window:set_right_status(window:active_workspace())
+
+    -- Follow toggles made outside this config: on hydra dwm grabs Ctrl+Shift+Y
+    -- globally, so this file's own binding never fires there. This hook runs on
+    -- the status tick (status_update_interval, 1s); stat-ing a 6-byte file is
+    -- free compared to that, and the apply is skipped unless the value changed.
+    local now_light = read_theme_state()
+    if now_light ~= applied_light then
+        apply_theme(window, now_light)
+    end
 end)
 
 ---------------------------------------------------------------
