@@ -7,10 +7,16 @@
 #   tmux_theme_sync.sh toggle  — flip state, then apply colors
 #
 # Callers:
-#   - Wezterm's toggle_theme() via propagate_state.sh — state already updated;
-#     we just read and apply (sync mode).
-#   - tmux.conf hook (client-focus-in) and run-shell  — sync mode.
-#   - tmux binding (Y)                                — toggle mode.
+#   - propagate_state.sh (local, and over ssh on remote hosts) — the state file
+#     is already updated, we just read and apply (sync mode).
+#   - `tmux_theme_sync.sh toggle` by hand — flips the state, then applies.
+#   - verify_theme_sync.sh, via propagate_state.sh.
+#
+# The tmux BINARY matters as much as the socket: a non-interactive shell
+# (wezterm's spawned bash, `ssh host <cmd>`) does not source ~/.zshrc, so it can
+# resolve the distro tmux while the running server is the source build — that
+# mismatch dies with "server exited unexpectedly". Hence the explicit
+# preference order below.
 #
 # `tmux set -g` / `tmux setw -g` set SERVER-WIDE options, so they work from a
 # NON-tmux shell and apply to every session on the server — but only when a
@@ -68,17 +74,31 @@ for _base in \
     [ -n "$_TMUX_SOCK" ] && break
  done
 
-# Route every `tmux` call below through the resolved socket.
+# ── Resolve the tmux client binary ────────────────────────────
+# The running server may be the source build ($HOME/pkgs/bin/tmux) while a
+# non-interactive shell (wezterm's spawned bash, ssh command execution — neither
+# sources ~/.zshrc) resolves the distro client instead. A 3.5a client against a
+# 3.7b server fails with "server exited unexpectedly", so prefer the source
+# build explicitly instead of trusting PATH.
+TMUX_BIN=""
+for _cand in "$HOME/pkgs/bin/tmux" "$HOME/.local/bin/tmux" "$(command -v tmux 2>/dev/null)"; do
+    if [ -n "$_cand" ] && [ -x "$_cand" ]; then
+        TMUX_BIN="$_cand"
+        break
+    fi
+done
+
+# Route every `tmux` call below through the resolved binary and socket.
 tmux() {
     if [ -n "$_TMUX_SOCK" ]; then
-        command tmux -S "$_TMUX_SOCK" "$@"
+        command "$TMUX_BIN" -S "$_TMUX_SOCK" "$@"
     else
-        command tmux "$@"
+        command "$TMUX_BIN" "$@"
     fi
 }
 
 # ── Guard: only proceed when a tmux server is running ─────────
-if ! command -v tmux >/dev/null 2>&1; then
+if [ -z "$TMUX_BIN" ]; then
     _log "tmux not installed; skipping sync"
     exit 0
 fi

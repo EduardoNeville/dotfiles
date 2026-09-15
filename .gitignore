@@ -20,6 +20,9 @@ configs/.pi/
 configs/.pi-subagents/
 .pi/
 
+# Theme propagation: per-machine remote host list (setup_theme_remotes.sh)
+configs/theme/remote-hosts
+
 # Pi extension reports and caches
 configs/pi/extensions/SYNTHESIS_REPORT.md
 configs/pi/extensions/**/node_modules/
