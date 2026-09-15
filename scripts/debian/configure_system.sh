@@ -158,6 +158,9 @@ main() {
         # login/lock screen — no-op unless lightdm + slick-greeter are installed
         [ -f "${DOTFILES_DIR}/profiles/desktop/scripts/setup_lightdm.sh" ] &&
             bash "${DOTFILES_DIR}/profiles/desktop/scripts/setup_lightdm.sh"
+        # storage/boot tuning — rotation-guarded, idempotent
+        [ -f "${DOTFILES_DIR}/profiles/desktop/scripts/setup_perf.sh" ] &&
+            bash "${DOTFILES_DIR}/profiles/desktop/scripts/setup_perf.sh"
     fi
 
     add_user_to_groups
