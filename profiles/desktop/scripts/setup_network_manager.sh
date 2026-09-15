@@ -208,6 +208,22 @@ say "--- effective path ---"
 ip route get 1.1.1.1 2>/dev/null | head -1 | sed 's/^/  /'
 say "--- wifi state (should be disconnected while the cable is in) ---"
 nmcli -t -f DEVICE,TYPE,STATE device status 2>/dev/null | awk -F: '$2 == "wifi" { print "  " $1 ": " $3 }'
+
+# Leftover addresses from a previous manager are the trap behind this whole
+# episode: a stale default route keeps the old (higher) metric, so a wifi
+# reconnect at 600 could outrank it again. Report them with the exact fix rather
+# than deleting addresses automatically — a second address may be legitimate.
+for dev in $eth_devs; do
+    addrs="$(ip -4 -o addr show dev "$dev" 2>/dev/null | awk '{ print $4 }')"
+    count="$(printf '%s\n' "$addrs" | grep -c . || true)"
+    if [ "${count:-0}" -gt 1 ]; then
+        say "--- note: $dev carries more than one IPv4 address ---"
+        printf '%s\n' "$addrs" | sed 's/^/    /'
+        say "    (a leftover from ifupdown keeps its old route metric; to drop it:)"
+        say "      sudo ip addr del <addr> dev $dev"
+        say "      sudo ip route del default via <gateway> dev $dev metric 1002"
+    fi
+done
 say ""
 if [ "$fail" = 0 ]; then
     say "PASS: the ethernet device is connected under NetworkManager."
