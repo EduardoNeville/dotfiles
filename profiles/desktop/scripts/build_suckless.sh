@@ -247,9 +247,11 @@ main() {
 
     _success "Suckless tools installation complete"
     echo ""
-    echo "To start dwm:"
-    echo "  - From console: startx"
-    echo "  - From display manager: Select 'dwm' at login"
+    echo "dwm starts on its own — no session needs to be selected:"
+    echo "  tty1 login  -> ~/.zprofile execs startx -> ~/.xinitrc"
+    echo "  lightdm     -> dwm.desktop (Exec=/usr/local/bin/dwm-session)"
+    echo "  generic DM  -> /etc/X11/Xsession -> ~/.xsession"
+    echo "  all three   -> profiles/desktop/configs/dwm-session.sh"
 }
 
 # Run if executed directly

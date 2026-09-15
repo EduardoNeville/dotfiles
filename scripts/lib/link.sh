@@ -48,12 +48,17 @@ link_dotfiles() {
         for item in "${DOTFILES_DIR}/profiles/$p/configs"/*; do
             [ -e "$item" ] || continue
             local basename=$(basename "$item")
-            # xinitrc is a file-level dotfile (~/.xinitrc), not ~/.config/
-            if [ "$basename" = "xinitrc" ]; then
-                backup_then_link "${HOME}/.xinitrc" "$item"
-                echo "  ✓ Linked .xinitrc ($p)"
+            # File-level X session dotfiles, not ~/.config/<name>/:
+            #   xinitrc  — startx
+            #   xsession — /etc/X11/Xsession (Debian's generic "Default Xsession"
+            #              entry), which without it falls back to a bare terminal
+            case "$basename" in
+            xinitrc|xsession)
+                backup_then_link "${HOME}/.${basename}" "$item"
+                echo "  ✓ Linked .${basename} ($p)"
                 continue
-            fi
+                ;;
+            esac
             [ -d "$item" ] || continue
             backup_then_link "${HOME}/.config/${basename}" "$item"
             echo "  ✓ Linked $basename ($p)"
