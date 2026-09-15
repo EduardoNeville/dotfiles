@@ -128,6 +128,11 @@ if [ -f "$DOTFILES_SCRIPTS/wallpaper.sh" ]; then
     _log "wallpaper: $(bash "$DOTFILES_SCRIPTS/wallpaper.sh" 2>&1 | tail -1)"
 fi
 
+# ── 1e. Retint rofi (clipmenu launches through it) ───────────
+if [ -f "$DOTFILES_SCRIPTS/rofi_theme.sh" ]; then
+    _log "rofi: $(bash "$DOTFILES_SCRIPTS/rofi_theme.sh" 2>&1 | tail -1)"
+fi
+
 # ── 2. Sync local tmux (server-wide; safe from any shell) ─────
 # No "$TMUX" check needed: the sync script itself guards for a running
 # server and exits 0 with a log note when there is none.

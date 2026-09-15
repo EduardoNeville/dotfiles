@@ -138,7 +138,10 @@ static const char *roficmd[] = { "rofi", "-show", "drun", "-theme", "~/.config/r
 static const char *firecmd[] = {"firefox", NULL};
 
 /* Clip Menu */
-static const char *clipmenucmd[] = { "sh", "-c", "CM_LAUNCHER=rofi clipmenu -i -fn 'monospace:size=14' -nb '#241b30' -nf '#00fbfd' -sb '#E0BFB8' -sf '#241b30'", NULL };
+/* Colours come from rofi's own theme (configs/theme/scripts/rofi_theme.sh writes
+ * it on every toggle), not from dmenu-style flags, so the clipboard picker
+ * follows light/dark like the rest of the desktop. */
+static const char *clipmenucmd[] = { "sh", "-c", "CM_LAUNCHER=rofi clipmenu -i", NULL };
 
 /* Light Control */
 static const char *brighter[] = { "brightnessctl", "set", "10%+", NULL };
