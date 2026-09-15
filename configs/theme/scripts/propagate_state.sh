@@ -31,6 +31,17 @@ STATE_FILE="$STATE_DIR/theme"
 LOG_FILE="$STATE_DIR/theme-propagate.log"
 DOTFILES_SCRIPTS="${DOTFILES_SCRIPTS:-$HOME/dotfiles/configs/theme/scripts}"
 
+# `toggle` is the single entry point used by keybindings (dwm's global
+# Ctrl+Shift+Y, wezterm's fallback binding): flip whatever the shared state
+# says, so every caller and every host agree on the result.
+if [ "$THEME" = "toggle" ]; then
+    if [ "$(cat "$STATE_FILE" 2>/dev/null || echo dark)" = "light" ]; then
+        THEME="dark"
+    else
+        THEME="light"
+    fi
+fi
+
 mkdir -p "$STATE_DIR"
 
 _log() {
@@ -38,12 +49,14 @@ _log() {
 }
 
 # Remote command run on each host: write the state file, then sync tmux.
+# $HOME / XDG_STATE_HOME are expanded by the REMOTE shell (escaped here), so the
+# host resolves its own paths instead of inheriting this machine's.
 # Remote hosts are expected to have the dotfiles clone at $HOME/dotfiles.
 _remote_cmd() {
     local theme="$1"
     local remote_scripts="$HOME/dotfiles/configs/theme/scripts"
-    printf "mkdir -p '%s' && echo '%s' > '%s' && [ -f '%s/tmux_theme_sync.sh' ] && bash '%s/tmux_theme_sync.sh'" \
-        "$STATE_DIR" "$theme" "$STATE_FILE" "$remote_scripts" "$remote_scripts"
+    printf "mkdir -p \"\${XDG_STATE_HOME:-\$HOME/.local/state}\" && echo '%s' > \"\${XDG_STATE_HOME:-\$HOME/.local/state}/theme\" && [ -f '%s/tmux_theme_sync.sh' ] && bash '%s/tmux_theme_sync.sh'" \
+        "$theme" "$remote_scripts" "$remote_scripts"
 }
 
 # Run a command on a remote host, trying Tailscale SSH first, then falling
@@ -80,6 +93,33 @@ if [ -n "$TMUX" ]; then FROM="inside tmux"; else FROM="non-tmux shell"; fi
 _log "run theme='$THEME' (from $FROM)"
 echo "$THEME" > "$STATE_FILE"
 _log "local state written: '$THEME' -> $STATE_FILE"
+
+# ── 1b. Nudge a running dwm to re-read the palette ────────────
+# dwm reloads its color schemes from the state file on SIGWINCH
+# (reloadtheme() in profiles/desktop/configs/suckless/dwm/dwm.c).
+# SIGWINCH is used deliberately: its default disposition is ignore, so this is
+# a harmless no-op against a dwm build that predates reloadtheme() — whereas
+# SIGUSR1 would terminate an unpatched dwm and take the session with it.
+if pgrep -x dwm >/dev/null 2>&1; then
+    if pkill -WINCH -x dwm; then
+        _log "dwm: SIGWINCH sent (palette reload)"
+    else
+        _log "dwm: SIGWINCH failed"
+    fi
+fi
+
+# ── 1c. Retint the login / lock screen ─────────────────────────
+# slick-greeter draws both the lightdm login screen and light-locker's lock
+# screen. It reads /etc/lightdm/slick-greeter.conf, which
+# profiles/desktop/scripts/setup_lightdm.sh symlinks into the state dir — so
+# this needs no root. Harmless no-op on machines without lightdm.
+if [ -f "$DOTFILES_SCRIPTS/greeter_theme.sh" ]; then
+    if bash "$DOTFILES_SCRIPTS/greeter_theme.sh" "$THEME"; then
+        _log "greeter sync: OK"
+    else
+        _log "greeter sync: FAILED (exit $?)"
+    fi
+fi
 
 # ── 2. Sync local tmux (server-wide; safe from any shell) ─────
 # No "$TMUX" check needed: the sync script itself guards for a running
