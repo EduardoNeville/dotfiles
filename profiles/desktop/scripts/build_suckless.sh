@@ -203,16 +203,22 @@ create_dwm_desktop_entry() {
 
     sudo mkdir -p /usr/share/xsessions
 
+    # The session is NOT `dwm` alone: it needs slstatus/dunst/clipmenud/
+    # wallpaper/light-locker. A display manager runs Exec= verbatim, so
+    # Exec=/usr/local/bin/dwm would give a bare window manager (no bar, no
+    # notifications). Both startx and lightdm run dwm-session.sh.
+    sudo ln -sf "${DOTFILES_DIR}/profiles/desktop/configs/dwm-session.sh" /usr/local/bin/dwm-session
+
     sudo tee /usr/share/xsessions/dwm.desktop > /dev/null <<EOF
 [Desktop Entry]
 Name=dwm
 Comment=Dynamic window manager
-Exec=/usr/local/bin/dwm
+Exec=/usr/local/bin/dwm-session
 Type=Application
 Keywords=tiling;wm;windowmanager;window;manager;
 EOF
 
-    _success "dwm desktop entry created"
+    _success "dwm desktop entry created (Exec=/usr/local/bin/dwm-session)"
 }
 
 main() {
