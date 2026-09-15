@@ -133,6 +133,13 @@ if [ -f "$DOTFILES_SCRIPTS/rofi_theme.sh" ]; then
     _log "rofi: $(bash "$DOTFILES_SCRIPTS/rofi_theme.sh" 2>&1 | tail -1)"
 fi
 
+# ── 1f. Appearance signal for GTK apps and Firefox ───────────
+# No portal and no DE here, so this GSettings write is the only system
+# colour-scheme signal they get (see gtk_theme.sh).
+if [ -f "$DOTFILES_SCRIPTS/gtk_theme.sh" ]; then
+    _log "gtk/firefox: $(bash "$DOTFILES_SCRIPTS/gtk_theme.sh" 2>&1 | tail -1)"
+fi
+
 # ── 2. Sync local tmux (server-wide; safe from any shell) ─────
 # No "$TMUX" check needed: the sync script itself guards for a running
 # server and exits 0 with a log note when there is none.
