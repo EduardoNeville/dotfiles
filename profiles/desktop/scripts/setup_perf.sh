@@ -120,7 +120,7 @@ done
 # virtlogd/virtlockd) carry `[Install] Also=<their>.socket`, so disabling the
 # service takes the socket with it. docker.service has no Also=, which is why
 # docker.socket survived. Socket-activated daemons still start on first use.
-for u in e2scrub_reap.service docker.service libvirtd.service virtlogd.service virtlockd.service; do
+for u in e2scrub_reap.service docker.service containerd.service libvirtd.service virtlogd.service virtlockd.service; do
     if systemctl is-enabled "$u" >/dev/null 2>&1; then
         sudo systemctl disable "$u" >/dev/null 2>&1 && echo "  ✓ $u disabled at boot" || echo "  ! $u disable failed"
     else
