@@ -66,6 +66,30 @@ static const char *colors[][3] = {
 	[SchemeInfoNorm]     = { col_primary,  col_secondary,   col_secondary    }, // infobar middle  unselected {text,background,not used but cannot be empty}
 };
 
+/* ── Theme palettes ──────────────────────────────────────────────
+ * dwm picks one of the two tables below at runtime from the shared state file
+ * ~/.local/state/theme (see reloadtheme() in dwm.c, triggered by SIGWINCH from
+ * configs/theme/scripts/propagate_state.sh). Both tables must keep the same
+ * length — enforced by a compile-time check in dwm.c.
+ * Light palette: configs/theme/colors-light.md (Catppuccin Latte-inspired). */
+static const char col_latte_fg[]     = "#1A1A2E";
+static const char col_latte_bg[]     = "#FAFAFA";
+static const char col_latte_accent[] = "#1E66F5";
+
+/* Same scheme → role mapping as colors[][] above (fg/bg/accent), Latte values:
+ * TagsSel/InfoSel invert to a dark chip with blue text, mirroring dark mode's
+ * grey chip with green text. */
+static const char *colors_light[][3] = {
+	/*              		 fg                  bg                  border            */
+	[SchemeNorm] 		 = { col_latte_fg,     col_latte_bg,       col_latte_accent },
+	[SchemeSel] 		 = { col_latte_bg,     col_latte_fg,       col_latte_bg     },
+	[SchemeStatus]  	 = { col_latte_fg,     col_latte_bg,       col_latte_bg     }, // Statusbar right
+	[SchemeTagsSel]      = { col_latte_accent, col_latte_fg,       col_latte_bg     }, // Tagbar left selected
+	[SchemeTagsNorm]     = { col_latte_fg,     col_latte_bg,       col_latte_bg     }, // Tagbar left unselected
+	[SchemeInfoSel]      = { col_latte_accent, col_latte_fg,       col_latte_bg     }, // infobar middle selected
+	[SchemeInfoNorm]     = { col_latte_fg,     col_latte_bg,       col_latte_bg     }, // infobar middle unselected
+};
+
 /* tagging */
 static const char *tags[] = { "I", "II", "III", "IV", "V", "VI", "VII"};
 
@@ -141,9 +165,16 @@ static const char *clipmenucmd[] = { "sh", "-c", "CM_LAUNCHER=rofi clipmenu -i -
 static const char *brighter[] = { "brightnessctl", "set", "10%+", NULL };
 static const char *dimmer[]   = { "brightnessctl", "set", "10%-", NULL };
 
+/* Theme toggle — the single entry point every surface follows: flips
+ * ~/.local/state/theme, syncs tmux, nudges dwm (SIGWINCH) and wezterm (state
+ * file poll), and pushes to every host in ~/.config/theme/remote-hosts. */
+static const char *theme_toggle_cmd[] = { "sh", "-c",
+	"exec \"$HOME/dotfiles/configs/theme/scripts/propagate_state.sh\" toggle", NULL };
+
 static const unsigned int mastersplit = 1;	/* number of tiled clients in the master area */
 static Key keys[] = {
 	/* modifier                     key        function        argument */
+	{ ControlMask|ShiftMask,        XK_y,      spawn,          {.v = theme_toggle_cmd } }, /* global light/dark toggle */
 	{ MODKEY,                       XK_p,      spawn,          {.v = roficmd } },
 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
 

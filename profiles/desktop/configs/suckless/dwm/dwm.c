@@ -30,6 +30,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/select.h>
 #include <X11/cursorfont.h>
 #include <X11/keysym.h>
 #include <X11/Xatom.h>
@@ -143,6 +144,7 @@ static void detachstack(Client *c);
 static Monitor *dirtomon(int dir);
 static void drawbar(Monitor *m);
 static void drawbars(void);
+void reloadtheme(int unused);
 static void enternotify(XEvent *e);
 static void expose(XEvent *e);
 static void focus(Client *c);
@@ -185,6 +187,7 @@ static void setup(void);
 static void seturgent(Client *c, int urg);
 static void showhide(Client *c);
 static void sigchld(int unused);
+static void sigwinch(int unused);
 static void spawn(const Arg *arg);
 static void switchcol(const Arg *arg);
 static void tag(const Arg *arg);
@@ -243,6 +246,8 @@ static void (*handler[LASTEvent]) (XEvent *) = {
 };
 static Atom wmatom[WMLast], netatom[NetLast];
 static int running = 1;
+/* set by sigwinch(); the reload itself runs in the event loop, see run() */
+static volatile sig_atomic_t theme_pending = 0;
 static Cur *cursor[CurLast];
 static Clr **scheme;
 static Display *dpy;
@@ -255,6 +260,8 @@ static Window root, wmcheckwin;
 
 /* compile-time check if all tags fit into an unsigned int bit array. */
 struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
+/* the dark/light palette tables in config.h must stay the same length */
+struct NumSchemes { char limitexceeded[LENGTH(colors) != LENGTH(colors_light) ? -1 : 1]; };
 
 /* function implementations */
 void
@@ -1500,11 +1507,29 @@ void
 run(void)
 {
 	XEvent ev;
+	int xfd = ConnectionNumber(dpy);
+	fd_set fds;
+
 	/* main event loop */
 	XSync(dpy, False);
-	while (running && !XNextEvent(dpy, &ev))
-		if (handler[ev.type])
-			handler[ev.type](&ev); /* call handler */
+	while (running) {
+		/* Palette reload requested by sigwinch(). Here, not in the handler:
+		 * Xlib is not async-signal-safe. */
+		if (theme_pending) {
+			theme_pending = 0;
+			reloadtheme(0);
+		}
+		while (XPending(dpy)) {
+			XNextEvent(dpy, &ev);
+			if (handler[ev.type])
+				handler[ev.type](&ev); /* call handler */
+		}
+		/* SIGWINCH is installed without SA_RESTART, so this returns EINTR
+		 * and the flag above is acted on without waiting for an X event. */
+		FD_ZERO(&fds);
+		FD_SET(xfd, &fds);
+		select(xfd + 1, &fds, NULL, NULL, NULL);
+	}
 }
 
 void
@@ -1656,12 +1681,24 @@ setmfact(const Arg *arg)
 void
 setup(void)
 {
-	int i;
+	struct sigaction sa;
 	XSetWindowAttributes wa;
 	Atom utf8string;
 
 	/* clean up any zombies immediately */
 	sigchld(0);
+
+	/* Palette reload: only a flag is set here. reloadtheme() talks to Xlib,
+	 * which is NOT async-signal-safe — calling it from the handler deadlocks
+	 * dwm on Xlib's display lock (the handler runs on top of whatever Xlib
+	 * call it interrupted). run() picks the flag up and reloads.
+	 * SIGWINCH is used because its default disposition is ignore, so a dwm
+	 * build without this handler simply ignores the signal (SIGUSR1 would
+	 * terminate an unpatched dwm). */
+	sa.sa_handler = sigwinch;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0; /* no SA_RESTART: select() in run() must return EINTR */
+	sigaction(SIGWINCH, &sa, NULL);
 
 	/* init screen */
 	screen = DefaultScreen(dpy);
@@ -1693,10 +1730,9 @@ setup(void)
 	cursor[CurNormal] = drw_cur_create(drw, XC_left_ptr);
 	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
 	cursor[CurMove] = drw_cur_create(drw, XC_fleur);
-	/* init appearance */
+	/* init appearance (palette read from ~/.local/state/theme) */
 	scheme = ecalloc(LENGTH(colors), sizeof(Clr *));
-	for (i = 0; i < LENGTH(colors); i++)
-		scheme[i] = drw_scm_create(drw, colors[i], 3);
+	reloadtheme(0);
 	/* init bars */
 	updatebars();
 	updatestatus();
@@ -1761,6 +1797,52 @@ sigchld(int unused)
 	if (signal(SIGCHLD, sigchld) == SIG_ERR)
 		die("can't install SIGCHLD handler:");
 	while (0 < waitpid(-1, NULL, WNOHANG));
+}
+
+void
+sigwinch(int unused)
+{
+	/* Async-signal-safe: every Xlib call happens later in run(). */
+	theme_pending = 1;
+}
+
+void
+reloadtheme(int unused)
+{
+	static int first = 1;
+	static const char *(*active)[3] = colors;
+	int i;
+	char path[256] = "", state[sizeof "light"] = "";
+	FILE *f;
+
+	(void)unused;
+	if (getenv("HOME"))
+		snprintf(path, sizeof path, "%s/.local/state/theme", getenv("HOME"));
+	if ((f = fopen(path, "r"))) {
+		if (!fgets(state, sizeof state, f))
+			state[0] = '\0';
+		fclose(f);
+	}
+	/* An unreadable/empty/torn read (the writers truncate before writing)
+	 * keeps the palette we already have instead of guessing dark. */
+	if (strstr(state, "light"))
+		active = colors_light;
+	else if (strstr(state, "dark"))
+		active = colors;
+
+	for (i = 0; i < LENGTH(colors); i++) {
+		if (scheme[i])
+			free(scheme[i]);
+		scheme[i] = drw_scm_create(drw, active[i], 3);
+	}
+
+	/* The first call comes from setup(), before the bars exist — only repaint
+	 * on later calls, i.e. a real SIGWINCH-driven reload. */
+	if (!first) {
+		drawbars();
+		focus(NULL);
+	}
+	first = 0;
 }
 
 void
