@@ -1,6 +1,8 @@
 ### ---- PATH config ----------------------------------------
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 export PATH="$HOME/.local/bin:$PATH"
+# pkgs activation dir (opt/source builds; ~/pkgs is gitignored)
+[ -d "$HOME/pkgs/bin" ] && export PATH="$HOME/pkgs/bin:$PATH"
 
 ### ZSH HOME
 export ZSH=$HOME/.config/zsh-conf
