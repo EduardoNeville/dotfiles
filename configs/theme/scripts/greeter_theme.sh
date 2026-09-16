@@ -41,7 +41,7 @@ case "$THEME" in
         THEME="dark"
         BACKGROUND="$ASSETS/hands_of_god.png"
         THEME_NAME="Adwaita-dark"
-        BG_COLOR="#1c1f26"
+        BG_COLOR="#011627" # Night Owl surface, matches dwm's dark bar (config.h)
         ;;
 esac
 

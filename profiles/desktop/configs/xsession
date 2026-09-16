@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+# Symlinked to ~/.xsession from dotfiles (profiles/desktop/configs/xsession).
+#
+# /etc/X11/Xsession runs this file if it is executable. That path is reached
+# whenever a session's Exec= is /etc/X11/Xsession — Debian's generic
+# "Default Xsession" entry (lightdm-xsession.desktop) does exactly that. Before
+# this file existed, Xsession found no ~/.xsession, no x-session-manager and no
+# x-window-manager, and fell back to x-terminal-emulator: wezterm, unmanaged, no
+# window manager, no bar (2026-09-15).
+#
+# With it, *any* of the three entry points ends in the same session:
+#   startx            -> ~/.xinitrc  -> this
+#   /etc/X11/Xsession -> ~/.xsession -> this
+#   lightdm           -> /usr/share/xsessions/dwm.desktop -> /usr/local/bin/dwm-session
+exec "${DOTFILES_DIR:-$HOME/dotfiles}/profiles/desktop/configs/dwm-session.sh"

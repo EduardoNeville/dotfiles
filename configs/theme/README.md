@@ -18,6 +18,7 @@ Every surface reads that file; only one script ever writes it.
 | zsh: starship, fzf, autosuggestions, f-sy-h | `configs/zsh-conf/theme-zsh.zsh` precmd hook |
 | remote hosts | `propagate_state.sh` writes the file over SSH, then runs their `tmux_theme_sync.sh` |
 | lightdm login + light-locker lock screen | `greeter_theme.sh` rewrites `slick-greeter.conf`; `/etc/lightdm/slick-greeter.conf` is a symlink to it (`setup_lightdm.sh`), so no root per toggle |
+| Firefox + GTK apps | `gtk_theme.sh` writes the GSettings appearance (`color-scheme`, `gtk-theme`) — the only system signal available without a DE or an xdg-desktop-portal. Firefox keeps the System theme and follows it for chrome and `prefers-color-scheme` |
 
 The palette itself is documented in `colors-light.md`; dark values live next to
 each consumer (they are not generated from one file — see "Why not one palette
@@ -46,6 +47,7 @@ It is bound in two places:
 | `setup_theme_remotes.sh` | One-time setup: creates `~/.config/theme/remote-hosts` (default `deep-blue`) and validates connectivity to every host. |
 | `verify_theme_sync.sh` | End-to-end check: converges every target, flips the theme through `propagate_state.sh`, asserts tmux's global status-style changed on every reachable host, reports `theme-sync.log` growth (pi extension evidence), restores the original theme. |
 | `greeter_theme.sh` | Regenerate the slick-greeter config (login screen + light-locker lock screen) from the state file. Called by `propagate_state.sh` on every toggle. |
+| `gtk_theme.sh` | Write the GSettings appearance (`org.gnome.desktop.interface` `color-scheme` + `gtk-theme`) so GTK apps and Firefox follow the theme. Called by `propagate_state.sh` (step 1f). Needs a D-Bus session bus; exits 1 with a note when dconf cannot be written. |
 | `dwm_bar_probe.py` | Desktop-only check: reads the actual pixels of dwm's bar and asserts they match the state file (`--expect light|dark`). This is what proves the SIGWINCH reload path works. |
 
 ## How the pieces fit

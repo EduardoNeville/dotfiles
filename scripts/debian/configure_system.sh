@@ -51,6 +51,10 @@ setup_systemd_user_services() {
     if [ -f "${HOME}/.config/systemd/user/review-packages.timer" ]; then
         systemctl --user enable review-packages.timer 2>/dev/null && echo "  ✓ enabled review-packages.timer"
     fi
+    # Battery level notifications (30/20/10% discharging, >80% charging)
+    if [ -f "${HOME}/.config/systemd/user/battery-notify.timer" ]; then
+        systemctl --user enable --now battery-notify.timer 2>/dev/null && echo "  ✓ enabled battery-notify.timer"
+    fi
     _success "Systemd user services configured"
 }
 
@@ -158,6 +162,13 @@ main() {
         # login/lock screen — no-op unless lightdm + slick-greeter are installed
         [ -f "${DOTFILES_DIR}/profiles/desktop/scripts/setup_lightdm.sh" ] &&
             bash "${DOTFILES_DIR}/profiles/desktop/scripts/setup_lightdm.sh"
+        # initial theme state for the consumers that read it (rofi palette,
+        # greeter config, tmux); later every toggle refreshes them
+        [ -f "${DOTFILES_DIR}/configs/theme/scripts/rofi_theme.sh" ] &&
+            bash "${DOTFILES_DIR}/configs/theme/scripts/rofi_theme.sh"
+        # storage/boot tuning — rotation-guarded, idempotent
+        [ -f "${DOTFILES_DIR}/profiles/desktop/scripts/setup_perf.sh" ] &&
+            bash "${DOTFILES_DIR}/profiles/desktop/scripts/setup_perf.sh"
     fi
 
     add_user_to_groups

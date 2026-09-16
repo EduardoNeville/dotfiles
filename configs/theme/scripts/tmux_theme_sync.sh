@@ -123,6 +123,13 @@ TMUX_POWERSLINE_LEFT=""
 TMUX_POWERSLINE_RIGHT=""
 TMUX_SEPARATOR=""
 
+# Continuum prepends its save hook `#(.../continuum_save.sh)` to status-right
+# when it loads, and that hook *is* its timer (continuum saves on status
+# updates). Redefining status-right below would silently disable auto-save, so
+# carry over any plugin `#(...sh)` interpolations that are already there.
+PLUGIN_INTERP="$(tmux show-options -g -v status-right 2>/dev/null \
+    | grep -oE '#\([^)]*\.sh\)' | tr -d '\n' || true)"
+
 if [ "$THEME" = "light" ]; then
     # ── Light mode (Catppuccin Latte-inspired) ──────────────
     # Background: off-white #FAFAFA, foreground: near-black #1A1A2E
@@ -141,7 +148,7 @@ if [ "$THEME" = "light" ]; then
     tmux setw -g window-status-current-format "#[fg=#FAFAFA,bg=#8839EF]${TMUX_POWERSLINE_LEFT}#[fg=#FAFAFA,bg=#8839EF,bold] #I #[fg=#8839EF,bg=#1E66F5]${TMUX_POWERSLINE_LEFT}#[fg=#FAFAFA,bg=#1E66F5] #W #{?window_zoomed_flag,󰊓 ,}#[fg=#1E66F5,bg=#FAFAFA]${TMUX_POWERSLINE_LEFT}"
 
     # Right status
-    tmux set -g status-right ""
+    tmux set -g status-right "$PLUGIN_INTERP"
     tmux set -ga status-right "#[fg=#DF8E1D,bg=#FAFAFA]#{?#{SSH_CLIENT}, 󰌘 SSH ,}"
     tmux set -ga status-right "#[fg=#40A02B,bg=#FAFAFA] #{?#{==:#(tailscale status --json 2>/dev/null | jq -r '.Self.Online' 2>/dev/null),true},󰱠 CONNECTED,󰅙 OFFLINE} "
 
@@ -178,7 +185,7 @@ else
     tmux setw -g window-status-current-format "#[fg=#011627,bg=#c792ea]${TMUX_POWERSLINE_LEFT}#[fg=#011627,bg=#c792ea,bold] #I #[fg=#c792ea,bg=#82aaff]${TMUX_POWERSLINE_LEFT}#[fg=#011627,bg=#82aaff] #W #{?window_zoomed_flag,󰊓 ,}#[fg=#82aaff,bg=#011627]${TMUX_POWERSLINE_LEFT}"
 
     # Right status
-    tmux set -g status-right ""
+    tmux set -g status-right "$PLUGIN_INTERP"
     tmux set -ga status-right "#[fg=#c5e478,bg=#011627]#{?#{SSH_CLIENT}, 󰌘 SSH ,}"
     tmux set -ga status-right "#[fg=#22da6e,bg=#011627] #{?#{==:#(tailscale status --json 2>/dev/null | jq -r '.Self.Online' 2>/dev/null),true},󰱠 CONNECTED,󰅙 OFFLINE} "
 

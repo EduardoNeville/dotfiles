@@ -158,6 +158,18 @@ local config = {
     -- Aesthetic Night Colorscheme
     bold_brightens_ansi_colors = true,
 
+    --- Font ----------
+    -- The config set no font at all, so wezterm used its built-in 12pt (16px at
+    -- 96dpi) — noticeably larger than everything else here (dwm's bar is 14pt
+    -- for comparison, and the bar probe/font metrics both agree).
+    --
+    -- DPI scaling stays on wezterm's automatic detection on purpose: eDP-1 is
+    -- 309mm wide at 1920px (~157dpi) while HDMI-2 is 597mm (~82dpi), so a fixed
+    -- point size correctly renders bigger in pixels on the HiDPI panel to stay
+    -- the same physical size. If you would rather have identical *pixel* size on
+    -- both monitors, add `dpi = 96,` here.
+    font_size = 9,
+
     --- UI --------------------------------
     --- Underline ------
     underline_thickness = 0,

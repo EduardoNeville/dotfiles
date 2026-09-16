@@ -16,78 +16,56 @@ static const char dmenufont[]       = "monospace:size=14";
 //static const char col_gray3[]       = "#bbbbbb";
 //static const char col_gray4[]       = "#eeeeee";
 //static const char col_cyan[]        = "#005577";
-static const char col_back[]        = "#121111";
-static const char col_gray1[]       = "#212126";
-static const char col_gray2[]       = "#444444";
-static const char col_gray3[]       = "#bbbbbb";
-static const char col_gray4[]       = "#dbdfdf";
-static const char col_blue[]        = "#808fbe";
-static const char col_navy1[]       = "#0d274f";
-static const char col_navy2[]       = "#21296e";
-static const char col_orange[]      = "#eaac79";
-static const char col_red[]         = "#c15a5e";
-static const char col_green[]       = "#8fa176";
-static const char col_cyan[]        = "#8cb5af";
-static const char col_yellow[]      = "#d8b170";
-static const char col_magenta[]     = "#b183ba";
-static const char col_magenta2[]    = "#ce92d4";
-static const char col_golden[]      = "#ffd700";
-static const char col_gold_warm[]   = "#f38518";
-static const char col_ivory[]       = "#FFFFF0";
-static const char col_rose_gold[]   = "#E0BFB8";
+/* ── Palettes ────────────────────────────────────────────────────
+ * Two 7x3 scheme tables (fg, bg, border), selected at runtime from the shared
+ * theme state (~/.local/state/theme) by reloadtheme() in dwm.c.
+ *
+ * The values mirror the terminal themes in configs/wezterm/wezterm.lua and the
+ * tmux palettes in configs/theme/scripts/tmux_theme_sync.sh, using the same
+ * roles those use: bar surface, muted text, and blue/magenta chips.
+ * Both tables must stay the same length (compile-time check in dwm.c).
+ * Everything else that used to live here was dead: grep found no users outside
+ * this file. */
 
-// synthwave pallete
-static const char col_sy_yellow[] = "#f9f972";
-static const char col_sy_pink[] = "#ff00f6";
-static const char col_sy_purple[] = "#aa54f9";
-static const char col_sy_blue[] = "#55a8fb";
-static const char col_sy_celeste[] = "#00fbfd";
+/* dark — Night Owl (wezterm: background #011627, foreground #d6deeb) */
+static const char col_night_bg[]      = "#011627";
+static const char col_night_fg[]      = "#d6deeb";
+static const char col_night_muted[]   = "#565f89";
+static const char col_night_blue[]    = "#82aaff";
+static const char col_night_magenta[] = "#c792ea";
+static const char col_night_border[]  = "#1d3b53";
 
-static const char col_void_black[] = "#1c1f26";
-static const char col_void_gray[] = "#505151";
-static const char col_void_green[] = "#4EE54F";
+/* light — Catppuccin Latte, with the black-text override wezterm applies
+ * (Latte's own #4C4F69 foreground reads as grey), and the #FAFAFA surface the
+ * tmux palette and greeter already use. */
+static const char col_latte_bg[]      = "#FAFAFA";
+static const char col_latte_fg[]      = "#000000";
+static const char col_latte_blue[]    = "#1E66F5";
+static const char col_latte_purple[]  = "#8839EF";
+static const char col_latte_border[]  = "#E6E9EF";
 
-
-#define col_primary   col_void_gray
-#define col_secondary col_void_black
-#define col_accent    col_void_green
-
-
+/* Roles are identical in both themes; only the colours change.
+ * (Chip colours equal the tmux status bar's, so bar and status line match.) */
 static const char *colors[][3] = {
-    /*               		 fg               bg              border          */
-    [SchemeNorm] 		 = { col_primary,  col_secondary,   col_accent    },
-    [SchemeSel] 		 = { col_secondary,    col_primary, col_secondary  },
-	//[SchemeTabActive]  	 = { col_secondary,    col_primary, col_secondary    },
-	//[SchemeTabInactive]  = { col_primary,  col_secondary,   col_secondary    },
-	[SchemeStatus]  	 = { col_primary,  col_secondary,   col_secondary    }, // Statusbar right {text,background,not used but cannot be empty}
-	[SchemeTagsSel]      = { col_accent,    col_primary, col_secondary    }, // Tagbar left selected {text,background,not used but cannot be empty}
-	[SchemeTagsNorm]     = { col_primary,  col_secondary,   col_secondary    }, // Tagbar left unselected {text,background,not used but cannot be empty}
-	[SchemeInfoSel]      = { col_accent,    col_primary, col_secondary    }, // infobar middle  selected {text,background,not used but cannot be empty}
-	[SchemeInfoNorm]     = { col_primary,  col_secondary,   col_secondary    }, // infobar middle  unselected {text,background,not used but cannot be empty}
+	/*                fg                 bg                  border           */
+	[SchemeNorm]     = { col_night_fg,      col_night_bg,       col_night_border }, /* bar base, unfocused window border */
+	[SchemeSel]      = { col_night_bg,      col_night_blue,     col_night_blue   }, /* focused border + its title chip */
+	[SchemeStatus]   = { col_night_fg,      col_night_bg,       col_night_bg     }, /* slstatus text (monochrome: see notes) */
+	[SchemeTagsSel]  = { col_night_bg,      col_night_magenta,  col_night_bg     }, /* selected tag chip */
+	[SchemeTagsNorm] = { col_night_muted,   col_night_bg,       col_night_bg     }, /* other tags */
+	[SchemeInfoSel]  = { col_night_bg,      col_night_blue,     col_night_bg     }, /* active window tab */
+	[SchemeInfoNorm] = { col_night_muted,   col_night_bg,       col_night_bg     }, /* inactive tabs */
 };
 
-/* ── Theme palettes ──────────────────────────────────────────────
- * dwm picks one of the two tables below at runtime from the shared state file
- * ~/.local/state/theme (see reloadtheme() in dwm.c, triggered by SIGWINCH from
- * configs/theme/scripts/propagate_state.sh). Both tables must keep the same
- * length — enforced by a compile-time check in dwm.c.
- * Light palette: configs/theme/colors-light.md (Catppuccin Latte-inspired). */
-static const char col_latte_fg[]     = "#1A1A2E";
-static const char col_latte_bg[]     = "#FAFAFA";
-static const char col_latte_accent[] = "#1E66F5";
-
-/* Same scheme → role mapping as colors[][] above (fg/bg/accent), Latte values:
- * TagsSel/InfoSel invert to a dark chip with blue text, mirroring dark mode's
- * grey chip with green text. */
 static const char *colors_light[][3] = {
-	/*              		 fg                  bg                  border            */
-	[SchemeNorm] 		 = { col_latte_fg,     col_latte_bg,       col_latte_accent },
-	[SchemeSel] 		 = { col_latte_bg,     col_latte_fg,       col_latte_bg     },
-	[SchemeStatus]  	 = { col_latte_fg,     col_latte_bg,       col_latte_bg     }, // Statusbar right
-	[SchemeTagsSel]      = { col_latte_accent, col_latte_fg,       col_latte_bg     }, // Tagbar left selected
-	[SchemeTagsNorm]     = { col_latte_fg,     col_latte_bg,       col_latte_bg     }, // Tagbar left unselected
-	[SchemeInfoSel]      = { col_latte_accent, col_latte_fg,       col_latte_bg     }, // infobar middle selected
-	[SchemeInfoNorm]     = { col_latte_fg,     col_latte_bg,       col_latte_bg     }, // infobar middle unselected
+	/*                fg                 bg                  border           */
+	[SchemeNorm]     = { col_latte_fg,      col_latte_bg,       col_latte_border },
+	[SchemeSel]      = { col_latte_bg,      col_latte_blue,     col_latte_blue   },
+	[SchemeStatus]   = { col_latte_fg,      col_latte_bg,       col_latte_bg     },
+	[SchemeTagsSel]  = { col_latte_bg,      col_latte_purple,   col_latte_bg     },
+	[SchemeTagsNorm] = { col_latte_fg,      col_latte_bg,       col_latte_bg     },
+	[SchemeInfoSel]  = { col_latte_bg,      col_latte_blue,     col_latte_bg     },
+	[SchemeInfoNorm] = { col_latte_fg,      col_latte_bg,       col_latte_bg     },
 };
 
 /* tagging */
@@ -151,7 +129,8 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 
-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_primary, "-nf", col_secondary, "-sb", col_rose_gold, "-sf", col_accent, NULL };
+/* dmenu is compiled in, so it stays Night Owl regardless of the theme. */
+static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_night_bg, "-nf", col_night_fg, "-sb", col_night_blue, "-sf", col_night_bg, NULL };
 static const char *termcmd[]  = { "wezterm", NULL };
 static const char *roficmd[] = { "rofi", "-show", "drun", "-theme", "~/.config/rofi/current.rasi"};
 
@@ -159,7 +138,10 @@ static const char *roficmd[] = { "rofi", "-show", "drun", "-theme", "~/.config/r
 static const char *firecmd[] = {"firefox", NULL};
 
 /* Clip Menu */
-static const char *clipmenucmd[] = { "sh", "-c", "CM_LAUNCHER=rofi clipmenu -i -fn 'monospace:size=14' -nb '#241b30' -nf '#00fbfd' -sb '#E0BFB8' -sf '#241b30'", NULL };
+/* Colours come from rofi's own theme (configs/theme/scripts/rofi_theme.sh writes
+ * it on every toggle), not from dmenu-style flags, so the clipboard picker
+ * follows light/dark like the rest of the desktop. */
+static const char *clipmenucmd[] = { "sh", "-c", "CM_LAUNCHER=rofi clipmenu -i", NULL };
 
 /* Light Control */
 static const char *brighter[] = { "brightnessctl", "set", "10%+", NULL };
