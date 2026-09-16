@@ -75,6 +75,27 @@ pkg_rpath() {
   printf '%s' "${out%:}"
 }
 
+# Drop build outputs for the current package so the next build actually
+# recompiles + relinks. After the system toolchain moves, an incremental build
+# sees "no source changes", skips the link, and reinstalls a binary linked
+# against the old (possibly now-absent) libc. Triggered by build.sh --force.
+clean_build_dir() {
+  local src="$PKGS_ROOT/src/$pkg_src_dir"
+  [ -d "$src" ] || return 0
+  case "$pkg_build" in
+    autotools)
+      if [ -f "$src/Makefile" ]; then
+        (cd "$src" && make distclean) >/dev/null 2>&1 || rm -f "$src/Makefile"
+      fi
+      ;;
+    cmake) rm -rf "$src/build-release" ;;
+    # neovim: wipe build/ but keep .deps — those are static archives with no
+    # libc version binding (the version is chosen by the final link).
+    make) rm -rf "$src/build" ;;
+  esac
+  info "cleaned build dir for $pkg_name ($pkg_build)"
+}
+
 # --- build types -----------------------------------------------------------
 
 build_autotools() {
@@ -157,6 +178,7 @@ build_package() {
   : "${pkg_prefix:?missing pkg_prefix in $conf}"
 
   log "Building $pkg_name ($pkg_version) [type=$pkg_type build=$pkg_build]"
+  if [ "${FORCE:-0}" = "1" ]; then clean_build_dir; fi
   case "$pkg_build" in
     autotools) build_autotools ;;
     cmake)     build_cmake ;;
@@ -164,7 +186,9 @@ build_package() {
     *) die "$pkg_name: unknown build system '$pkg_build'" ;;
   esac
 
-  [ "${LINK:-1}" = "1" ] && link_bins
+  # NB: must be an if, not `[ ... ] && link_bins` — the latter leaves the
+  # function returning 1 under set -e, which made --no-link always fail.
+  if [ "${LINK:-1}" = "1" ]; then link_bins; fi
 }
 
 # Optionally create symlinks for installed binaries in the pkgs activation dir

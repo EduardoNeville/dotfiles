@@ -5,6 +5,7 @@
 #   ./scripts/update.sh            # update ALL packages (dep order)
 #   ./scripts/update.sh tmux       # update one package (+ its deps)
 #   ./scripts/update.sh --no-link tmux
+#   ./scripts/update.sh --force nvim   # wipe build dir first (see check.sh)
 #
 #   git     packages : git pull --ff-only, rebuild, reinstall
 #   tarball packages : re-extract a pristine source dir, reconfigure, build, install
@@ -18,15 +19,17 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$DIR/common.sh"
 
 LINK=1
+FORCE=0
 targets=()
 for arg in "$@"; do
   case "$arg" in
     --no-link) LINK=0 ;;
+    --force) FORCE=1 ;;
     --) : ;;
     *) targets+=("$arg") ;;
   esac
 done
-export LINK
+export LINK FORCE
 
 init_build_env
 unset_pkg_vars
@@ -94,4 +97,5 @@ else
   done
 fi
 
+"$DIR/check.sh"
 log "Done."
