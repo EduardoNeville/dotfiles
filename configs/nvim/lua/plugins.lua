@@ -143,7 +143,7 @@ return {
 				typescriptreact = {},
 				bash = { "shellcheck" },
 				yaml = { "yamllint" },
-				markdown = { "markdownlint" },
+				-- markdownlint dropped: binary not installed (was `ENOENT` on BufEnter)
 			}
 			local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
 			vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {

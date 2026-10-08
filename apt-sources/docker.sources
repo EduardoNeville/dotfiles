@@ -1,0 +1,10 @@
+# Docker Engine — official vendor repo (Tier 2), base-wide: docker-ce cluster
+# is declared in profiles/base/packages.apt, so every Debian machine needs it.
+# Keyring: https://download.docker.com/linux/debian/gpg (official URL) →
+# /etc/apt/keyrings/docker.asc (bootstrapped before this file goes live).
+Types: deb
+URIs: https://download.docker.com/linux/debian/
+Suites: trixie
+Components: stable
+Architectures: amd64
+Signed-By: /etc/apt/keyrings/docker.asc

@@ -1,353 +1,188 @@
 #!/usr/bin/env bash
-# Author: Eduardo Neville <eduadoneville82@gmail.com>
-# Description: Configure Debian system settings and symlink dotfiles
+# scripts/debian/configure_system.sh — Debian adapter (profile-aware).
+# Everything here runs on full installs; guards keep it idempotent.
 
 set -e
 
-DOTFILES_DIR="${HOME}/dotfiles"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/../lib/os.sh"
+source "${SCRIPT_DIR}/../lib/link.sh"
 
-# Pi's configuration is owned by the dotpi repo (github.com/EduardoNeville/dotpi).
-# dotfiles no longer ships configs/pi at all: it clones dotpi and lets
-# dotpi/install.sh create the ~/.pi/agent symlinks, so exactly one repo owns
-# those files and the two installers cannot fight over them.
-DOTPI_REPO="${DOTPI_REPO:-git@github.com:EduardoNeville/dotpi.git}"
-DOTPI_DIR="${DOTPI_DIR:-${HOME}/dotpi}"
-
-_process() { echo "$(tput setaf 6)→ $1...$(tput sgr0)"; }
-_success() { echo "$(tput setaf 2)✓ Success:$(tput sgr0) $1"; }
-_error() { echo "$(tput setaf 1)✗ Error:$(tput sgr0) $1"; }
-_prompt() { echo "$(tput setaf 3)? $1$(tput sgr0)"; }
-
-link_dotfiles() {
-    _process "Symlinking dotfiles"
-
-    # Create .config directory if it doesn't exist
-    mkdir -p "${HOME}/.config"
-
-    # Symlink each config directory
-    for item in "${DOTFILES_DIR}/configs"/*; do
-        [ -d "$item" ] || continue  # Skip if not a directory
-
-        local basename=$(basename "$item")
-        local target="${HOME}/.config/${basename}"
-
-        # Skip certain directories
-        case "$basename" in
-            "suckless"|"services")
-                continue
-                ;;
-        esac
-
-        # Backup existing directory/file
-        if [ -e "$target" ] && [ ! -L "$target" ]; then
-            _process "Backing up existing $basename"
-            mv "$target" "${target}.backup.$(date +%Y%m%d_%H%M%S)"
-        fi
-
-        # Remove existing symlink
-        [ -L "$target" ] && rm "$target"
-
-        # Create new symlink
-        ln -sf "$item" "$target"
-        echo "  ✓ Linked $basename"
-    done
-
-    _success "Config directories linked"
-}
-
-link_zsh_config() {
-    _process "Linking ZSH configuration"
-
-    local zshrc="${DOTFILES_DIR}/configs/zsh-conf/zshrc"
-
-    if [ -f "$zshrc" ]; then
-        # Backup existing .zshrc
-        if [ -f "${HOME}/.zshrc" ] && [ ! -L "${HOME}/.zshrc" ]; then
-            mv "${HOME}/.zshrc" "${HOME}/.zshrc.backup.$(date +%Y%m%d_%H%M%S)"
-        fi
-
-        [ -L "${HOME}/.zshrc" ] && rm "${HOME}/.zshrc"
-        ln -sf "$zshrc" "${HOME}/.zshrc"
-        _success "ZSH config linked"
-    else
-        _error "ZSH config not found at $zshrc"
-    fi
-}
-
-link_gitconfig() {
-    _process "Linking git configuration"
-
-    local gitconfig="${DOTFILES_DIR}/configs/.gitconfig"
-
-    if [ -f "$gitconfig" ]; then
-        # Don't overwrite if user already has custom git config
-        if [ -f "${HOME}/.gitconfig" ] && ! [ -L "${HOME}/.gitconfig" ]; then
-            read -p "Overwrite existing .gitconfig? (y/n): " overwrite_git
-            if [[ ! "$overwrite_git" =~ ^[Yy]$ ]]; then
-                _process "Keeping existing .gitconfig"
-                return 0
-            fi
-            mv "${HOME}/.gitconfig" "${HOME}/.gitconfig.backup.$(date +%Y%m%d_%H%M%S)"
-        fi
-
-        [ -L "${HOME}/.gitconfig" ] && rm "${HOME}/.gitconfig"
-        ln -sf "$gitconfig" "${HOME}/.gitconfig"
-        _success "Git config linked"
-    fi
-}
-
-setup_zsh_as_default() {
-    _process "Setting ZSH as default shell"
-
-    local current_shell=$(basename "$SHELL")
-
-    if [ "$current_shell" = "zsh" ]; then
-        _success "ZSH is already the default shell"
-        return 0
-    fi
-
-    if ! command -v zsh >/dev/null 2>&1; then
-        _error "ZSH is not installed"
-        return 1
-    fi
-
-    local zsh_path=$(which zsh)
-
-    # Check if zsh is in /etc/shells
-    if ! grep -q "^${zsh_path}$" /etc/shells; then
-        _process "Adding ZSH to /etc/shells"
-        echo "$zsh_path" | sudo tee -a /etc/shells
-    fi
-
-    _process "Changing default shell to ZSH (requires password)"
-    chsh -s "$zsh_path"
-
-    _success "ZSH set as default shell (restart terminal to apply)"
-}
-
-install_zsh_plugins() {
-    _process "Installing ZSH plugins"
-
-    local zsh_plugins_dir="${DOTFILES_DIR}/configs/zsh-conf/plugins"
-
-    if [ ! -d "$zsh_plugins_dir" ]; then
-        _error "ZSH plugins directory not found"
-        return 1
-    fi
-
-    # Plugins are likely already in the dotfiles as submodules
-    # Just ensure they're updated
-    cd "${DOTFILES_DIR}"
-
-    if [ -d ".git" ]; then
-        _process "Updating git submodules for ZSH plugins"
-        git submodule update --init --recursive
-        _success "ZSH plugins updated"
-    fi
-
-    cd - >/dev/null
-}
-
-install_starship() {
-    _process "Installing Starship prompt"
-
-    if command -v starship >/dev/null 2>&1; then
-        _success "Starship already installed"
-        return 0
-    fi
-
-    # Check if it's in cargo packages
-    if command -v cargo >/dev/null 2>&1; then
-        _process "Installing Starship via cargo"
-        cargo install starship
-    else
-        _process "Installing Starship via official installer"
-        curl -sS https://starship.rs/install.sh | sh -s -- -y
-    fi
-
-    _success "Starship installed"
-}
-
-setup_vim() {
-    _process "Setting up Vim/Neovim"
-
-    # Install Lazy.nvim for Neovim
-    if command -v nvim >/dev/null 2>&1; then
-        local lazy_dir="${HOME}/.local/share/nvim/site/pack/lazy/start/lazy.nvim"
-
-        if [ ! -d "$lazy_dir" ]; then
-            _process "Installing Lazy.nvim"
-            git clone --filter=blob:none --branch=stable \
-                https://github.com/folke/lazy.nvim.git "$lazy_dir"
-            _success "Lazy.nvim installed"
-        fi
-
-        _process "Syncing Neovim plugins (this may take a moment)"
-        nvim --headless "+Lazy! sync" +qall 2>/dev/null || true
-        _success "Neovim plugins synchronized"
-    fi
-}
+has_profile() { case " $PROFILES " in *" $1 "*) return 0 ;; *) return 1 ;; esac; }
 
 add_user_to_groups() {
     _process "Adding user to necessary groups"
-
-    local groups=("video" "audio" "input" "docker" "storage")
-
+    local groups=(video audio input docker storage)
     for group in "${groups[@]}"; do
-        if getent group "$group" >/dev/null; then
-            if ! groups ${USER} | grep -q "$group"; then
-                sudo usermod -aG "$group" ${USER}
-                echo "  ✓ Added to $group"
+        if getent group "$group" >/dev/null 2>&1; then
+            if ! groups "${USER}" | grep -q "$group"; then
+                sudo usermod -aG "$group" "${USER}" && echo "  ✓ Added to $group"
             fi
         fi
     done
-
     _success "User groups configured"
 }
 
 setup_fonts() {
+    if ! has fc-cache; then
+        _process "Skipping font cache (fontconfig not installed)"
+        return 0
+    fi
     _process "Updating font cache"
-
     fc-cache -fv >/dev/null 2>&1
-
     _success "Font cache updated"
 }
 
-create_common_directories() {
-    _process "Creating common directories"
-
-    local dirs=(
-        "${HOME}/Projects"
-        "${HOME}/Documents"
-        "${HOME}/Downloads"
-        "${HOME}/.local/bin"
-        "${HOME}/.local/share"
-    )
-
-    for dir in "${dirs[@]}"; do
-        mkdir -p "$dir"
-    done
-
-    _success "Common directories created"
-}
-
-install_dotpi() {
-    _process "Installing dotpi (pi agent configuration)"
-
-    if [ -d "${DOTPI_DIR}/.git" ]; then
-        echo "  ✓ Already cloned: ${DOTPI_DIR}"
-        echo "    (update with: git -C ${DOTPI_DIR} pull)"
-    elif [ -e "${DOTPI_DIR}" ]; then
-        _error "${DOTPI_DIR} exists but is not a git clone — using it as-is"
-    elif ! command -v git >/dev/null 2>&1; then
-        _error "git not found — cannot clone dotpi"
-        return 0
-    else
-        # SSH first: the repo is private and setup_github.sh installs the key.
-        # Fall back to HTTPS for token/CI setups. GIT_TERMINAL_PROMPT=0 makes a
-        # failed auth fail fast instead of hanging on a credential prompt, and
-        # the timeout bounds a blackholed network (both clone attempts are
-        # attempted, so worst case is twice this).
-        local https_repo="${DOTPI_REPO/git@github.com:/https://github.com/}"
-        local timeout_cmd=""
-        command -v timeout >/dev/null 2>&1 && timeout_cmd="timeout ${DOTPI_CLONE_TIMEOUT:-90}"
-        local cloned=0
-
-        if ${timeout_cmd} env GIT_TERMINAL_PROMPT=0 git clone "${DOTPI_REPO}" "${DOTPI_DIR}"; then
-            cloned=1
-            echo "  ✓ Cloned ${DOTPI_REPO}"
-        elif [ "${https_repo}" != "${DOTPI_REPO}" ] &&
-             ${timeout_cmd} env GIT_TERMINAL_PROMPT=0 git clone "${https_repo}" "${DOTPI_DIR}"; then
-            cloned=1
-            echo "  ✓ Cloned ${https_repo}"
-        fi
-
-        if [ "$cloned" -eq 0 ]; then
-            # Nothing existed at DOTPI_DIR before this branch, so anything here
-            # now is a partial clone from a killed attempt — safe to remove.
-            rm -rf "${DOTPI_DIR}"
-
-            # Not fatal: the rest of the system configuration is still useful.
-            _error "could not clone dotpi — pi config not installed"
-            echo "    fix with: git clone ${DOTPI_REPO} ${DOTPI_DIR}"
-            echo "         then: sh ${DOTPI_DIR}/install.sh"
-            return 0
-        fi
-    fi
-
-    # dotpi owns ~/.pi/agent/{settings,trust}.json, ~/.hypa and the pi
-    # extensions. Its installer is idempotent and backs up before replacing.
-    if [ -f "${DOTPI_DIR}/install.sh" ]; then
-        if sh "${DOTPI_DIR}/install.sh"; then
-            _success "Pi agent configuration installed by dotpi"
-        else
-            _error "dotpi install.sh failed — check the output above"
-        fi
-    else
-        _error "no install.sh in ${DOTPI_DIR}"
-    fi
-}
-
 setup_systemd_user_services() {
+    # Base units (review timer) + desktop units (pipewire etc.).
+    local services_dir
     _process "Setting up systemd user services"
-
-    local services_dir="${DOTFILES_DIR}/configs/services"
-
-    if [ -d "$services_dir" ]; then
-        mkdir -p "${HOME}/.config/systemd/user"
-
-        for service in "$services_dir"/*.service; do
-            [ -f "$service" ] || continue
-            local service_name=$(basename "$service")
-            ln -sf "$service" "${HOME}/.config/systemd/user/$service_name"
-            echo "  ✓ Linked $service_name"
+    mkdir -p "${HOME}/.config/systemd/user"
+    for services_dir in "${DOTFILES_DIR}/profiles/base/services" "${DOTFILES_DIR}/profiles/desktop/configs/services"; do
+        [ -d "$services_dir" ] || continue
+        for unit in "$services_dir"/*; do
+            [ -f "$unit" ] || continue
+            ln -sf "$unit" "${HOME}/.config/systemd/user/$(basename "$unit")"
+            echo "  ✓ Linked $(basename "$unit")"
         done
-
-        systemctl --user daemon-reload
-        _success "Systemd user services configured"
+    done
+    systemctl --user daemon-reload
+    # Weekly review timer (idempotent, no sudo)
+    if [ -f "${HOME}/.config/systemd/user/review-packages.timer" ]; then
+        systemctl --user enable review-packages.timer 2>/dev/null && echo "  ✓ enabled review-packages.timer"
     fi
+    # Battery level notifications (30/20/10% discharging, >80% charging)
+    if [ -f "${HOME}/.config/systemd/user/battery-notify.timer" ]; then
+        systemctl --user enable --now battery-notify.timer 2>/dev/null && echo "  ✓ enabled battery-notify.timer"
+    fi
+    _success "Systemd user services configured"
+}
+
+ensure_source_pkgs() {
+    # Tier 4: opt/source manifests; builds live in $HOME/pkgs (gitignored).
+    [ -d "${DOTFILES_DIR}/opt/source/packages" ] || return 0
+    _process "Ensuring source-built tools (opt/source)"
+    # Sync manifests into the per-machine build root — build.sh dies on
+    # .conf files it can't find (it reads $PKGS_ROOT/packages/<name>.conf).
+    mkdir -p "${HOME}/pkgs/packages"
+    cp -f "${DOTFILES_DIR}"/opt/source/packages/*.conf "${HOME}/pkgs/packages/"
+    local conf bin
+    for conf in "${DOTFILES_DIR}"/opt/source/packages/*.conf; do
+        [ -f "$conf" ] || continue
+        bin=""
+        pkg_profiles=""
+        # shellcheck disable=SC1090
+        source "$conf"
+        # Optional per-conf profile gate (e.g. pkg_profiles="desktop"):
+        # desktop-only builds need X11 headers the base profile doesn't ship.
+        if [ -n "$pkg_profiles" ] && ! has_profile "$pkg_profiles"; then
+            echo "  ⊘ $pkg_name (profiles: $pkg_profiles — not active here)"
+            continue
+        fi
+        if [ -n "$pkg_bin" ] && ! has "$pkg_bin"; then
+            _process "Building $pkg_name from source (missing $pkg_bin)"
+            # HOME_BIN=~/.local/bin: built bins land somewhere already on PATH.
+            PKGS_ROOT="${HOME}/pkgs" HOME_BIN="${HOME}/.local/bin" \
+                bash "${DOTFILES_DIR}/opt/source/scripts/build.sh" "$pkg_name"
+        else
+            echo "  ✓ $pkg_name ($(has "$pkg_bin" && echo present))"
+        fi
+    done
+    _success "Source packages ensured"
+}
+
+install_console_tty_setup() {
+    # One TTY session, no accidental switches:
+    # 1. Disable Alt+Left/Right VT cycling on the console (kernel keymap
+    #    defaults Decr_Console/Incr_Console — too easy to hit in a shell).
+    #    Ctrl+Alt+Fn switching is untouched; X/dwm unaffected (MODKEY=Mod4).
+    # 2. Mask getty@tty2..6 — tty1 is the only TTY. getty-static respawns
+    #    the idle instances unless masked.
+    [ -f /etc/console/vt-no-arrow-cycle.kmap ] || {
+        sudo mkdir -p /etc/console
+        sudo tee /etc/console/vt-no-arrow-cycle.kmap > /dev/null <<'KMAP'
+alt keycode 105 = VoidSymbol
+alt keycode 106 = VoidSymbol
+KMAP
+    }
+    if [ ! -f /etc/systemd/system/loadkeymap.service ]; then
+        sudo tee /etc/systemd/system/loadkeymap.service > /dev/null <<'UNIT'
+[Unit]
+Description=Console keymap: disable Alt+arrow VT cycling
+After=console-setup.service
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/loadkeys /etc/console/vt-no-arrow-cycle.kmap
+RemainAfterExit=yes
+[Install]
+WantedBy=multi-user.target
+UNIT
+    fi
+    sudo systemctl daemon-reload
+    sudo systemctl enable --now loadkeymap.service
+    local i
+    for i in 2 3 4 5 6; do
+        sudo systemctl mask "getty@tty$i.service"
+    done
 }
 
 main() {
-    _process "Configuring system"
+    detect_os
+    detect_profile
+    _process "Configuring system (Debian, profiles: $PROFILES)"
 
-    # Link configuration files
     link_dotfiles
+    # Manual-auth steps are best-effort ON PURPOSE (SSH key registration and
+    # dotpi access to the private repo happen once, outside install).
+    bash "${DOTFILES_DIR}/profiles/base/scripts/setup_github.sh" || true
+    ensure_dotpi || true
+    link_gitconfig || true
+
+    # Everything below is FAIL-FAST: each step depends on the previous ones
+    # (apt layer → toolchains → source builds), so a failure stops the install
+    # right where it happened instead of cascading into a confusing error later.
     link_zsh_config
-    link_gitconfig
-
-    # Setup Pi agent config — owned by the dotpi repo, cloned on demand
-    install_dotpi
-
-    # Setup shell
-    install_zsh_plugins
+    link_pi_config || true # pi config completes once the SSH key is registered; re-run install.sh
     setup_zsh_as_default
+    install_zsh_plugins
 
-    # Setup applications
-    install_starship
-    setup_vim
+    # Toolchains (Tier 5) — scripts are internally idempotent (rustc/nvm guards
+    # inside), so run unconditionally: a machine with rustc but missing cargo
+    # packages (opt/cargoPkgs) still gets the declared tools.
+    bash "${DOTFILES_DIR}/profiles/base/scripts/install_rust_tools.sh"
+    bash "${DOTFILES_DIR}/profiles/base/scripts/install_nvm_node.sh"
 
-    # System configuration
+    if has_profile desktop; then
+        [ -f "${DOTFILES_DIR}/profiles/desktop/scripts/build_suckless.sh" ] &&
+            bash "${DOTFILES_DIR}/profiles/desktop/scripts/build_suckless.sh"
+        [ -f "${DOTFILES_DIR}/profiles/desktop/scripts/setup_audio.sh" ] &&
+            bash "${DOTFILES_DIR}/profiles/desktop/scripts/setup_audio.sh"
+        [ -f "${DOTFILES_DIR}/profiles/desktop/scripts/install_wezterm.sh" ] &&
+            bash "${DOTFILES_DIR}/profiles/desktop/scripts/install_wezterm.sh"
+        # login/lock screen — no-op unless lightdm + slick-greeter are installed
+        [ -f "${DOTFILES_DIR}/profiles/desktop/scripts/setup_lightdm.sh" ] &&
+            bash "${DOTFILES_DIR}/profiles/desktop/scripts/setup_lightdm.sh"
+        # initial theme state for the consumers that read it (rofi palette,
+        # greeter config, tmux); later every toggle refreshes them
+        [ -f "${DOTFILES_DIR}/configs/theme/scripts/rofi_theme.sh" ] &&
+            bash "${DOTFILES_DIR}/configs/theme/scripts/rofi_theme.sh"
+        # storage/boot tuning — rotation-guarded, idempotent
+        [ -f "${DOTFILES_DIR}/profiles/desktop/scripts/setup_perf.sh" ] &&
+            bash "${DOTFILES_DIR}/profiles/desktop/scripts/setup_perf.sh"
+    fi
+
     add_user_to_groups
     setup_fonts
-    create_common_directories
+    install_console_tty_setup
     setup_systemd_user_services
+    ensure_source_pkgs
 
-    _success "System configuration complete"
-
+    _success "System configuration complete (Debian)"
     echo ""
-    echo "Configuration Summary:"
-    echo "  ✓ Dotfiles linked"
-    echo "  ✓ Pi agent config installed from dotpi"
-    echo "  ✓ ZSH configured"
-    echo "  ✓ Neovim set up"
-    echo "  ✓ Starship prompt installed"
-    echo "  ✓ User groups updated"
-    echo ""
-    echo "NOTE: Log out and log back in for all changes to take effect"
+    echo "NOTE: log out and back in for groups/shell to take effect."
+    echo "One-time: run profiles/base/scripts/setup_github.sh for gh auth + SSH key."
 }
 
-# Run if executed directly
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi

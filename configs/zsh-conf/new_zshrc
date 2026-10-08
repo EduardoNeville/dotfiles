@@ -1,6 +1,8 @@
 ### ---- PATH config ----------------------------------------
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 export PATH="$HOME/.local/bin:$PATH"
+# pkgs activation dir (opt/source builds; ~/pkgs is gitignored)
+[ -d "$HOME/pkgs/bin" ] && export PATH="$HOME/pkgs/bin:$PATH"
 
 ### ZSH HOME
 export ZSH=$HOME/.config/zsh-conf
@@ -197,10 +199,10 @@ gt -> git tui\n'"
 alias ld='lazydocker'
 
 # --- evals config ----------------------------------
-eval "$(zoxide init zsh)"
-
-# rust export
+# rust export (must precede zoxide init so zoxide is on PATH)
 export PATH="$HOME/.cargo/bin:$PATH"
+
+eval "$(zoxide init zsh)"
 
 autoload -U compinit; compinit -i
 

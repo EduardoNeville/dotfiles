@@ -1,0 +1,6 @@
+[Unit]
+Description=Battery level notifications (below 30/20/10% discharging, above 80% charging)
+
+[Service]
+Type=oneshot
+ExecStart=%h/dotfiles/scripts/battery_notify.sh

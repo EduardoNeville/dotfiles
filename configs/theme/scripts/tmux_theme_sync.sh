@@ -7,10 +7,16 @@
 #   tmux_theme_sync.sh toggle  — flip state, then apply colors
 #
 # Callers:
-#   - Wezterm's toggle_theme() via propagate_state.sh — state already updated;
-#     we just read and apply (sync mode).
-#   - tmux.conf hook (client-focus-in) and run-shell  — sync mode.
-#   - tmux binding (Y)                                — toggle mode.
+#   - propagate_state.sh (local, and over ssh on remote hosts) — the state file
+#     is already updated, we just read and apply (sync mode).
+#   - `tmux_theme_sync.sh toggle` by hand — flips the state, then applies.
+#   - verify_theme_sync.sh, via propagate_state.sh.
+#
+# The tmux BINARY matters as much as the socket: a non-interactive shell
+# (wezterm's spawned bash, `ssh host <cmd>`) does not source ~/.zshrc, so it can
+# resolve the distro tmux while the running server is the source build — that
+# mismatch dies with "server exited unexpectedly". Hence the explicit
+# preference order below.
 #
 # `tmux set -g` / `tmux setw -g` set SERVER-WIDE options, so they work from a
 # NON-tmux shell and apply to every session on the server — but only when a
@@ -40,14 +46,66 @@ if [ "$MODE" = "toggle" ]; then
     fi
 fi
 
+# ── Target the user's default tmux server ──────────────────────
+# The caller (e.g. wezterm's run_child_process) may inherit a stale or foreign
+# $TMUX (pointing at a dead/mismatched socket), which makes the nested `tmux`
+# client fail to find the running server and log "no tmux server running; \
+# skipping sync" — leaving tmux stuck on the old theme. We manage the default
+# tmux server (socket /tmp/tmux-$UID/default), so drop the inherited TMUX/
+# TMUX_TMPDIR and let `tmux` discover the canonical default socket.
+unset TMUX TMUX_TMPDIR
+
+# ── Resolve the live tmux server socket ─────────────────┬───
+# The caller (e.g. wezterm's run_child_process) can inject a stale $TMUX or a
+# $TMPDIR/$TMUX_TMPDIR pointing at its own runtime dir, which makes `tmux` look
+# in the wrong place and fail has-session ("no tmux server running; skipping
+# sync") even though a server is up. We manage the default tmux server, so find
+# its actual socket file and force `tmux -S` — immune to inherited env.
+_TMUX_SOCK=""
+for _base in \
+    "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/tmux" "${TMPDIR:-/tmp}" /tmp; do
+    for _cand in "$_base/tmux-$(id -u)/default" "$_base/tmux-$(id -u)/"*/ \
+                 "$_base/tmux/default" "$_base/tmux/"*; do
+        if [ -S "$_cand" ] 2>/dev/null; then
+            _TMUX_SOCK="$_cand"
+            break 2
+        fi
+    done
+    [ -n "$_TMUX_SOCK" ] && break
+ done
+
+# ── Resolve the tmux client binary ────────────────────────────
+# The running server may be the source build ($HOME/pkgs/bin/tmux) while a
+# non-interactive shell (wezterm's spawned bash, ssh command execution — neither
+# sources ~/.zshrc) resolves the distro client instead. A 3.5a client against a
+# 3.7b server fails with "server exited unexpectedly", so prefer the source
+# build explicitly instead of trusting PATH.
+TMUX_BIN=""
+for _cand in "$HOME/pkgs/bin/tmux" "$HOME/.local/bin/tmux" "$(command -v tmux 2>/dev/null)"; do
+    if [ -n "$_cand" ] && [ -x "$_cand" ]; then
+        TMUX_BIN="$_cand"
+        break
+    fi
+done
+
+# Route every `tmux` call below through the resolved binary and socket.
+tmux() {
+    if [ -n "$_TMUX_SOCK" ]; then
+        command "$TMUX_BIN" -S "$_TMUX_SOCK" "$@"
+    else
+        command "$TMUX_BIN" "$@"
+    fi
+}
+
 # ── Guard: only proceed when a tmux server is running ─────────
-if ! command -v tmux >/dev/null 2>&1; then
+if [ -z "$TMUX_BIN" ]; then
     _log "tmux not installed; skipping sync"
     exit 0
 fi
 mkdir -p "$STATE_DIR"
-if ! tmux has-session 2>/dev/null; then
-    _log "no tmux server running; skipping sync"
+if ! tmux has-session 2>/tmp/theme-hs.err; then
+    _log "no tmux server running; skipping sync (socket=${_TMUX_SOCK:-<not-found>})"
+    _log "  tmux error: $(head -c 300 /tmp/theme-hs.err 2>/dev/null | tr '\n' ' ')"
     exit 0
 fi
 
@@ -64,6 +122,13 @@ fi
 TMUX_POWERSLINE_LEFT=""
 TMUX_POWERSLINE_RIGHT=""
 TMUX_SEPARATOR=""
+
+# Continuum prepends its save hook `#(.../continuum_save.sh)` to status-right
+# when it loads, and that hook *is* its timer (continuum saves on status
+# updates). Redefining status-right below would silently disable auto-save, so
+# carry over any plugin `#(...sh)` interpolations that are already there.
+PLUGIN_INTERP="$(tmux show-options -g -v status-right 2>/dev/null \
+    | grep -oE '#\([^)]*\.sh\)' | tr -d '\n' || true)"
 
 if [ "$THEME" = "light" ]; then
     # ── Light mode (Catppuccin Latte-inspired) ──────────────
@@ -83,7 +148,7 @@ if [ "$THEME" = "light" ]; then
     tmux setw -g window-status-current-format "#[fg=#FAFAFA,bg=#8839EF]${TMUX_POWERSLINE_LEFT}#[fg=#FAFAFA,bg=#8839EF,bold] #I #[fg=#8839EF,bg=#1E66F5]${TMUX_POWERSLINE_LEFT}#[fg=#FAFAFA,bg=#1E66F5] #W #{?window_zoomed_flag,󰊓 ,}#[fg=#1E66F5,bg=#FAFAFA]${TMUX_POWERSLINE_LEFT}"
 
     # Right status
-    tmux set -g status-right ""
+    tmux set -g status-right "$PLUGIN_INTERP"
     tmux set -ga status-right "#[fg=#DF8E1D,bg=#FAFAFA]#{?#{SSH_CLIENT}, 󰌘 SSH ,}"
     tmux set -ga status-right "#[fg=#40A02B,bg=#FAFAFA] #{?#{==:#(tailscale status --json 2>/dev/null | jq -r '.Self.Online' 2>/dev/null),true},󰱠 CONNECTED,󰅙 OFFLINE} "
 
@@ -120,7 +185,7 @@ else
     tmux setw -g window-status-current-format "#[fg=#011627,bg=#c792ea]${TMUX_POWERSLINE_LEFT}#[fg=#011627,bg=#c792ea,bold] #I #[fg=#c792ea,bg=#82aaff]${TMUX_POWERSLINE_LEFT}#[fg=#011627,bg=#82aaff] #W #{?window_zoomed_flag,󰊓 ,}#[fg=#82aaff,bg=#011627]${TMUX_POWERSLINE_LEFT}"
 
     # Right status
-    tmux set -g status-right ""
+    tmux set -g status-right "$PLUGIN_INTERP"
     tmux set -ga status-right "#[fg=#c5e478,bg=#011627]#{?#{SSH_CLIENT}, 󰌘 SSH ,}"
     tmux set -ga status-right "#[fg=#22da6e,bg=#011627] #{?#{==:#(tailscale status --json 2>/dev/null | jq -r '.Self.Online' 2>/dev/null),true},󰱠 CONNECTED,󰅙 OFFLINE} "
 

@@ -1,0 +1,33 @@
+# Base layer — every machine (deep-blue, hydra, i-mac).
+# Names identical on apt AND brew; per-OS names live in packages.apt/brew.
+# One per line, # comments allowed.
+bash-completion
+btop
+cmake
+curl
+fastfetch
+ffmpeg
+fzf
+gdb
+git
+git-lfs
+gnupg
+httpie
+jq
+luarocks
+make
+meson
+nnn
+pandoc
+pass
+pkg-config
+python3
+rsync
+shellcheck
+stow
+tree
+unzip
+vim
+wget
+zsh
+zip

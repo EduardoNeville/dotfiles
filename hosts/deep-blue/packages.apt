@@ -1,0 +1,18 @@
+# deep-blue per-host packages (DL360 G9). Never shared.
+# HP server tooling (HPE MCP vendor repo — hosts/deep-blue/apt-sources/)
+amsd
+hponcfg
+ssacli
+ssaducli
+storcli
+ipmitool
+python3-hpilo
+
+# Services
+postgresql
+postgresql-common
+redis
+certbot
+cloudflared
+bind9-dnsutils
+hdparm

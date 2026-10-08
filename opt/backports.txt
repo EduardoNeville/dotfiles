@@ -1,0 +1,4 @@
+# Tier 1 declared backports — one package per line.
+# Backports enabled in apt-sources/debian.sources; installing from them is
+# OPT-IN: any name here is installed with `apt-get -t trixie-backports install`.
+# Nothing today; add when the review loop flags something as stale enough.

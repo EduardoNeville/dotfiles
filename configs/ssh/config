@@ -1,0 +1,11 @@
+# SSH config — shared across machines (tailscale magicDNS resolves hostnames).
+# Customize Host entries here; ~/.ssh/config is symlinked to this file.
+Host deep-blue hydra imac-de-carlos phalanx sargon
+    ServerAliveInterval 30
+    ServerAliveCountMax 3
+    ConnectTimeout 10
+    IdentityFile ~/.ssh/id_ed25519
+
+Host *
+    AddKeysToAgent yes
+    IdentityFile ~/.ssh/id_ed25519

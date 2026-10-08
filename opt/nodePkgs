@@ -1,1 +1,4 @@
+# Global JS packages — installed with `bun add -g`, never npm (2026-09).
+# core set (@anthropic-ai/claude-code, typescript, ts-node, yarn, pnpm)
+# lives in profiles/base/scripts/install_nvm_node.sh.
 markdownlint-cli

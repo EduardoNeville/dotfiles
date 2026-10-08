@@ -33,13 +33,19 @@ REMOTE_SCRIPTS="$HOME/dotfiles/configs/theme/scripts"
 LOCAL_SCRIPTS="${DOTFILES_SCRIPTS:-$REMOTE_SCRIPTS}"
 
 # Mirror of propagate_state.sh's remote command (propagate_state.sh is the
-# source of truth; keep in sync if that script changes).
+# source of truth; keep in sync if that script changes). $HOME/XDG_STATE_HOME
+# are expanded by the remote shell.
 _remote_cmd() {
     local theme="$1"
     local scripts="$2" # remote hosts use $HOME/dotfiles; local fallback may use an override
-    printf "mkdir -p '%s' && echo '%s' > '%s' && [ -f '%s/tmux_theme_sync.sh' ] && bash '%s/tmux_theme_sync.sh'" \
-        "$STATE_DIR" "$theme" "$STATE_FILE" "$scripts" "$scripts"
+    printf "mkdir -p \"\${XDG_STATE_HOME:-\$HOME/.local/state}\" && echo '%s' > \"\${XDG_STATE_HOME:-\$HOME/.local/state}/theme\" && [ -f '%s/tmux_theme_sync.sh' ] && bash '%s/tmux_theme_sync.sh'" \
+        "$theme" "$scripts" "$scripts"
 }
+
+# tmux client resolution (must match tmux_theme_sync.sh): a non-interactive
+# shell may resolve a distro tmux that cannot talk to a source-built server
+# ("server exited unexpectedly"). Expanded by the shell that runs the probe.
+_TMUX_BIN='$(for t in "$HOME/pkgs/bin/tmux" "$HOME/.local/bin/tmux" tmux; do [ -x "$t" ] && { printf %s "$t"; break; }; done)'
 
 # Run <cmd> on a remote host; output captured in OUT. 0 on success.
 _remote_capture() {
@@ -66,9 +72,9 @@ _local_capture() {
 _target_status_style() {
     local target="$1"
     if [ "$target" = "__local__" ]; then
-        _local_capture "tmux show-options -g -v status-style"
+        _local_capture "$_TMUX_BIN show-options -g -v status-style"
     else
-        _remote_capture "$target" "tmux show-options -g -v status-style 2>/dev/null"
+        _remote_capture "$target" "$_TMUX_BIN show-options -g -v status-style 2>/dev/null"
     fi
 }
 
@@ -99,7 +105,7 @@ echo "targets: ${TARGETS[*]}"
 
 # ── Guard: local fallback needs a running tmux server ─────────
 if [ "${#TARGETS[@]}" -eq 1 ] && [ "${TARGETS[0]}" = "__local__" ]; then
-    if ! command -v tmux >/dev/null 2>&1 || ! tmux has-session 2>/dev/null; then
+    if ! _local_capture "$_TMUX_BIN has-session"; then
         echo "SKIP: no tmux server running here and no remote-hosts configured."
         echo "      (verify_theme_sync.sh is safe to run on any machine with the clone.)"
         exit 0
@@ -108,6 +114,15 @@ fi
 if ! command -v tailscale >/dev/null 2>&1; then
     echo "NOTE: tailscale not installed — only the plain-ssh fallback will be used."
 fi
+
+# ── 0. Converge targets to the current theme ────────────────
+# A target whose tmux lags its own state file (e.g. propagation was down, or
+# the tmux server/client mismatched) would make the flip below a no-op and
+# fail the assertion spuriously. Push the current theme once so the target's
+# applied theme really is ORIGINAL before we snapshot it.
+echo "converging targets to '$ORIGINAL' via propagate_state.sh ..."
+_run_propagate "$ORIGINAL"
+sleep 1
 
 # ── 1. Before: capture status-style per target ────────────────
 declare -A BEFORE

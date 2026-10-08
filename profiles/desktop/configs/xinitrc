@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+# Symlinked to ~/.xinitrc from dotfiles (profiles/desktop/configs/xinitrc).
+# startx entry point — the session itself lives in dwm-session.sh so that
+# startx and lightdm start exactly the same thing.
+exec "${DOTFILES_DIR:-$HOME/dotfiles}/profiles/desktop/configs/dwm-session.sh"

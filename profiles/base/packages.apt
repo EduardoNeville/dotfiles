@@ -1,0 +1,145 @@
+# Base layer — Debian (deep-blue, hydra). Server+dev core, no GUI.
+# Triage of legacy opt/debianPkgs (2026-09); GUI/laptop items → desktop profile.
+# Core System & Development
+build-essential
+gcc
+g++
+gdb
+make
+cmake
+ninja-build
+meson
+pkg-config
+autoconf
+automake
+libtool
+git
+git-lfs
+curl
+wget
+rsync
+ca-certificates
+gettext
+
+# Shells & Terminal Tools
+zsh
+zsh-syntax-highlighting
+zsh-autosuggestions
+bash-completion
+
+# Text Editors
+vim
+tree-sitter-cli
+
+# Terminal Utils
+nnn
+
+# Multimedia core
+ffmpeg
+
+# PDF & LaTeX
+texlive
+texlive-latex-extra
+texlive-fonts-recommended
+texlive-fonts-extra
+texlive-xetex
+pandoc
+
+# File Systems & Storage
+btrfs-progs
+e2fsprogs
+xfsprogs
+dosfstools
+ntfs-3g
+exfat-fuse
+exfatprogs
+f2fs-tools
+parted
+lvm2
+cryptsetup
+cryptsetup-initramfs
+smartmontools
+
+# Compression & Archives
+zip
+unzip
+p7zip-full
+tar
+gzip
+bzip2
+xz-utils
+zstd
+
+# System Monitoring
+btop
+iotop
+sysstat
+lm-sensors
+smartmontools
+fastfetch
+fio
+
+# Programming Languages
+python3
+python3-pip
+python3-venv
+python3-dev
+golang
+default-jdk
+luarocks
+pipx
+
+# Linters
+shellcheck
+yamllint
+
+# Containers & Virtualization (docker via vendor repo — Tier 2)
+docker-ce
+docker-ce-cli
+containerd.io
+docker-buildx-plugin
+docker-compose-plugin
+qemu-system
+qemu-utils
+libvirt-daemon-system
+libvirt-clients
+bridge-utils
+
+# Security & Encryption
+gnupg
+gnupg2
+gpg
+pass
+openssh-client
+openssh-server
+openssl
+
+# Development Libraries
+libssl-dev
+libreadline-dev
+libsqlite3-dev
+libncurses-dev
+libffi-dev
+libbz2-dev
+liblzma-dev
+zlib1g-dev
+libxml2-dev
+libxmlsec1-dev
+
+# Network
+tailscale
+gh
+bind9-dnsutils
+net-tools
+ufw
+
+# Misc Utilities (Rust tools → cargo, Tier 5: bat/eza/starship/zoxide/ripgrep/fd/git-delta/du-dust/dysk)
+tree
+fzf
+btop
+fastfetch
+lazygit
+trash-cli
+ncdu
+jq
+stow

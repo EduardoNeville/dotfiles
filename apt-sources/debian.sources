@@ -1,0 +1,22 @@
+# Debian trixie (13) — base apt sources, every Debian machine
+# Captured from deep-blue 2026-09, converted to deb822, backports declared.
+# Installed by scripts/lib/apt_sources.sh (Phase 2). Backports are opt-in
+# only: install with `apt-get -t trixie-backports install <pkg>` (Tier 1).
+Types: deb
+URIs: http://deb.debian.org/debian
+Suites: trixie trixie-updates
+Components: main contrib non-free non-free-firmware
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+
+Types: deb
+URIs: http://security.debian.org/debian-security
+Suites: trixie-security
+Components: main contrib non-free non-free-firmware
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+
+# Backports: recompiled testing packages, pinned below stable by default.
+Types: deb
+URIs: http://deb.debian.org/debian
+Suites: trixie-backports
+Components: main contrib non-free non-free-firmware
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg

@@ -1,3 +1,5 @@
+# Cargo-installed tools (Tier 5 — ecosystem manager FIRST, even when apt has them).
+# Rule: Rust tools install via cargo on Debian; apt only for distro/system packages.
 csvlens
 eza
 bat
