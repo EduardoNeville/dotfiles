@@ -28,6 +28,11 @@ opt/                backports.txt, casks/taps, cargoPkgs, opt/source (nvim/tmux 
 scripts/            engine (lib/), adapters (debian|macos), check_parity.sh, review_packages.sh
 ```
 
+The pi agent config is **not** tracked here. It lives in its own repo
+([`dotpi`](https://github.com/EduardoNeville/dotpi)), which the installer clones
+to `~/dotpi` and then delegates to (`scripts/lib/link.sh` → `dotpi/install.sh`).
+That repo owns `~/.pi/agent/*` and the pi extensions; this one only bootstraps it.
+
 ## Rules (locked)
 
 1. **Tier ladder** per tool: stable → declared backports → vendor repo →
