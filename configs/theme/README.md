@@ -23,7 +23,7 @@ SSH hosts via a single shared state file:
    `~/.config/theme/remote-hosts` runs, in the background:
    `mkdir -p ~/.local/state && echo <theme> > ~/.local/state/theme && bash ~/dotfiles/configs/theme/scripts/tmux_theme_sync.sh`
 3. The remote `tmux_theme_sync.sh` applies the theme to that host's tmux.
-4. The pi extension (`configs/pi/extensions/theme-sync/`) watches the state
+4. The pi extension (`~/dotpi/extensions/theme-sync/`) watches the state
    file and calls `ctx.ui.setTheme`, appending to `~/.local/state/theme-sync.log`.
 
 ## Logging

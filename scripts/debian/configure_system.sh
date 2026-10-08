@@ -6,6 +6,13 @@ set -e
 
 DOTFILES_DIR="${HOME}/dotfiles"
 
+# Pi's configuration is owned by the dotpi repo (github.com/EduardoNeville/dotpi).
+# dotfiles no longer ships configs/pi at all: it clones dotpi and lets
+# dotpi/install.sh create the ~/.pi/agent symlinks, so exactly one repo owns
+# those files and the two installers cannot fight over them.
+DOTPI_REPO="${DOTPI_REPO:-git@github.com:EduardoNeville/dotpi.git}"
+DOTPI_DIR="${DOTPI_DIR:-${HOME}/dotpi}"
+
 _process() { echo "$(tput setaf 6)→ $1...$(tput sgr0)"; }
 _success() { echo "$(tput setaf 2)✓ Success:$(tput sgr0) $1"; }
 _error() { echo "$(tput setaf 1)✗ Error:$(tput sgr0) $1"; }
@@ -224,31 +231,61 @@ create_common_directories() {
     _success "Common directories created"
 }
 
-link_pi_config() {
-    _process "Linking Pi agent configuration"
+install_dotpi() {
+    _process "Installing dotpi (pi agent configuration)"
 
-    local pi_agent_dir="${HOME}/.pi/agent"
+    if [ -d "${DOTPI_DIR}/.git" ]; then
+        echo "  ✓ Already cloned: ${DOTPI_DIR}"
+        echo "    (update with: git -C ${DOTPI_DIR} pull)"
+    elif [ -e "${DOTPI_DIR}" ]; then
+        _error "${DOTPI_DIR} exists but is not a git clone — using it as-is"
+    elif ! command -v git >/dev/null 2>&1; then
+        _error "git not found — cannot clone dotpi"
+        return 0
+    else
+        # SSH first: the repo is private and setup_github.sh installs the key.
+        # Fall back to HTTPS for token/CI setups. GIT_TERMINAL_PROMPT=0 makes a
+        # failed auth fail fast instead of hanging on a credential prompt, and
+        # the timeout bounds a blackholed network (both clone attempts are
+        # attempted, so worst case is twice this).
+        local https_repo="${DOTPI_REPO/git@github.com:/https://github.com/}"
+        local timeout_cmd=""
+        command -v timeout >/dev/null 2>&1 && timeout_cmd="timeout ${DOTPI_CLONE_TIMEOUT:-90}"
+        local cloned=0
 
-    if [ ! -d "$pi_agent_dir" ]; then
-        mkdir -p "$pi_agent_dir"
+        if ${timeout_cmd} env GIT_TERMINAL_PROMPT=0 git clone "${DOTPI_REPO}" "${DOTPI_DIR}"; then
+            cloned=1
+            echo "  ✓ Cloned ${DOTPI_REPO}"
+        elif [ "${https_repo}" != "${DOTPI_REPO}" ] &&
+             ${timeout_cmd} env GIT_TERMINAL_PROMPT=0 git clone "${https_repo}" "${DOTPI_DIR}"; then
+            cloned=1
+            echo "  ✓ Cloned ${https_repo}"
+        fi
+
+        if [ "$cloned" -eq 0 ]; then
+            # Nothing existed at DOTPI_DIR before this branch, so anything here
+            # now is a partial clone from a killed attempt — safe to remove.
+            rm -rf "${DOTPI_DIR}"
+
+            # Not fatal: the rest of the system configuration is still useful.
+            _error "could not clone dotpi — pi config not installed"
+            echo "    fix with: git clone ${DOTPI_REPO} ${DOTPI_DIR}"
+            echo "         then: sh ${DOTPI_DIR}/install.sh"
+            return 0
+        fi
     fi
 
-    local files=("settings.json" "trust.json")
-    for file in "${files[@]}"; do
-        local src="${DOTFILES_DIR}/configs/pi/agent/${file}"
-        local target="${pi_agent_dir}/${file}"
-
-        if [ -f "$src" ]; then
-            if [ -f "$target" ] && [ ! -L "$target" ]; then
-                mv "$target" "${target}.backup.$(date +%Y%m%d_%H%M%S)"
-            fi
-            [ -L "$target" ] && rm "$target"
-            ln -sf "$src" "$target"
-            echo "  ✓ Linked $file"
+    # dotpi owns ~/.pi/agent/{settings,trust}.json, ~/.hypa and the pi
+    # extensions. Its installer is idempotent and backs up before replacing.
+    if [ -f "${DOTPI_DIR}/install.sh" ]; then
+        if sh "${DOTPI_DIR}/install.sh"; then
+            _success "Pi agent configuration installed by dotpi"
+        else
+            _error "dotpi install.sh failed — check the output above"
         fi
-    done
-
-    _success "Pi agent configuration linked"
+    else
+        _error "no install.sh in ${DOTPI_DIR}"
+    fi
 }
 
 setup_systemd_user_services() {
@@ -279,8 +316,8 @@ main() {
     link_zsh_config
     link_gitconfig
 
-    # Setup Pi agent config
-    link_pi_config
+    # Setup Pi agent config — owned by the dotpi repo, cloned on demand
+    install_dotpi
 
     # Setup shell
     install_zsh_plugins
@@ -301,7 +338,7 @@ main() {
     echo ""
     echo "Configuration Summary:"
     echo "  ✓ Dotfiles linked"
-    echo "  ✓ Pi agent configured"
+    echo "  ✓ Pi agent config installed from dotpi"
     echo "  ✓ ZSH configured"
     echo "  ✓ Neovim set up"
     echo "  ✓ Starship prompt installed"

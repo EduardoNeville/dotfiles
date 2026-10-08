@@ -132,6 +132,12 @@ dotfiles/
 └── void-to-debian-packages.md # Package migration reference
 ```
 
+> **Pi agent config lives elsewhere:** `configs/pi` was removed from this repo.
+> `configure_system.sh` clones [`dotpi`](https://github.com/EduardoNeville/dotpi)
+> into `~/dotpi` and runs its `install.sh`, which owns
+> `~/.pi/agent/{settings,trust}.json` (and the pi extensions). Install or update
+> pi itself with that repo, not this one.
+
 ---
 
 ## 🔧 Modular Scripts
