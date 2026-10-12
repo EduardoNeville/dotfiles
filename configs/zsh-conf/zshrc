@@ -258,6 +258,14 @@ eval "$(zoxide init zsh)"
 # Starship 
 export STARSHIP_CONFIG=~/.config/starship/starship.toml
 export STARSHIP_CACHE=~/.starship/cache
+# Drop starship's own logging to error level. It emits advisory warnings (most
+# visibly "starship::context: Scanning current directory timed out" — fired
+# from a race in its cwd scan in dirs with thousands of entries, at most once
+# per session) that are not actionable and cannot be turned off in
+# starship.toml. Error level keeps real failures (bad TOML, missing commands)
+# on screen; run `STARSHIP_LOG=warn starship prompt` to see warnings again
+# while debugging.
+export STARSHIP_LOG=error
 # Theme hook: starship palette, FZF colors, zsh-autosuggestions and
 # fast-syntax-highlighting all follow ~/.local/state/theme (dark|light).
 source $ZSH/theme-zsh.zsh

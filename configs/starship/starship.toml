@@ -4,9 +4,16 @@
 # Root-level settings (must come before any [table] header)
 # ============================================================
 
-# Increase scan_timeout to avoid "Scanning current directory timed out" warnings
-# especially in large repos or on slow filesystems
-scan_timeout = 100
+# Starship scans the top level of the cwd once per prompt to detect project
+# files (every enabled language module triggers it). The scan is best-effort:
+# in monster directories (/var/lib/dpkg/info, 7.5k entries, ~200 ms cold) it
+# runs past this budget and starship logs "Scanning current directory timed
+# out". That advisory is silenced at the log level instead of by chasing this
+# number — see STARSHIP_LOG in configs/zsh-conf/zshrc — and the timeout does
+# not reliably bound the wait anyway (the scan loop drains already-queued
+# entries past the deadline). 500 ms keeps detection complete in ordinary
+# big directories; small ones finish in single-digit ms.
+scan_timeout = 500
 
 # Format
 format = """$username$directory$git_branch$git_status$fill$time$all$character"""
