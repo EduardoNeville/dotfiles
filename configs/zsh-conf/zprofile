@@ -1,7 +1,16 @@
-# ~/.zprofile — login shells only. Auto-start X on tty1: boot → login → dwm.
-# `exec startx` ties the TTY session to X, so quitting dwm (Mod4+Shift+q)
-# returns to getty, which re-logs-in and re-enters dwm automatically.
-# Guarded: ssh logins and other TTYs stay in the shell.
-if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
+# ~/.zprofile — login shells only.
+#
+# Auto-start X on tty1 ONLY where the active dotfiles profile includes
+# "desktop" (e.g. the hydra laptop). The installer records the active
+# profiles in ~/.config/dotfiles-profile, so servers (base) never run this.
+# Without the guard, exec'ing a missing/failing startx drops the console
+# login straight back to getty — i.e. an instant logout loop.
+# (exec startx ties the TTY session to X, so quitting dwm returns to getty,
+# which re-logs-in and re-enters dwm automatically.)
+DOTFILES_PROFILE_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/dotfiles-profile"
+
+if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ] \
+    && grep -qw desktop "$DOTFILES_PROFILE_FILE" 2>/dev/null \
+    && command -v startx >/dev/null 2>&1; then
     exec startx
 fi
