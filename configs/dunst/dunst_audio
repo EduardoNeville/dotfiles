@@ -1,25 +1,119 @@
 #!/bin/sh
-# Volume keys for dwm: PipeWire (wpctl) + dunst OSD.
-# Called from dwm config.h: dunst_audio toggle | +5% | -5%
+# dunst_audio — PipeWire volume keys + per-output targeting + dunst OSD.
+#
+#   dunst_audio toggle            mute the selected output
+#   dunst_audio +5% | -5%         raise/lower the selected output
+#   dunst_audio select            rofi: pick which output the keys control
+#                                 ("Auto" = whatever PipeWire deems default)
+#
+# The selection is remembered by sink NAME — wpctl's numeric IDs are
+# reboot-transient, names survive. While the chosen output is absent
+# (headphones unplugged), the keys fall back to the system default; the
+# memory stays, so plugging the same output hands the keys back.
+#
+# Called from dwm config.h: dunst_audio toggle | +5% | -5% | select.
 
-case "$1" in
-    toggle) wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle ;;
-    +*)     wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ "${1#+}+" ;;
-    -*)     wpctl set-volume @DEFAULT_AUDIO_SINK@ "${1#-}-" ;;
+set -u
+
+STATE="${XDG_STATE_HOME:-$HOME/.local/state}/audio-target"
+
+# list_sinks -> "<id><TAB><name>" per line (first Sinks: section = audio)
+list_sinks() {
+    wpctl status 2>/dev/null | awk '
+        /Sinks:/ { if (!done) { insec=1; done=1 }; next }
+        insec && /├─|└─/ { insec=0; next }
+        insec {
+            s = $0
+            gsub(/[*│├└─]/, "", s)
+            gsub(/  +/, " ", s)
+            sub(/^ /, "", s)
+            if (s !~ /^[0-9]+\./) next      # blank pad lines: skip
+            id = s; sub(/\..*/, "", id)
+            name = substr(s, length(id) + 3)
+            sub(/ *\[[^]]*\]/, "", name)
+            gsub(/ +$/, "", name)
+            if (name == "") next
+            print id "\t" name
+        }'
+}
+
+# resolve -> "<id> <name|@DEFAULT_AUDIO_SINK@>"; 2nd field == node name
+# or the literal default alias when nothing is remembered / found.
+resolve_target() {
+    want="$(cat "$STATE" 2>/dev/null)"
+    if [ -n "$want" ]; then
+        hit="$(list_sinks | while IFS="$(printf '\t')" read -r id name; do
+            [ "$name" = "$want" ] && printf '%s %s' "$id" "$name"
+        done)"
+        if [ -n "$hit" ]; then
+            printf '%s\n' "$hit"
+            return 0
+        fi
+    fi
+    printf '%s @DEFAULT_AUDIO_SINK@\n' @DEFAULT_AUDIO_SINK@
+}
+
+notify_target() { # notify_target <pretty-or-empty>
+    command -v notify-send >/dev/null 2>&1 && \
+        notify-send -r 7006 ${2:+-u "$2"} -i audio-card-symbolic \
+            "Volume output: ${1:-auto (system default)}"
+}
+
+case "${1:-}" in
+    select)
+        pick="$(printf 'Auto — follow the system default\n%s\n' \
+            "$(list_sinks | awk -F'\t' '{print $2}')" \
+            | rofi -dmenu -format s -theme "${XDG_CONFIG_HOME:-$HOME/.config}/rofi/current.rasi" \
+                -p "volume output" 2>/dev/null)"
+        [ -n "$pick" ] || exit 0                       # dismissed
+        if printf '%s\n' "$pick" | grep -q '^Auto'; then
+            rm -f "$STATE"
+            notify_target ""
+        else
+            printf '%s\n' "$pick" >"$STATE"
+            notify_target "$pick"
+        fi
+        exit 0
+        ;;
+    toggle)  exec=tw_toggle ;;
+    +*)      wp_arg="${1#+}+"; exec=tw_step ;;
+    -*)      wp_arg="${1#-}-"; exec=tw_step ;;
+    *) echo "usage: $0 toggle|+N|-N|select" >&2; exit 2 ;;
 esac
 
-read -r _ vol stat <<EOF
-$(wpctl get-volume @DEFAULT_AUDIO_SINK@)
-EOF
-pct=$(awk -v v="$vol" 'BEGIN { printf "%d", v * 100 }')
-if [ "$stat" = "[MUTED]" ]; then
-    icon=audio-volume-muted
-elif [ "$pct" -gt 60 ]; then
-    icon=audio-volume-high
-elif [ "$pct" -gt 20 ]; then
-    icon=audio-volume-medium
-else
-    icon=audio-volume-low
-fi
+# apply the keypress, then read back state for the OSD
+target="$(resolve_target)"
+nodeid="${target%% *}"
+nodename="${target#* }"
+
+case "$exec" in
+    tw_toggle) wpctl set-mute "$nodeid" toggle ;;
+    tw_step)
+        wpctl set-volume -l 1.0 "$nodeid" "$wp_arg"
+        ;;
+esac
+
+readout="$(wpctl get-volume "$nodeid" 2>/dev/null)"
+case "$readout" in Volume:*) ;; *)
+    notify-send -r 7001 -i audio-volume-muted "Volume" "Output not found" 2>/dev/null
+    exit 0 ;;
+esac
+
+vol="$(printf '%s' "$readout" | awk '{print $2}')"
+case "$readout" in *MUTED*) muted=1 ;; *) muted=0 ;; esac
+
+# pretty label: wpctl's Node Description, else the alias we resolved
+label="$(wpctl info "$nodeid" 2>/dev/null | awk '
+    /Node Description:/ { sub(/.*Node Description: */, ""); print; exit }')"
+[ -n "$label" ] || { [ "$nodename" = @DEFAULT_AUDIO_SINK@ ] && label="Auto" \
+    || label="$nodename"; }
+
+pct="$(awk -v v="$vol" 'BEGIN { printf "%d", v * 100 }')"
+case "$muted/$pct" in
+    1/*)  icon=audio-volume-muted;  extra="MUTED — $label" ;;
+    0/6*) icon=audio-volume-high;   extra="$label" ;;
+    0/[3-5]*) icon=audio-volume-medium; extra="$label" ;;
+    *)    icon=audio-volume-low;    extra="$label" ;;
+esac
 command -v notify-send >/dev/null 2>&1 && \
-    notify-send -r 7001 -h int:value:"$pct" -i "$icon" "Volume: $pct%"
+    notify-send -r 7001 -h int:value:"$pct" -i "$icon" "Volume: $pct%" "$extra"

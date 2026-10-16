@@ -198,13 +198,15 @@ static Key keys[] = {
     /* START SPECIAL KEY CONTROL */
     /* ------------------------  */
 
-    // Volume
+    // Volume (select: pick which output the keys control — e.g. headphones)
     {0, XF86XK_AudioMute, spawn,
      SHCMD("~/dotfiles/configs/dunst/dunst_audio toggle")},
     {0, XF86XK_AudioLowerVolume, spawn,
      SHCMD("~/dotfiles/configs/dunst/dunst_audio -5%")},
     {0, XF86XK_AudioRaiseVolume, spawn,
      SHCMD("~/dotfiles/configs/dunst/dunst_audio +5%")},
+    {MODKEY, XK_u, spawn,
+     SHCMD("~/dotfiles/configs/dunst/dunst_audio select")},
 
     // Light
     {0, XF86XK_MonBrightnessDown, spawn, {.v = dimmer}},
