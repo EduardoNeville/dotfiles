@@ -1,9 +1,7 @@
 #!/bin/sh
 
-# Notification script
+# Notifications (systemd's battery-notify.timer feeds it warnings)
 dunst &
-dunst_battery &
-dunst_bluetooth &
 
 # ClipMenu
 clipmenud &

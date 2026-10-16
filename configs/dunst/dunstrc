@@ -1,0 +1,11 @@
+# dunstrc — minimal: dunst's built-in defaults for everything not listed here
+# (geometry, colors, timeouts; critical notifications never auto-expire).
+[global]
+    # Pop up over the window with keyboard focus — "the pane I am on".
+    # dwm exports _NET_ACTIVE_WINDOW, so keyboard mode works. On this single
+    # monitor (eDP-1) it is equivalent to default geometry, but stays correct
+    # if a second panel ever appears.
+    follow = keyboard
+
+    # Right side of the top bar area, below dwm's bar.
+    origin = top-right
