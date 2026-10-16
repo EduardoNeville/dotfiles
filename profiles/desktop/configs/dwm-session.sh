@@ -14,6 +14,11 @@
 [ -f "${DOTFILES_DIR:-$HOME/dotfiles}/configs/theme/scripts/wallpaper.sh" ] && \
     bash "${DOTFILES_DIR:-$HOME/dotfiles}/configs/theme/scripts/wallpaper.sh" >/dev/null 2>&1 &
 
+# apply stored theme and start xsettingsd: the live appearance signal for
+# already-running GTK apps and Firefox (see gtk_theme.sh)
+[ -f "${DOTFILES_DIR:-$HOME/dotfiles}/configs/theme/scripts/gtk_theme.sh" ] && \
+    bash "${DOTFILES_DIR:-$HOME/dotfiles}/configs/theme/scripts/gtk_theme.sh" >/dev/null 2>&1 &
+
 # Compositor — exists to kill X11 tearing (glx + vsync, no effects). The config
 # is passed explicitly rather than relying on ~/.config/picom being linked, so
 # the session cannot silently fall back to built-in defaults (no vsync).

@@ -1,0 +1,9 @@
+[Unit]
+Description=Hibernate before the internal battery's low-voltage cutoff (BAT0)
+
+[Service]
+Type=oneshot
+# 25%: ~8 minutes of margin at the measured 2.8%/min discharge, and clear of the
+# 8-13% where this pack's voltage collapses. Raise it if you want more headroom.
+Environment=BATTERY_GUARD_THRESHOLD=25
+ExecStart=/home/eduardoneville/dotfiles/scripts/battery_guard.sh

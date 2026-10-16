@@ -58,6 +58,33 @@ setup_systemd_user_services() {
     _success "Systemd user services configured"
 }
 
+setup_system_services() {
+    # System units from the repo (battery guard: hibernate before BAT0's voltage
+    # cutoff). Linked rather than copied, so repo edits apply — same style as the
+    # user units above.
+    local systemd_dir="${DOTFILES_DIR}/profiles/base/systemd/system"
+    [ -d "$systemd_dir" ] || return 0
+    _process "Setting up systemd system services"
+    local unit name linked=0
+    for unit in "$systemd_dir"/*; do
+        [ -f "$unit" ] || continue
+        name="$(basename "$unit")"
+        if [ ! -e "/etc/systemd/system/${name}" ] ||
+            ! cmp -s "$unit" "/etc/systemd/system/${name}" 2>/dev/null; then
+            sudo ln -sf "$unit" "/etc/systemd/system/${name}" && echo "  ✓ Linked ${name}"
+            linked=1
+        fi
+    done
+    [ "$linked" = 1 ] && sudo systemctl daemon-reload
+    # Hibernate before the internal pack's low-voltage cutoff (see
+    # scripts/battery_guard.sh for why upower cannot do this).
+    if [ -f /etc/systemd/system/battery-guard.timer ]; then
+        sudo systemctl enable --now battery-guard.timer >/dev/null 2>&1 &&
+            echo "  ✓ enabled battery-guard.timer"
+    fi
+    _success "Systemd system services configured"
+}
+
 ensure_source_pkgs() {
     # Tier 4: opt/source manifests; builds live in $HOME/pkgs (gitignored).
     [ -d "${DOTFILES_DIR}/opt/source/packages" ] || return 0
@@ -175,6 +202,7 @@ main() {
     setup_fonts
     install_console_tty_setup
     setup_systemd_user_services
+    setup_system_services
     ensure_source_pkgs
 
     _success "System configuration complete (Debian)"

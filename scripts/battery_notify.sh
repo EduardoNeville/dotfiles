@@ -11,9 +11,11 @@
 # climbing above 32% (or falling below 78%) re-arms it, which is what makes a
 # charge cycle or a battery swap behave.
 #
-# The percentage comes from upower's DisplayDevice — the combined reading for
-# this laptop's two batteries (BAT0 internal + BAT1) — not from a single
-# /sys/class/power_supply entry, which would ignore one of them.
+# The percentage is the *lowest* of this laptop's two batteries (BAT0 internal +
+# BAT1), read from /sys/class/power_supply. upower's DisplayDevice averages them,
+# and because the EC drains BAT0 first while BAT1 stays full, the average never
+# drops below ~48% — it can never warn before BAT0 hits 0% and the machine cuts
+# power. See scripts/battery_guard.sh for the hibernate side of the same story.
 #
 # Runs as a systemd *user* service, so it has no session environment: the
 # session bus address is derived from XDG_RUNTIME_DIR when it is missing
@@ -44,14 +46,17 @@ while [ $# -gt 0 ]; do
 done
 
 # ── read the battery unless overridden ───────────────────────
-remaining=""
+remaining=""   # no aggregate time-to-empty: BAT0's own rate is what matters
 if [ -z "$percent" ]; then
-    dev="$(upower -e 2>/dev/null | grep -m1 DisplayDevice)"
-    [ -n "$dev" ] || { echo "upower reports no DisplayDevice; nothing to do"; exit 0; }
-    info="$(upower -i "$dev" 2>/dev/null)"
-    percent="$(printf '%s\n' "$info" | sed -n 's/.*percentage:[[:space:]]*\([0-9]*\).*/\1/p' | head -1)"
-    [ -n "$charge_state" ] || charge_state="$(printf '%s\n' "$info" | sed -n 's/.*state:[[:space:]]*\([a-z-]*\).*/\1/p' | head -1)"
-    remaining="$(printf '%s\n' "$info" | sed -n 's/.*time to \(empty\|full\):[[:space:]]*\(.*\)$/\2/p' | head -1)"
+    for bat in /sys/class/power_supply/BAT*/capacity; do
+        [ -f "$bat" ] || continue
+        c="$(cat "$bat" 2>/dev/null)" || continue
+        case "$c" in ''|*[!0-9]*) continue ;; esac
+        [ -n "$percent" ] && [ "$c" -ge "$percent" ] && continue
+        percent="$c"
+    done
+    [ -n "$percent" ] || { echo "no readable battery capacity; nothing to do"; exit 0; }
+    [ -n "$charge_state" ] || charge_state="$(cat /sys/class/power_supply/BAT0/status 2>/dev/null | tr 'A-Z' 'a-z')"
 fi
 
 case "$percent" in
