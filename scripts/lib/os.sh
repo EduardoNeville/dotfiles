@@ -45,6 +45,45 @@ detect_profile() {
 
 has() { command -v "$1" >/dev/null 2>&1; }
 
+# --- source-built tools (opt/source) ---------------------------------------
+# Presence on PATH is NOT proof that a tool is the pinned source build.
+# /usr/bin/tmux (3.5a) and a stale ~/.local/bin/nvim both satisfy `has`, which
+# is how ensure_source_pkgs() ended up printing "present" forever and never
+# building the manifest pin. These helpers answer the question that matters.
+
+# Version banner of a tool: first line of its version output. Manifests whose
+# tool needs a nonstandard flag declare `pkg_version_args` — tmux takes -V,
+# since `tmux --version` just prints usage.
+pkg_version_of() {
+    local bin="$1"
+    shift || true
+    local args=("$@")
+    [ "${#args[@]}" -gt 0 ] || args=(--version)
+    "$bin" "${args[@]}" 2>/dev/null | head -1 || true
+}
+
+# source_pkg_current <bin> <want-version> [version-args...]
+# 0 only when <bin> resolves INTO $HOME/pkgs/builds and reports <want-version>.
+# Empty <want-version> means "any version, as long as it is our build".
+source_pkg_current() {
+    local bin="$1" want="$2"
+    shift 2 2>/dev/null || true
+    local real got
+    has "$bin" || return 1
+    real="$(readlink -f "$(command -v "$bin")" 2>/dev/null)" || return 1
+    case "$real" in
+    "${HOME}/pkgs/builds/"*) ;;
+    *) return 1 ;; # system or distro build — not ours, so not the pin
+    esac
+    [ -n "$want" ] || return 0
+    got="$(pkg_version_of "$bin" "$@")"
+    case "$got" in
+    *"$want"*) return 0 ;;
+    *"${want#v}"*) return 0 ;; # nvim prints "NVIM v0.12.5", pin is "v0.12.5"
+    esac
+    return 1
+}
+
 # pkg_install <name> — install one package with the native package manager.
 pkg_install() {
     case "$PKG" in
