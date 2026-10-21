@@ -8,6 +8,10 @@
 #   ./scripts/build.sh --force nvim    # wipe build dir first, so the LINK
 #                                      # reruns (needed when the system
 #                                      # toolchain moved; see check.sh)
+#                                      # AND move aside a real file sitting at
+#                                      # the link target (vendored nvim in
+#                                      # ~/.local/bin), which would otherwise
+#                                      # shadow the build without a word
 #
 # Installs each package into its own prefix dir (nvim/, tmux/, ...) at
 # $PREFIX_ROOT, and optionally links the binaries into $HOME_BIN (~/bin).
