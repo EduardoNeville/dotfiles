@@ -94,6 +94,7 @@ if [ "$CHECK_PACKAGES" = "1" ]; then
         pkg_name=""
         pkg_bin=""
         pkg_profiles=""
+        pkg_version_args=()
         # shellcheck disable=SC1090
         source "$conf"
         [ -n "$pkg_bin" ] || continue
@@ -102,10 +103,16 @@ if [ "$CHECK_PACKAGES" = "1" ]; then
         if [ -n "$pkg_profiles" ]; then
             case " $PROFILES " in *" $pkg_profiles "*) ;; *) continue ;; esac
         fi
-        if has "$pkg_bin"; then
-            ok "$pkg_name ($pkg_bin)"
+        # Presence is not parity: what must be on PATH is the pinned build out
+        # of ~/pkgs/builds, not whatever the distro or a vendored tarball left
+        # behind. An unpinned distro binary is drift, and silently passing here
+        # is what hid the 3.5a-vs-3.7b gap.
+        if source_pkg_current "$pkg_bin" "${pkg_version:-}" "${pkg_version_args[@]}"; then
+            ok "$pkg_name ($(pkg_version_of "$pkg_bin" "${pkg_version_args[@]}"))"
+        elif has "$pkg_bin"; then
+            bad "$pkg_name is $(pkg_version_of "$pkg_bin" "${pkg_version_args[@]}") but the pin is ${pkg_version:-?} — not the ~/pkgs/builds copy (re-run install.sh)"
         else
-            bad "$pkg_name missing ($pkg_bin) — build with opt/source/scripts/build.sh"
+            bad "$pkg_name missing ($pkg_bin, want ${pkg_version:-?}) — build with opt/source/scripts/build.sh"
         fi
     done
 fi
