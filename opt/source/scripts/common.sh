@@ -17,7 +17,8 @@ declare -A BUILT=()
 # (especially the arrays) leaks from a previously sourced package.
 unset_pkg_vars() {
   unset pkg_name pkg_version pkg_type pkg_src_dir pkg_url pkg_tarball \
-        pkg_build pkg_prefix pkg_deps pkg_configure_args pkg_cmake_args 2>/dev/null || true
+        pkg_build pkg_prefix pkg_deps pkg_configure_args pkg_cmake_args \
+        pkg_version_args pkg_profiles 2>/dev/null || true
 }
 
 log()  { printf '\033[1;34m==> %s\033[0m\n' "$*"; }
@@ -211,7 +212,22 @@ link_bins() {
         info "fixed symlink $link"
       fi
     elif [ -e "$link" ]; then
-      info "skip $link (exists, not a symlink)"
+      # A real file (not a symlink) is usually a hand-installed or vendored
+      # copy — e.g. ~/.local/bin/nvim untarred from an upstream release. It
+      # shadows the build just installed, so silence here is a bug: that is
+      # how a source-built 3.7b could install "successfully" while /usr/bin or
+      # ~/.local/bin kept winning on PATH. --force moves it aside (never
+      # deletes) and links ours in.
+      if [ "${FORCE:-0}" = "1" ]; then
+        local bak="$link.bak.$(date +%Y%m%d%H%M%S)"
+        mv -- "$link" "$bak"
+        ln -s "$bin" "$link"
+        info "replaced $link (kept $bak) -> $bin"
+      else
+        info "SHADOWED: $link is a real file, not a symlink — what runs is NOT"
+        info "  the build just installed. Re-run with --force to move it to"
+        info "  $link.bak.<timestamp> and link the build instead."
+      fi
     else
       ln -s "$bin" "$link"
       info "linked $link -> $bin"
