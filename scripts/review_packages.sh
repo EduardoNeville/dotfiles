@@ -54,13 +54,31 @@ noise_re="${noise_re%|}"
     echo "## Source-built (opt/source)"
     for conf in "$DOTFILES"/opt/source/packages/*.conf; do
         [ -f "$conf" ] || continue
-        pkg_name="" pkg_bin="" pkg_branch="" pkg_src_dir=""
+        pkg_name="" pkg_bin="" pkg_branch="" pkg_src_dir="" pkg_version=""
+        pkg_version_args=()
+        pkg_profiles=""
         # shellcheck disable=SC1090
         source "$conf"
-        if [ -n "$pkg_bin" ] && has "$pkg_bin"; then
-            printf '  ✓ %s (%s)\n' "$pkg_name" "$("$pkg_bin" --version 2>/dev/null | head -1 || true)"
+        [ -n "$pkg_bin" ] || continue
+        # Same profile gate as ensure_source_pkgs / check_parity.sh: without it
+        # a desktop-only tool (clipmenu) is reported "missing" on every base
+        # host forever, so the periodic review always exits 1 and stops being a
+        # signal. detect_profile() has already run, so $PROFILES is populated.
+        if [ -n "$pkg_profiles" ]; then
+            case " ${PROFILES:-} " in *" $pkg_profiles "*) ;; *) continue ;; esac
+        fi
+        if source_pkg_current "$pkg_bin" "${pkg_version:-}" "${pkg_version_args[@]}"; then
+            printf '  ✓ %s (%s)\n' "$pkg_name" "$(pkg_version_of "$pkg_bin" "${pkg_version_args[@]}" || true)"
+        elif has "$pkg_bin"; then
+            # Present but wrong: the distro package or a vendored tarball is
+            # shadowing the pinned build. Actionable, so it counts as drift.
+            printf '  ✗ %s is %s, pin is %s — not the ~/pkgs/builds copy\n' \
+                "$pkg_name" "$(pkg_version_of "$pkg_bin" "${pkg_version_args[@]}" || true)" "${pkg_version:-?}"
+            printf '        build: PKGS_ROOT=~/pkgs HOME_BIN=~/.local/bin opt/source/scripts/build.sh --force %s\n' "$pkg_name"
+            fail=1
         else
-            printf '  ✗ %s missing (%s) — build: PKGS_ROOT=~/pkgs opt/source/scripts/build.sh %s\n' "$pkg_name" "$pkg_bin" "$pkg_name"
+            printf '  ✗ %s missing (%s, want %s) — build: PKGS_ROOT=~/pkgs opt/source/scripts/build.sh %s\n' \
+                "$pkg_name" "$pkg_bin" "${pkg_version:-?}" "$pkg_name"
             fail=1
         fi
     done
