@@ -66,26 +66,42 @@ ensure_source_pkgs() {
     # .conf files it can't find (it reads $PKGS_ROOT/packages/<name>.conf).
     mkdir -p "${HOME}/pkgs/packages"
     cp -f "${DOTFILES_DIR}"/opt/source/packages/*.conf "${HOME}/pkgs/packages/"
-    local conf bin
+    local conf bin vargs
     for conf in "${DOTFILES_DIR}"/opt/source/packages/*.conf; do
         [ -f "$conf" ] || continue
-        bin=""
-        pkg_profiles=""
+        # Reset per-iteration: the manifests are sourced, so any field a
+        # previous .conf set (pkg_profiles, pkg_version_args) would leak into
+        # this one and e.g. make neovim probe with tmux's -V.
+        unset pkg_name pkg_version pkg_bin pkg_prefix pkg_profiles \
+            pkg_version_args 2>/dev/null || true
         # shellcheck disable=SC1090
         source "$conf"
         # Optional per-conf profile gate (e.g. pkg_profiles="desktop"):
         # desktop-only builds need X11 headers the base profile doesn't ship.
-        if [ -n "$pkg_profiles" ] && ! has_profile "$pkg_profiles"; then
+        if [ -n "${pkg_profiles:-}" ] && ! has_profile "$pkg_profiles"; then
             echo "  ⊘ $pkg_name (profiles: $pkg_profiles — not active here)"
             continue
         fi
-        if [ -n "$pkg_bin" ] && ! has "$pkg_bin"; then
-            _process "Building $pkg_name from source (missing $pkg_bin)"
-            # HOME_BIN=~/.local/bin: built bins land somewhere already on PATH.
-            PKGS_ROOT="${HOME}/pkgs" HOME_BIN="${HOME}/.local/bin" \
-                bash "${DOTFILES_DIR}/opt/source/scripts/build.sh" "$pkg_name"
+        [ -n "${pkg_bin:-}" ] || continue
+        vargs=()
+        if [ "${#pkg_version_args[@]}" -gt 0 ]; then vargs=("${pkg_version_args[@]}"); fi
+        # `has` alone is wrong: /usr/bin/tmux 3.5a and a vendored
+        # ~/.local/bin/nvim both satisfy it, so this loop used to report
+        # "present" forever and never build the pinned version. Require the
+        # binary to resolve into ~/pkgs/builds AND report the pinned version.
+        if source_pkg_current "$pkg_bin" "${pkg_version:-}" "${vargs[@]}"; then
+            echo "  ✓ $pkg_name ($(pkg_version_of "$pkg_bin" "${vargs[@]}") — $HOME/pkgs/builds)"
         else
-            echo "  ✓ $pkg_name ($(has "$pkg_bin" && echo present))"
+            if has "$pkg_bin"; then
+                echo "  ! $pkg_name: PATH has $(pkg_version_of "$pkg_bin" "${vargs[@]}" || echo 'an unknown build')"
+                echo "    (not the pinned ${pkg_version:-?} from ~/pkgs/builds — rebuilding)"
+            fi
+            _process "Building $pkg_name from source (want ${pkg_version:-latest})"
+            # HOME_BIN=~/.local/bin: built bins land somewhere already on PATH.
+            # --force is required here: a vendored real file at the link target
+            # (the usual case for nvim) otherwise wins over the fresh build.
+            PKGS_ROOT="${HOME}/pkgs" HOME_BIN="${HOME}/.local/bin" \
+                bash "${DOTFILES_DIR}/opt/source/scripts/build.sh" --force "$pkg_name"
         fi
     done
     _success "Source packages ensured"
