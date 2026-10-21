@@ -21,7 +21,31 @@ Manifest fields: `pkg_name`, `pkg_version`, `pkg_type` (git|tarball),
 + `pkg_sha256` (tarball: verified on every download), `pkg_build`
 (autotools|cmake|make), `pkg_prefix`, `pkg_deps`, `pkg_configure_args` /
 `pkg_cmake_args`, `pkg_bin` (what `review_packages.sh` / `check_parity.sh`
-report on), `pkg_profiles` (optional gate: build only for those profiles).
+report on), `pkg_profiles` (optional gate: build only for those profiles),
+`pkg_version_args` (optional: flags for the version probe — tmux needs `(-V)`,
+since `tmux --version` prints usage; the default is `--version`).
+
+## What "installed" means
+
+`ensure_source_pkgs` (in `scripts/debian/configure_system.sh`), `check_parity.sh`
+and `review_packages.sh` all gate on `source_pkg_current` (`scripts/lib/os.sh`),
+which is true only when the tool on PATH
+
+1. resolves **into `~/pkgs/builds`** — a distro package or a vendored release
+tarball in `~/.local/bin` does not count, and
+2. reports the **version pinned in the manifest** (via `pkg_version_args`).
+
+Bare presence on PATH is not enough, and used to be an actual bug: `/usr/bin/tmux`
+(3.5a) and a vendored `~/.local/bin/nvim` both satisfied `command -v`, so the
+installer reported "✓ present" forever and never built the pin. `tmux 3.5a`
+ships the bracketed-paste corruption (`ESC[106;5u` instead of newlines) that
+3.7b fixes, so that silent skip was user-visible.
+
+Consequently `link_bins` refuses to leave a shadowing **real file** at the link
+target unnamed: it warns loudly, and `--force` moves it to
+`<link>.bak.<timestamp>` (never deletes) before linking the build. That is why a
+first install over a vendored tool needs `build.sh --force <pkg>` — e.g.
+`nvim` untarred into `~/.local/bin`.
 
 ## When the system toolchain moves
 
