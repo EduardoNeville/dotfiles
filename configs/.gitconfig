@@ -15,3 +15,6 @@
 	name = EduardoNeville
 [advice]
 	addIgnoredFile = false
+
+[init]
+	defaultBranch = main
