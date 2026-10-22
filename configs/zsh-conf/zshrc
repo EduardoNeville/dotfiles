@@ -308,3 +308,9 @@ export PATH=$HOME/.opencode/bin:$PATH
 
 # OpenClaw Completion (cached in $ZSH/plugins/openclaw/)
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# >>> osynk >>>
+# Added by the osynk installer, and removed by `./install.sh --uninstall`.
+# `osynk` lives in ~/.local/bin; putting it first keeps it reachable.
+export PATH="$HOME/.local/bin:$PATH"
+# <<< osynk <<<
