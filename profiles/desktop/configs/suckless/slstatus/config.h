@@ -66,7 +66,9 @@ static const char unknown_str[] = "n/a";
  */
 static const struct arg args[] = {
 	/* function format          argument */
-    { run_command, "[ BAT:%s%%", "/home/eduardoneville/dotfiles/scripts/battery_percentage.sh" },
+    /* script prints "BAT0:53%|BAT1:4%" — both packs, EC drains BAT0 first;
+       labels live in the script, slstatus adds nothing but the RAM/date */
+    { run_command, "%s", "/home/eduardoneville/dotfiles/scripts/battery_percentage.sh" },
     { ram_used, "|RAM:%s", NULL },
-    { datetime, "|%s ]", "%Y-%m-%d %H:%M" },
+    { datetime, "|%s", "%Y-%m-%d %H:%M" },
 };

@@ -118,7 +118,7 @@ link_zsh_config() {
 
     if [ -f "$zprofile" ]; then
         backup_then_link "${HOME}/.zprofile" "$zprofile"
-        echo "  ✓ Linked .zprofile (login shells: auto-startx on tty1)"
+        echo "  ✓ Linked .zprofile (login shells; startx only on desktop profile)"
     fi
 }
 

@@ -41,6 +41,11 @@ detect_profile() {
     fi
     PROFILES="${PROFILES:-base}"
     _process "Profiles: $PROFILES ($OS / $PKG)"
+
+    # Record the active profiles so runtime shell configs can branch on them
+    # (e.g. ~/.zprofile auto-starts X only on "desktop" machines).
+    mkdir -p "${XDG_CONFIG_HOME:-${HOME}/.config}"
+    printf '%s\n' "$PROFILES" > "${XDG_CONFIG_HOME:-${HOME}/.config}/dotfiles-profile"
 }
 
 has() { command -v "$1" >/dev/null 2>&1; }

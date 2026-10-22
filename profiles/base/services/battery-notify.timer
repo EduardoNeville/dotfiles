@@ -1,10 +1,13 @@
 [Unit]
-Description=Check the battery level every minute
+Description=Check the battery level every 30 seconds
 
 [Timer]
-OnBootSec=1min
-OnUnitActiveSec=1min
-AccuracySec=10s
+OnBootSec=30s
+OnUnitActiveSec=30s
+# systemd batches timer fires by the accuracy window; without this the check
+# can land a full minute past the interval, which is late for a battery about
+# to be cut off by the EC (battery-notify mirrors battery-guard thresholds).
+AccuracySec=1s
 
 [Install]
 WantedBy=timers.target

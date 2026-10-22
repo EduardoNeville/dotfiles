@@ -1,5 +1,5 @@
 [Unit]
-Description=Battery level notifications (below 30/20/10% discharging, above 80% charging)
+Description=Battery warnings, repeated each run (below 30/20/10% discharging, above 80% charging)
 
 [Service]
 Type=oneshot

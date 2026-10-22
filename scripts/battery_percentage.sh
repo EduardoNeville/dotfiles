@@ -1,24 +1,26 @@
 #!/bin/sh
+# battery_percentage.sh — both battery packs, for the status bar.
+#
+#   battery_percentage.sh        ->  BAT0:53%|BAT1:4%
+#
+# This laptop has two packs (BAT0 internal + BAT1 removable). The EC drains
+# BAT0 first and, once BAT0 is truly empty, cuts power instead of handing over
+# to BAT1 — so an aggregate (average or min) hides where the machine really
+# is. Print every pack explicitly; unreadable packs are skipped, and with no
+# readable pack at all we print N/A.
+#
+# (No trailing sleep: slstatus reads the output only after the script exits,
+# so it would freeze the whole bar for 5 s every update instead of throttling.)
 
-total_capacity=0
-count=0
+set -u
 
-# Loop through all batteries
+out=""
 for bat in /sys/class/power_supply/BAT*/capacity; do
-    if [ -f "$bat" ]; then
-        capacity=$(cat "$bat")
-        if echo "$capacity" | grep -qE '^[0-9]+$'; then
-            total_capacity=$((total_capacity + capacity))
-            count=$((count + 1))
-        fi
-    fi
+    [ -f "$bat" ] || continue
+    capacity="$(cat "$bat" 2>/dev/null)" || continue
+    case "$capacity" in ''|*[!0-9]*) continue ;; esac
+    name="$(basename "$(dirname "$bat")")"   # BAT0 / BAT1
+    out="${out:+$out|}${name}:${capacity}%"
 done
 
-# Calculate average percentage
-if [ "$count" -gt 0 ]; then
-    printf "%.0f" $((total_capacity / count))
-else
-    printf "N/A"
-fi
-
-sleep 5
+[ -n "$out" ] && printf "%s" "$out" || printf "N/A"

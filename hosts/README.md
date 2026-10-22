@@ -4,6 +4,7 @@
 |---|---|---|---|---|
 | deep-blue      | deep-blue | Debian 13   | base (default)     | DL360 G9, headless server. HP tooling + postgres/redis in hosts/deep-blue/ |
 | hydra          | hydra     | Debian 13   | base desktop       | hosts/hydra declares it |
+| phalanx        | phalanx   | Debian 13   | base               | Xeon E5 server + Tesla P40; NVMe root, /boot on the HDD ESP |
 | imac-de-carlos | imac      | macOS       | base (default)     | brew. hostname file only if profile ever changes |
 
 Profile resolution order: `--profile` flag > `$PROFILE` env > `hosts/<hostname>` file > `base`.
