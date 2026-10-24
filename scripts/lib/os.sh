@@ -32,6 +32,13 @@ HOST="$(hostname 2>/dev/null || echo unknown)"
 # detect_profile — which profiles this machine activates.
 # Order: $PROFILE env/--profile flag > hosts/<hostname>/PROFILE (dir style)
 # or hosts/<hostname> file (legacy) > default "base".
+#
+# Comma- and space-separated lists are equivalent: `--profile base,desktop`
+# and a hosts/<host>/PROFILE containing "base desktop" mean the same thing.
+# The value is normalized to space-separated here because pkg_lists() and
+# has_profile() word-split on spaces — a raw "base,desktop" used to resolve
+# to one bogus name, contribute zero package lists, skip every desktop step,
+# and still finish with a success message.
 detect_profile() {
     PROFILES="${PROFILE:-}"
     if [ -z "$PROFILES" ] && [ -f "${DOTFILES_DIR}/hosts/${HOST}/PROFILE" ]; then
@@ -40,6 +47,22 @@ detect_profile() {
         PROFILES="$(grep '^PROFILE=' "${DOTFILES_DIR}/hosts/${HOST}" | head -1 | cut -d= -f2- | tr -d '"')"
     fi
     PROFILES="${PROFILES:-base}"
+    PROFILES="$(printf '%s' "$PROFILES" | tr ',' ' ' | tr -s ' ' | sed 's/^ //; s/ $//')"
+
+    # Validate before anything is installed. Without this, a typo like
+    # `--profile laptop` matches no directory, declares no packages, and the
+    # run "succeeds" having done nothing — the failure then shows up much
+    # later as a missing window manager.
+    local p
+    for p in $PROFILES; do
+        if [ ! -d "${DOTFILES_DIR}/profiles/$p" ]; then
+            _error "Unknown profile '$p' — no profiles/$p directory"
+            echo "  available: $(ls -1 "${DOTFILES_DIR}/profiles" | tr '\n' ' ')" >&2
+            echo "  usage: ./install.sh --profile base,desktop   (laptop = base + desktop)" >&2
+            return 1
+        fi
+    done
+
     _process "Profiles: $PROFILES ($OS / $PKG)"
 
     # Record the active profiles so runtime shell configs can branch on them

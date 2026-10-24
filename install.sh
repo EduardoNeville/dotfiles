@@ -18,7 +18,14 @@ while [ $# -gt 0 ]; do
     case "$1" in
     --links-only) MODE="links" ;;
     --check) MODE="check" ;;
-    --profile) PROFILE="$2"; shift ;;
+    --profile)
+        if [ -z "${2:-}" ]; then
+            echo "--profile needs a value (e.g. --profile base,desktop)" >&2
+            exit 2
+        fi
+        PROFILE="$2"
+        shift
+        ;;
     *) echo "unknown option: $1 (--links-only | --check | --profile p1,p2)" >&2; exit 2 ;;
     esac
     shift
@@ -35,8 +42,25 @@ source "${DOTFILES_DIR}/scripts/lib/packages.sh"
 # shellcheck source=scripts/lib/apt_sources.sh
 source "${DOTFILES_DIR}/scripts/lib/apt_sources.sh"
 
+# A checkout owned by another user — the classic case is a repo that was first
+# cloned or tarball-extracted with sudo — breaks every build with a confusing
+# linker error: `cc -o dwm ...` cannot overwrite the root-owned binary and
+# reports
+#   /usr/bin/ld: cannot open output file dwm: Permission denied
+# Catch that here, before apt runs, with the exact fix, instead of letting the
+# failure surface halfway through the desktop build.
+if [ "$MODE" != "check" ] &&
+    [ -n "$(find "$DOTFILES_DIR" -maxdepth 0 ! -user "$(id -un)" 2>/dev/null)" ]; then
+    _error "$DOTFILES_DIR is not owned by $(id -un) — source builds and config links will fail"
+    echo "  fix: sudo chown -R $(id -un):$(id -gn) $DOTFILES_DIR" >&2
+    exit 1
+fi
+
 detect_os
-detect_profile
+# detect_profile validates every requested profile against profiles/<name>/;
+# an unknown one (e.g. a typo like "laptop") would otherwise install nothing
+# and still report success.
+detect_profile || { _error "invalid profile — nothing was installed"; exit 1; }
 
 case "$MODE" in
 check) ;;
