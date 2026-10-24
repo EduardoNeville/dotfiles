@@ -2,7 +2,7 @@
 #!/usr/bin/env bash
 # Description:
 # Automatically install tools for different OS
-source $(dirname "$0")/scripts/installer.sh
+source "$(dirname "$0")/installer.sh"
 
 DOTFILES_DIR="${HOME}/dotfiles"
 PACKAGE_MANAGER=""
