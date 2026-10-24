@@ -1,5 +1,10 @@
 # Dotfiles Redesign — Profile-Based Plan (2026-09)
 
+> **Status 2026-10:** implemented. Tree/sketch paths below are the plan as
+> written; the landed names differ in places (`install_suckless.sh` became
+> `profiles/desktop/scripts/build_suckless.sh`, and `full_install.sh` is gone —
+> `install.sh` is the only entry point). See `deprecated/README.md`.
+
 ## Context
 
 - `dotnix` failed: it layered a second package manager (nix) on top of apt/brew

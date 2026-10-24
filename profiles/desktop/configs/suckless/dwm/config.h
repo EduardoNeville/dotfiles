@@ -165,9 +165,10 @@ static const char *firecmd[] = {"firefox", NULL};
 static const char *clipmenucmd[] = {"sh", "-c", "CM_LAUNCHER=rofi clipmenu -i",
                                     NULL};
 
-/* Light Control */
-static const char *brighter[] = {"brightnessctl", "set", "10%+", NULL};
-static const char *dimmer[] = {"brightnessctl", "set", "10%-", NULL};
+/* Light Control — light.sh owns both the backlight and the gamma LUT, so one
+ * scale runs 0..130%: above 100% the hardware is already at full duty and the
+ * extra comes from a curve (see profiles/desktop/scripts/lut.py). Calling
+ * brightnessctl directly here is what used to make the up key a no-op at max. */
 
 /* Theme toggle — the single entry point every surface follows: flips
  * ~/.local/state/theme, syncs tmux, nudges dwm (SIGWINCH) and wezterm (state
@@ -208,9 +209,11 @@ static Key keys[] = {
     {MODKEY, XK_u, spawn,
      SHCMD("~/dotfiles/configs/dunst/dunst_audio select")},
 
-    // Light
-    {0, XF86XK_MonBrightnessDown, spawn, {.v = dimmer}},
-    {0, XF86XK_MonBrightnessUp, spawn, {.v = brighter}},
+    // Light — 5% steps; light.sh keeps backlight, LUT and OSD in sync
+    {0, XF86XK_MonBrightnessDown, spawn,
+     SHCMD("~/dotfiles/profiles/desktop/scripts/light.sh down")},
+    {0, XF86XK_MonBrightnessUp, spawn,
+     SHCMD("~/dotfiles/profiles/desktop/scripts/light.sh up")},
 
     // Screenshots
     {ShiftMask, XK_Print, spawn, SHCMD("flameshot gui")},

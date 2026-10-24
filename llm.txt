@@ -1,7 +1,7 @@
 # Eduardo's Dotfiles - LLM Context
 
 ## Repository Overview
-This is a comprehensive, automated dotfiles system designed for rapid deployment of a complete Linux development environment. The repository supports multiple Linux distributions (Debian/Ubuntu, Void, Fedora) and macOS, with emphasis on USB stick portability - clone to USB, plug into any machine, run one command, and the entire environment installs automatically.
+This is a profile-driven dotfiles system for Debian 13 and macOS. One entry point (`install.sh`), one link engine (`scripts/lib/link.sh`), one parity check. Clone, declare the machine's profile in `hosts/<hostname>/PROFILE`, run `./install.sh`.
 
 **Author:** Eduardo Neville
 **Primary Target:** Debian/Ubuntu systems
@@ -11,60 +11,28 @@ This is a comprehensive, automated dotfiles system designed for rapid deployment
 
 ```
 /home/eduardoneville/dotfiles/
-├── full_install.sh              # Main orchestration script (623 lines)
-├── README.md                    # Comprehensive user documentation
-├── llm.txt                      # This file - AI assistant context
-├── configs/                     # All application configurations
-│   ├── nvim/                   # Neovim with Lazy.nvim plugin manager
-│   ├── zsh-conf/              # ZSH shell + plugins (git submodules)
-│   │   └── plugins/           # fast-syntax-highlighting, zsh-autosuggestions, fzf-tab, etc.
-│   ├── suckless/              # dwm (window manager) + slstatus (status bar) source
-│   │   ├── dwm/              # Patched dwm source code
-│   │   └── slstatus/         # Status bar source
-│   ├── nnn/                   # File manager (full source with plugins)
-│   ├── wezterm/               # GPU-accelerated terminal emulator config
-│   ├── starship/              # Cross-shell prompt configuration
-│   ├── sway/                  # Wayland window manager config
-│   ├── waybar/                # Wayland status bar config
-│   ├── rofi/                  # Application launcher (X11)
-│   ├── wofi/                  # Application launcher (Wayland)
-│   ├── dunst/                 # Notification daemon config
-│   ├── television/            # Fuzzy finder with custom channels
-│   ├── services/              # systemd user services (pipewire)
-│   ├── .gitconfig             # Git configuration with delta integration
-│   └── .xinitrc               # X11 startup script
-├── scripts/                     # Modular installation scripts
-│   ├── debian/                # Debian/Ubuntu specific scripts
-│   │   ├── configure_system.sh    # Symlink creation, shell setup
-│   │   ├── install_suckless.sh    # dwm/slstatus compilation
-│   │   ├── install_rust_tools.sh  # Rust toolchain + cargo packages
-│   │   ├── install_nvm_node.sh    # Node.js via NVM
-│   │   ├── setup_audio.sh         # PipeWire audio system setup
-│   │   ├── setup_github.sh        # GitHub CLI authentication
-│   │   └── install_wezterm.sh     # WezTerm terminal installation
-│   ├── backup/                # System backup scripts
-│   ├── base_fedora_install.sh
-│   ├── base_void_install.sh
-│   ├── installer.sh
-│   └── validate_install.sh
-├── opt/                         # Package lists and definitions
-│   ├── debianPkgs             # 193+ Debian packages by category
-│   ├── cargoPkgs              # 14 Rust CLI tools to install
-│   ├── xbpsPkgs               # Void Linux packages
-│   ├── dnfPkgs                # Fedora packages
-│   ├── Brewfile               # macOS packages
-│   ├── nixPkgs                # Nix packages
-│   ├── homebrew               # Homebrew configuration
-│   ├── nodePkgs               # Global npm packages
-│   ├── pip                    # Python packages
-│   ├── aptPkgs                # Additional apt packages
-│   └── links                  # Symlink definitions for configure_system.sh
-├── notes/                       # Documentation
-│   ├── bootSteps.md           # Post-installation steps
-│   ├── neoVimPlugins.md       # Legacy packer instructions (outdated)
-│   └── packagesInfo.md        # Audio/PipeWire references
-├── assets/                      # Wallpapers and images
-└── deprecated/                  # Old installation scripts
+├── install.sh                   # THE entrypoint: profile-driven (packages → links → configure → parity)
+├── README.md                    # User documentation
+├── llm.txt                      # This file — AI assistant context
+├── configs/                     # Universal dotfiles → ~/.config/<name> (ssh → ~/.ssh)
+│   ├── nvim/  zsh-conf/  nnn/  wezterm/  starship/  television/  tmux/
+│   ├── dunst/  picom/  theme/  opencode/  fontconfig/
+│   └── .gitconfig               # → ~/.gitconfig
+├── profiles/                    # What a class of machine gets
+│   ├── base/                    #   packages.common|apt|brew + scripts/ + services/ + systemd/
+│   └── desktop/                 #   dwm/X11 layer: packages.apt + configs/ + scripts/
+├── hosts/                       # Per-host package lists + PROFILE (deep-blue, hiarcs, hydra, phalanx)
+├── scripts/                     # Install engine (no entry points of its own)
+│   ├── lib/                     #   os.sh, link.sh, packages.sh, apt_sources.sh
+│   ├── debian/configure_system.sh   # Debian adapter: links, shell, services, profile scripts
+│   ├── macos/configure_system.sh    # macOS adapter
+│   ├── check_parity.sh          #   drift check → ./install.sh --check
+│   └── validate_install.sh      #   post-install validation
+├── apt-sources/                 # deb822 sources installed by the apt adapter
+├── opt/                         # Declared package lists (backports, cargo, npm, pip, taps, casks)
+├── notes/                       # Design notes and plans
+├── assets/                      # Wallpapers/images
+└── deprecated/                  # Retired installers — see deprecated/README.md
 ```
 
 ## Architecture Patterns
@@ -72,23 +40,30 @@ This is a comprehensive, automated dotfiles system designed for rapid deployment
 ### 1. Symlink-Based Configuration Management
 The `scripts/debian/configure_system.sh` script uses symlinks to manage configs:
 - Creates symlinks from `~/dotfiles/configs/*` to `~/.config/*`
-- **Exception:** `suckless/` and `services/` directories handled specially
+- **Exceptions:** `ssh` → `~/.ssh/config`; `xinitrc`/`xsession` → `~/.<name>`
 - Backs up existing configs with timestamps before overwriting
 - Links `.zshrc` and `.gitconfig` directly to home directory
-- Sources are defined in `opt/links` file
+- The link set is derived, not listed: `scripts/lib/link.sh` links every
+  `configs/*` directory and every active profile's `configs/*` directory
 
 ### 2. OS Detection and Adaptation
-The main script (`full_install.sh`) detects OS and sets package manager:
-- Debian/Ubuntu → `apt`
-- Void Linux → `xbps`  
-- Fedora → `dnf`
+`install.sh` sources `scripts/lib/os.sh` (OS + package manager) and
+`scripts/lib/packages.sh` (profile package lists), then hands off to
+`scripts/$OS/configure_system.sh`:
+- Debian 13 → `apt`
 - macOS → `brew`
-- Scripts fall back: tries `$OS/` subdirectory first, then `debian/`
+- Profile resolution: `--profile` > `$PROFILE` > `hosts/<hostname>/PROFILE` > `base`
 
-### 3. Three Installation Modes
-1. **Interactive** (default): Menu-driven selection of components
-2. **Full** (`--full`): Automated with minimal prompts
-3. **Unattended** (`--unattended`): Zero interaction for USB deployment
+### 3. Install Modes (flags, not a menu)
+| command | runs |
+|---|---|
+| `./install.sh` | apt sources → profile packages → configure → parity |
+| `./install.sh --links-only` | skips packages; links + configure + parity |
+| `./install.sh --check` | parity only (read-only) |
+| `./install.sh --profile base,desktop` | override profile resolution |
+
+The old interactive menu, `--full` and `--unattended` died with
+`full_install.sh` (now `deprecated/`). There is no other installer.
 
 ### 4. Git Submodules for Shell Plugins
 ZSH plugins are vendored as git submodules in `configs/zsh-conf/plugins/`:
@@ -104,7 +79,8 @@ Both dwm and slstatus are compiled from source:
 - Source code in `configs/suckless/`
 - Multiple patches included (flextile, nmaster, bartabgroups)
 - Custom color schemes and keybindings
-- Requires compilation via `scripts/debian/install_suckless.sh`
+- Requires compilation via `profiles/desktop/scripts/build_suckless.sh`
+- Sources: `profiles/desktop/configs/suckless/` (not under `configs/`)
 
 ## Key Configuration Details
 
@@ -204,52 +180,49 @@ lua_ls, rust_analyzer, clangd, ts_ls, jsonls, yamllint, dockerls, etc.
 
 ### Adding New Configuration Files
 1. Place config in appropriate subdirectory under `configs/`
-2. Add symlink entry to `opt/links` if needed
-3. Run `bash scripts/debian/configure_system.sh` to apply
+2. Nothing to register: `scripts/lib/link.sh` links `configs/*` and
+   `profiles/<p>/configs/*` by name
+3. Run `./install.sh --links-only` (or `./install.sh`) to apply, then `./install.sh --check`
 
 ### Modifying Package Lists
-- Edit `opt/debianPkgs` for Debian/Ubuntu
-- Edit `opt/cargoPkgs` for Rust tools
-- Edit `opt/xbpsPkgs` for Void Linux
-- Edit `opt/dnfPkgs` for Fedora
-- Edit `opt/Brewfile` for macOS
+- Profile packages: `profiles/<p>/packages.common` (every OS), `.apt`, `.brew`
+- Per-host extras: `hosts/<hostname>/packages.apt`
+- Toolchain extras: `opt/{cargoPkgs,nodePkgs,pip,taps.txt,casks.txt,backports.txt}`
+- Non-apt installers: `opt/source/` (frozen at nvim+tmux)
 
 ### Customizing dwm/slstatus
-1. Edit `configs/suckless/dwm/config.h` or `configs/suckless/slstatus/config.h`
-2. Run `bash scripts/debian/install_suckless.sh` to recompile
+1. Edit `profiles/desktop/configs/suckless/dwm/config.h` (or `slstatus/config.h`)
+2. Run `bash profiles/desktop/scripts/build_suckless.sh` to recompile
+3. `./install.sh --check` to confirm the installed binaries are current
 
 ### Adding Installation Scripts
-1. Create script in `scripts/debian/` (or appropriate OS subdirectory)
-2. Make executable: `chmod +x scripts/debian/my_script.sh`
-3. Integrate into `full_install.sh` menu or call standalone
+1. Create the script in `profiles/<p>/scripts/` (profile-specific) or
+   `scripts/$OS/` (adapter-wide)
+2. `chmod +x` it
+3. Call it from `scripts/$OS/configure_system.sh` — that is the only place
+   `install.sh` looks; there is no menu to register it in
 
 ## Important File Locations
 
 **Configuration Symlinks Map:**
 ```
-~/dotfiles/configs/nvim/           → ~/.config/nvim
-~/dotfiles/configs/zsh-conf/zshrc  → ~/.zshrc
-~/dotfiles/configs/.gitconfig      → ~/.gitconfig
-~/dotfiles/configs/sway/           → ~/.config/sway
-~/dotfiles/configs/waybar/         → ~/.config/waybar
-~/dotfiles/configs/rofi/           → ~/.config/rofi
-~/dotfiles/configs/wezterm/        → ~/.config/wezterm
-~/dotfiles/configs/starship/       → ~/.config/starship.toml
-~/dotfiles/configs/television/     → ~/.config/television
-~/dotfiles/configs/dunst/          → ~/.config/dunst
-~/dotfiles/configs/tmux/           → ~/.config/tmux
-~/dotfiles/configs/services/       → ~/.config/service (special handling)
-~/dotfiles/configs/suckless/       → Not symlinked, compiled separately
-~/dotfiles/configs/nnn/            → Not symlinked, compiled separately
+~/dotfiles/configs/<name>/              → ~/.config/<name>       (every dir)
+~/dotfiles/profiles/<p>/configs/<name>/ → ~/.config/<name>       (active profiles)
+~/dotfiles/configs/ssh/config           → ~/.ssh/config
+~/dotfiles/profiles/<p>/configs/xinitrc → ~/.xinitrc
+~/dotfiles/profiles/<p>/configs/xsession→ ~/.xsession
+~/dotfiles/configs/.gitconfig           → ~/.gitconfig
+~/dotfiles/configs/zsh-conf/zshrc       → ~/.zshrc
+# no manifest: the set is derived by scripts/lib/link.sh
 ```
 
 **Package Lists:**
-- Main packages: `opt/debianPkgs`
-- Rust tools: `opt/cargoPkgs`
-- Symlink definitions: `opt/links`
+- Profile packages: `profiles/<p>/packages.{common,apt,brew}`
+- Per-host extras: `hosts/<hostname>/packages.apt`
+- Toolchains: `opt/{cargoPkgs,nodePkgs,pip,taps.txt,casks.txt}`
 
 **Logs:**
-- Installation log: `~/dotfiles_install.log`
+- Drift report: `./install.sh --check` (no log file is written)
 
 ## Modern CLI Tools Stack
 
@@ -271,17 +244,22 @@ The system emphasizes modern Rust-based CLI replacements:
 
 **Full system installation:**
 ```bash
-bash full_install.sh --full
+./install.sh
 ```
 
-**Just update symlinks:**
+**Links + configure, no package installs:**
 ```bash
-bash scripts/debian/configure_system.sh
+./install.sh --links-only
+```
+
+**Read-only drift check:**
+```bash
+./install.sh --check
 ```
 
 **Recompile dwm after config changes:**
 ```bash
-bash scripts/debian/install_suckless.sh
+bash profiles/desktop/scripts/build_suckless.sh
 ```
 
 **Install new cargo package:**
@@ -360,11 +338,11 @@ git submodule update --init --recursive
 ## Notes for AI Assistants
 
 1. **Always use the symlink approach** when adding new configs - don't directly edit ~/.config files
-2. **Check opt/links** before creating new symlinks manually
-3. **OS-specific scripts** should go in scripts/$OS/ with fallback to scripts/debian/
+2. **Check `scripts/lib/link.sh`** before creating symlinks manually
+3. **OS-specific scripts** go in `scripts/$OS/` and are called from `configure_system.sh`
 4. **ZSH plugins are submodules** - don't try to install via package manager
-5. **dwm/slstatus require compilation** - config changes need re-running install_suckless.sh
-6. **Package lists are categorized** in opt/debianPkgs by use case (dev, multimedia, etc.)
+5. **dwm/slstatus require compilation** — `profiles/desktop/scripts/build_suckless.sh`
+6. **Packages are declared per profile** in `profiles/<p>/packages.*` (+ `hosts/<host>/packages.apt`); nothing is installed imperatively
 7. **Use modern CLI tools** (eza, bat, fd, rg) instead of legacy tools (ls, cat, find, grep)
 8. **Lazy.nvim** is the plugin manager - not Packer (legacy documentation exists but is outdated)
 9. **Television** is the fuzzy finder of choice - configure channels in configs/television/cable/

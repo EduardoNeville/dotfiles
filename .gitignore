@@ -21,3 +21,6 @@ profiles/desktop/configs/rofi/shared/colors.rasi
 
 # suckless st build dir (vendored sources, binary artifacts)
 profiles/desktop/configs/suckless/st/
+
+# Python bytecode from the legibility helper (lut.py) — never part of the repo
+__pycache__/

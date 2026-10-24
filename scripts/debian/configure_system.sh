@@ -209,6 +209,11 @@ main() {
         # greeter config, tmux); later every toggle refreshes them
         [ -f "${DOTFILES_DIR}/configs/theme/scripts/rofi_theme.sh" ] &&
             bash "${DOTFILES_DIR}/configs/theme/scripts/rofi_theme.sh"
+        # brightness/DPI/text defaults — idempotent; verifies the runtime deps
+        # and generates the per-profile Firefox page scale (profiles are
+        # created by Firefox, so that part cannot be symlinked)
+        [ -f "${DOTFILES_DIR}/profiles/desktop/scripts/setup_legibility.sh" ] &&
+            bash "${DOTFILES_DIR}/profiles/desktop/scripts/setup_legibility.sh"
         # storage/boot tuning — rotation-guarded, idempotent
         [ -f "${DOTFILES_DIR}/profiles/desktop/scripts/setup_perf.sh" ] &&
             bash "${DOTFILES_DIR}/profiles/desktop/scripts/setup_perf.sh"

@@ -1,4 +1,8 @@
 # ----------------------------------------------------------------------------------------
+# LEGACY — helper functions sourced by full_install_old.sh (the pre-2026-09
+# installer). Kept for history only: the live installer is ../install.sh, which
+# builds on scripts/lib/{os,link,packages,apt_sources}.sh and the profile lists.
+# Nothing in the current install path sources this file.
 
 #
 # Nix installer

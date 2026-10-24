@@ -54,10 +54,45 @@ for p in $PROFILES; do
         chk_link "$HOME/.config/$name" "${d%/}"
     done
     [ -f "$DOTFILES/profiles/$p/configs/xinitrc" ] && chk_link "$HOME/.xinitrc" "$DOTFILES/profiles/$p/configs/xinitrc"
+    [ -f "$DOTFILES/profiles/$p/configs/xsession" ] && chk_link "$HOME/.xsession" "$DOTFILES/profiles/$p/configs/xsession"
 done
 
+# The desktop profile is only "installed" when the session can actually run:
+# startx -> ~/.xinitrc -> dwm-session.sh -> (repo) dwm, and lightdm -> the
+# dwm.desktop entry -> /usr/local/bin/dwm-session. Checking the binaries here
+# makes a stale install (package layer done, suckless build failed) show up as
+# drift instead of surfacing later as "dwm doesn't start".
+case " $PROFILES " in
+*" desktop "*)
+    echo "== X session (desktop) =="
+    [ -x /usr/local/bin/dwm ] && ok "/usr/local/bin/dwm" ||
+        bad "/usr/local/bin/dwm missing — run install.sh (suckless build)"
+    [ -x /usr/local/bin/slstatus ] && ok "/usr/local/bin/slstatus" ||
+        bad "/usr/local/bin/slstatus missing — run install.sh (suckless build)"
+    [ -x /usr/local/bin/dwm-session ] && ok "/usr/local/bin/dwm-session" ||
+        bad "/usr/local/bin/dwm-session missing — run install.sh (suckless build)"
+    [ -f /usr/share/xsessions/dwm.desktop ] && ok "/usr/share/xsessions/dwm.desktop" ||
+        bad "/usr/share/xsessions/dwm.desktop missing — run install.sh (suckless build)"
+
+    # Brightness/legibility defaults: the files are read from the repo at
+    # session start (Xresources) or linked (~/.config/fontconfig), so drift
+    # here means the desktop was installed from an older checkout.
+    [ -f "$DOTFILES/profiles/desktop/configs/Xresources" ] &&
+        ok "Xresources (Xft.dpi)" ||
+        bad "profiles/desktop/configs/Xresources missing — dwm bar/rofi/GTK stay at 96dpi"
+    [ -x "$DOTFILES/profiles/desktop/scripts/light.sh" ] &&
+        ok "light.sh (0-130% brightness scale)" ||
+        bad "profiles/desktop/scripts/light.sh missing — brightness keys will not work"
+    if sh "$DOTFILES/profiles/desktop/scripts/firefox_legibility.sh" --check 2>/dev/null; then
+        ok "Firefox page scale (all profiles)"
+    else
+        bad "Firefox user.js legibility block stale — bash profiles/desktop/scripts/setup_legibility.sh"
+    fi
+    ;;
+esac
+
 echo "== shadowed configs (real dirs blocking repo symlinks) =="
-for d in "$DOTFILES"/configs/*/ "$DOTFILES"/profiles/$PROFILES/configs/*/; do
+for d in "$DOTFILES"/configs/*/; do
     [ -d "$d" ] || continue
     name=$(basename "$d")
     case "$name" in .git* | ssh) continue ;; esac
@@ -65,6 +100,17 @@ for d in "$DOTFILES"/configs/*/ "$DOTFILES"/profiles/$PROFILES/configs/*/; do
     if [ -e "$t" ] && [ ! -L "$t" ]; then
         bad "$t is a real directory — shadows $d (delete or back it up, re-run install.sh)"
     fi
+done
+for p in $PROFILES; do
+    for d in "$DOTFILES"/profiles/$p/configs/*/; do
+        [ -d "$d" ] || continue
+        name=$(basename "$d")
+        case "$name" in .git* | ssh) continue ;; esac
+        t="$HOME/.config/$name"
+        if [ -e "$t" ] && [ ! -L "$t" ]; then
+            bad "$t is a real directory — shadows $d (delete or back it up, re-run install.sh)"
+        fi
+    done
 done
 
 echo "== pi (dotpi) =="

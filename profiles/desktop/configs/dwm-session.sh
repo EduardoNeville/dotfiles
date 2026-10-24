@@ -9,6 +9,14 @@
 # A display manager runs the .desktop Exec= verbatim, so without this split a
 # DM session would be a bare dwm: no bar, no notifications, no wallpaper.
 
+# X resources — the panel is 157dpi (31cm at 1920px) but X clients default to
+# 96dpi, so dwm's bar, dmenu, rofi and GTK chrome all rendered physically
+# smaller than wezterm (which auto-detects the panel). Xft.dpi=110 brings them
+# back in line. dwm opens its fonts once, at startup, so this must run before
+# the exec at the bottom.
+XRES="${DOTFILES_DIR:-$HOME/dotfiles}/profiles/desktop/configs/Xresources"
+[ -f "$XRES" ] && command -v xrdb >/dev/null 2>&1 && xrdb -merge "$XRES"
+
 # Wallpaper — theme-aware: wallpaper.sh reads the state file and picks the
 # asset, so the same mapping is used here and on every toggle.
 [ -f "${DOTFILES_DIR:-$HOME/dotfiles}/configs/theme/scripts/wallpaper.sh" ] && \
@@ -19,11 +27,29 @@
 [ -f "${DOTFILES_DIR:-$HOME/dotfiles}/configs/theme/scripts/gtk_theme.sh" ] && \
     bash "${DOTFILES_DIR:-$HOME/dotfiles}/configs/theme/scripts/gtk_theme.sh" >/dev/null 2>&1 &
 
+# Firefox page scale — stored in each profile's user.js, because Firefox
+# creates and names its profiles (nothing to symlink). install.sh writes it
+# once; this re-run is what catches a profile that appears afterwards. Writes
+# only when the marked block is missing or stale, so it is silent after the
+# first login.
+[ -x "${DOTFILES_DIR:-$HOME/dotfiles}/profiles/desktop/scripts/firefox_legibility.sh" ] && \
+    "${DOTFILES_DIR:-$HOME/dotfiles}/profiles/desktop/scripts/firefox_legibility.sh" >/dev/null 2>&1 &
+
 # Compositor — exists to kill X11 tearing (glx + vsync, no effects). The config
 # is passed explicitly rather than relying on ~/.config/picom being linked, so
 # the session cannot silently fall back to built-in defaults (no vsync).
 command -v picom >/dev/null 2>&1 && \
     picom -b --config "${DOTFILES_DIR:-$HOME/dotfiles}/configs/picom/picom.conf" &
+
+# Brightness — two things overwrite the panel state behind our back: picom
+# installs an identity gamma LUT when it starts (-b means it may still be
+# starting), and systemd-backlight restored whatever percentage was saved at
+# the last shutdown (36% here). light.sh restore re-applies the user's saved
+# level, curve and vibrance; the short delay lets picom win the race first.
+(
+    sleep 1
+    "${DOTFILES_DIR:-$HOME/dotfiles}/profiles/desktop/scripts/light.sh" restore
+) >/dev/null 2>&1 &
 
 # Status bar + notifications (dwm's config.h does not spawn these)
 command -v slstatus >/dev/null 2>&1 && slstatus &

@@ -1,5 +1,10 @@
 # OS-Agnostic Dotfiles — Implementation Plan
 
+> **Status 2026-10:** implemented. `install.sh` is the only entrypoint;
+> `full_install.sh` (the transitional shim) has been deleted, and its era's
+> helpers now live in `deprecated/` (see `deprecated/README.md`). The phase
+> notes below are the historical plan, not a task list.
+
 Goal: one source of truth, one linker, one entrypoint. macOS and Debian (plus future
 Void/Fedora) differ only in package names and system services. Every config file is
 shared; platform divergence lives *inside* config files as runtime checks, never as
@@ -71,8 +76,9 @@ Layer 3  ADAPTERS (thin, per-OS, ~50 lines each)
 ### Phase 4 — Single entrypoint + retirement
 - Root `install.sh`: detect OS → install packages → run adapter → run
   `check_parity.sh`. Flags: `--no-packages`, `--links-only`, `--check`.
-- `full_install.sh` becomes a deprecated shim that prints "use ./install.sh" and
-  execs it. Delete after both machines migrate.
+- ~~`full_install.sh` becomes a deprecated shim that prints "use ./install.sh" and
+  execs it. Delete after both machines migrate.~~ **Done 2026-10:** shim removed;
+  `scripts/installer.sh` and `full_install_old.sh` moved into `deprecated/`.
 - **Acceptance:** one command on a fresh macOS and a fresh Debian yields identical
   `check_parity.sh` output (modulo `macos.txt`/`debian.txt` extras).
 

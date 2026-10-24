@@ -1,0 +1,20 @@
+! X resources — loaded by dwm-session.sh with `xrdb -merge` before any client
+! starts (dwm opens its fonts once, at startup, so order matters).
+!
+! The panel reports 309mm x 173mm at 1920x1080 — 157dpi — but X clients assume
+! 96dpi unless told otherwise. That is why the bar, dmenu, rofi and GTK chrome
+! all rendered physically smaller than wezterm, which auto-detects the panel.
+! 110 (+15%) is a deliberate first step: enough to close the gap, small enough
+! that dwm's 14pt bar and rofi's geometry still fit. Raise to 120 only after
+! eyeballing the bar height and rofi width.
+Xft.dpi: 110
+
+! Rendering: subpixel RGB + light hinting is the sharpest text this panel
+! produces; sharper glyph edges read as brighter at the same nits. GTK3 does
+! not read these (it asks fontconfig directly), so configs/fontconfig/fonts.conf
+! declares the same choices for it.
+Xft.antialias: true
+Xft.hinting: true
+Xft.hintstyle: hintslight
+Xft.rgba: rgb
+Xft.lcdfilter: lcddefault

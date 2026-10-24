@@ -51,6 +51,13 @@ brightnessctl
 acpi
 acpid
 
+# Brightness / text legibility — used by profiles/desktop/scripts/{light,lut}.sh,
+# setup_legibility.sh and configs/fontconfig/fonts.conf. xorg pulls
+# x11-xserver-utils in transitively; declared anyway because lut.py loads
+# libXrandr at runtime and dwm-session.sh calls xrdb.
+x11-xserver-utils
+fontconfig
+
 # GUI apps
 obs-studio
 keepassxc
@@ -63,6 +70,7 @@ mupdf
 mupdf-tools
 clipit
 dunst
+picom
 firefox-esr
 suckless-tools
 

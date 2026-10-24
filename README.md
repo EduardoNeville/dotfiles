@@ -26,12 +26,38 @@ apt-sources/        debian.sources (trixie + updates + security + backports)
 configs/            universal dotfiles, symlinked to ~/.config (ssh → ~/.ssh)
 opt/                backports.txt, casks/taps, cargoPkgs, opt/source (nvim/tmux builds)
 scripts/            engine (lib/), adapters (debian|macos), check_parity.sh, review_packages.sh
+deprecated/         retired installers (not wired into install.sh) — see its README
 ```
+
+`install.sh` is the only install entry point. Everything it runs is either
+`scripts/lib/*`, `scripts/<os>/configure_system.sh`, or a
+`profiles/<profile>/scripts/*` helper.
 
 The pi agent config is **not** tracked here. It lives in its own repo
 ([`dotpi`](https://github.com/EduardoNeville/dotpi)), which the installer clones
 to `~/dotpi` and then delegates to (`scripts/lib/link.sh` → `dotpi/install.sh`).
 That repo owns `~/.pi/agent/*` and the pi extensions; this one only bootstraps it.
+
+### Desktop layer (profile: `desktop`)
+
+On top of dwm/audio/bluetooth, the desktop profile ships display defaults tuned
+for the T480's ~250-nit panel (`install.sh` applies all of it; details and
+measurements in `notes/backlight-legibility-plan.md`):
+
+- `profiles/desktop/scripts/light.sh` + `lut.py` — one 0–130% brightness scale.
+  ≤100% is the real backlight; >100% adds a midtone LUT curve, because the
+  panel's 100% duty *is* the hardware ceiling. Bound to the brightness keys.
+- `profiles/desktop/configs/Xresources` — `Xft.dpi: 110` for a 157dpi panel
+  (merged by `dwm-session.sh` before dwm starts; `dwm-session.sh` also re-applies
+  the saved brightness after picom, which would otherwise reset the LUT).
+- `configs/fontconfig/fonts.conf` — subpixel/hinting, for GTK3 which ignores
+  the X resources above.
+- `setup_legibility.sh` — install-time dependency check plus the per-profile
+  Firefox page scale (1.15), since Firefox profiles cannot be symlinked.
+
+A fresh desktop install starts at **120%** (`LIGHT_DEFAULT`), i.e. hardware
+100% + curve. Change it with the brightness keys, `light.sh set N`, or by
+exporting `LIGHT_DEFAULT` before `install.sh`.
 
 ## Rules (locked)
 
