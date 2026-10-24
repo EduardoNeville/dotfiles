@@ -8,7 +8,8 @@
 set -u
 DOTFILES="${DOTFILES_DIR:-$HOME/dotfiles}"
 DOTFILES_DIR="$DOTFILES"
-DOTPI="$HOME/dotpi"
+DOTPI="${DOTPI_DIR:-$HOME/dotpi}"
+PI_AGENT="${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}"
 fail=0
 CHECK_PACKAGES=0
 [ "${1:-}" = "--packages" ] && CHECK_PACKAGES=1
@@ -141,8 +142,8 @@ for p in $PROFILES; do
 done
 
 echo "== pi (dotpi) =="
-chk_link "$HOME/.pi/agent/settings.json" "$DOTPI/settings.json"
-chk_link "$HOME/.pi/agent/trust.json" "$DOTPI/trust.json"
+chk_link "${PI_AGENT}/settings.json" "$DOTPI/settings.json"
+chk_link "${PI_AGENT}/trust.json" "$DOTPI/trust.json"
 chk_link "$HOME/.config/ponytail/config.json" "$DOTPI/extensions/ponytail/config.json"
 
 if [ "$CHECK_PACKAGES" = "1" ]; then

@@ -35,8 +35,22 @@ deprecated/         retired installers (not wired into install.sh) — see its R
 
 The pi agent config is **not** tracked here. It lives in its own repo
 ([`dotpi`](https://github.com/EduardoNeville/dotpi)), which the installer clones
-to `~/dotpi` and then delegates to (`scripts/lib/link.sh` → `dotpi/install.sh`).
+to `~/dotpi` — a separate repository at the root of `$HOME`, a peer of
+`~/dotfiles`, never nested inside it — and then delegates to
+(`scripts/lib/link.sh` → `dotpi/install.sh`).
 That repo owns `~/.pi/agent/*` and the pi extensions; this one only bootstraps it.
+
+Any host can install a different config repo (or put dotpi elsewhere) without
+touching this repo:
+
+```bash
+DOTPI_REPO=git@github.com:you/work-pi-config.git DOTPI_DIR=~/pi-work ./install.sh
+DOTPI_DIR=~/dotpi PI_CODING_AGENT_DIR=~/.pi/work ./install.sh
+```
+
+Relocating `DOTPI_DIR` relies on the config repo resolving its own path; the
+`skills`/`packages` entries in its `settings.json` are still written as `~/dotpi/...`,
+so a repo living elsewhere must fix those paths itself.
 
 ### Desktop layer (profile: `desktop`)
 

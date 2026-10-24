@@ -21,37 +21,42 @@ backup_then_link() {
 # attempts run with GIT_TERMINAL_PROMPT=0 and a timeout so a private repo
 # without a key fails in seconds instead of blocking the installer on a
 # credential prompt, or hanging on an unreachable network.
+# The pi config repo is its own repository at the root of $HOME (a peer of
+# ~/dotfiles), never nested inside dotfiles. Any host can point at a different
+# config repo/location: DOTPI_REPO=<url> DOTPI_DIR=~/pi-config ./install.sh
 DOTPI_REPO="${DOTPI_REPO:-git@github.com:EduardoNeville/dotpi.git}"
+DOTPI_DIR="${DOTPI_DIR:-${HOME}/dotpi}"
 ensure_dotpi() {
     # A directory is not enough — a killed clone leaves one behind, so require
     # dotpi's own marker file before declaring it present.
-    if [ -f "${HOME}/dotpi/settings.json" ]; then
+    if [ -f "${DOTPI_DIR}/settings.json" ]; then
         return 0
     fi
 
-    _process "Cloning dotpi (pi agent config repo)"
+    _process "Cloning pi config repo into ${DOTPI_DIR}"
+    mkdir -p "$(dirname "${DOTPI_DIR}")"
 
     local timeout_cmd=""
     has timeout && timeout_cmd="timeout ${DOTPI_CLONE_TIMEOUT:-90}"
     local https_repo="${DOTPI_REPO/git@github.com:/https://github.com/}"
     local cloned=0
 
-    if ${timeout_cmd} env GIT_TERMINAL_PROMPT=0 git clone --recurse-submodules "${DOTPI_REPO}" "${HOME}/dotpi" 2>/dev/null; then
+    if ${timeout_cmd} env GIT_TERMINAL_PROMPT=0 git clone --recurse-submodules "${DOTPI_REPO}" "${DOTPI_DIR}" 2>/dev/null; then
         cloned=1
     elif [ "${https_repo}" != "${DOTPI_REPO}" ] &&
-        ${timeout_cmd} env GIT_TERMINAL_PROMPT=0 git clone --recurse-submodules "${https_repo}" "${HOME}/dotpi" 2>/dev/null; then
+        ${timeout_cmd} env GIT_TERMINAL_PROMPT=0 git clone --recurse-submodules "${https_repo}" "${DOTPI_DIR}" 2>/dev/null; then
         cloned=1
     fi
 
     if [ "$cloned" -eq 1 ]; then
-        _success "dotpi cloned"
+        _success "pi config repo cloned"
         return 0
     fi
 
-    # Nothing was at ~/dotpi before this function ran, so a leftover directory
-    # can only be a partial clone from the attempt above.
-    rm -rf "${HOME}/dotpi"
-    _error "dotpi clone failed — run profiles/base/scripts/setup_github.sh first (private repo), then re-run install.sh"
+    # Nothing was there before this function ran, so a leftover directory can
+    # only be a partial clone from the attempt above.
+    rm -rf "${DOTPI_DIR}"
+    _error "clone failed — run profiles/base/scripts/setup_github.sh first (private repo), then re-run install.sh"
     return 1
 }
 
@@ -257,52 +262,23 @@ create_common_directories() {
 link_pi_config() {
     _process "Linking Pi agent configuration"
 
-    # Canonical source is ~/dotpi (system-agnostic, see dotpi/install.sh);
-    # dotpi is the sole owner — dotfiles ships no pi config to fall back to.
-    if [ -x "${HOME}/dotpi/install.sh" ]; then
-        _process "Delegating to dotpi/install.sh (canonical pi config)"
+    # The config repo owns ~/.pi/agent (see its install.sh); dotfiles ships no
+    # pi config and does not duplicate its linking rules.
+    if [ -f "${DOTPI_DIR}/install.sh" ]; then
+        _process "Delegating to ${DOTPI_DIR}/install.sh (canonical pi config)"
         # --no-extensions: extension npm installs are handled by dotpi or
         # caller explicitly; configure_system stays fast and offline-safe.
-        sh "${HOME}/dotpi/install.sh" --no-extensions || {
-            _error "dotpi/install.sh failed — check ~/dotpi/install.sh --dry-run"
+        sh "${DOTPI_DIR}/install.sh" --no-extensions || {
+            _error "${DOTPI_DIR}/install.sh failed — check ${DOTPI_DIR}/install.sh --dry-run"
             return 1
         }
-        _success "Pi agent configuration linked via dotpi"
+        _success "Pi agent configuration linked via the config repo"
         return 0
     fi
 
-    if [ -d "${HOME}/dotpi" ] && [ -f "${HOME}/dotpi/settings.json" ]; then
-        _process "dotpi found but not executable — linking directly"
-        local pi_agent_dir="${HOME}/.pi/agent"
-        mkdir -p "$pi_agent_dir"
-        for file in settings.json trust.json; do
-            local src="${HOME}/dotpi/${file}"
-            [ -f "$src" ] || continue
-            backup_then_link "${pi_agent_dir}/${file}" "$src"
-            echo "  ✓ Linked $file (from dotpi)"
-        done
-        # Render HOME-portable hypa/ponytail configs if dotpi script unavailable
-        if [ -f "${HOME}/dotpi/extensions/hypa/config.json" ]; then
-            mkdir -p "${HOME}/.hypa" "${HOME}/.hypa-pi"
-            sed "s|__HOME__|${HOME}|g; s|/home/eduardoneville|${HOME}|g" \
-                "${HOME}/dotpi/extensions/hypa/config.json" >"${HOME}/.hypa/config.json"
-            sed "s|__HOME__|${HOME}|g; s|/home/eduardoneville|${HOME}|g" \
-                "${HOME}/dotpi/extensions/hypa/pi-config.json" >"${HOME}/.hypa-pi/config.json"
-            echo "  ✓ Rendered hypa configs for $HOME"
-        fi
-        if [ -f "${HOME}/dotpi/extensions/ponytail/config.json" ]; then
-            mkdir -p "${HOME}/.config/ponytail"
-            backup_then_link "${HOME}/.config/ponytail/config.json" "${HOME}/dotpi/extensions/ponytail/config.json"
-            echo "  ✓ Linked ponytail config"
-        fi
-        _success "Pi agent configuration linked via dotpi (fallback)"
-        return 0
-    fi
-
-    # Nothing left to fall back to: configs/pi was removed so that exactly one
-    # repo owns pi config. A missing ~/dotpi here means the clone failed (private
-    # repo without an SSH key), so say that instead of half-configuring pi.
-    _error "~/dotpi missing — pi config not linked; run profiles/base/scripts/setup_github.sh (or clone dotpi manually), then re-run install.sh"
+    # A missing install.sh here means the clone failed (private repo without an
+    # SSH key) — say that instead of half-configuring pi.
+    _error "${DOTPI_DIR} has no install.sh — pi config not linked; run profiles/base/scripts/setup_github.sh (or clone ${DOTPI_REPO} manually), then re-run install.sh"
     return 1
 }
 
