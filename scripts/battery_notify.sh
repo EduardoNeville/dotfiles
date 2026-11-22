@@ -1,5 +1,6 @@
 #!/bin/sh
-# battery_notify.sh — battery warnings, every minute, on the pack that matters.
+# battery_notify.sh — battery warnings and handover notices, every 30 seconds,
+# on the pack that matters.
 #
 #   battery_notify.sh                                   # real readings (timer)
 #   battery_notify.sh --selftest                        # assert the decision table
@@ -7,11 +8,14 @@
 #   battery_notify.sh --dry-run --percent 25 --state discharging --name BAT0
 #
 # Design rules (measured on this T480):
-#   - The pack that is *Discharging* is the one that will kill the machine (the
-#     EC drains BAT0 first, but after a reboot it runs off BAT1 instead — see
+#   - The pack that is *Discharging* is the one that will kill the machine
+#     (the EC drains the external BAT1 first, then reaches BAT0 — see
 #     scripts/battery_guard.sh). Warn on min(capacity) of the DISCHARGING
 #     packs. Using BAT0's status alone or an aggregate over every pack is how
 #     the warnings used to silently never fire.
+#   - At 10% the guard is also asking the EC to hand the load to the other
+#     pack. The notification says that instead of claiming an immediate
+#     cutoff, because a successful handover is seamless.
 #   - No discharging pack but a Charging one above 80% -> the "unplug to save
 #     cycles" hint. That is computed on the charging packs, never on the
 #     aggregate, or a stuck 4% sibling would keep it suppressed forever.
@@ -65,6 +69,12 @@ decide() {
     is_num "$2" || return 0
     st="$(printf %s "${1:-}" | tr 'A-Z' 'a-z')"
     if [ "$st" = "discharging" ]; then
+        # 10% is the guard's handover point (it acts at <=10), so this tier is
+        # inclusive while the 30/20 tiers stay "below the number".
+        if [ "$2" -le 10 ]; then
+            echo "low 10"
+            return 0
+        fi
         t="$(pick_tier "$2")"
         [ -n "$t" ] && echo "low $t"
     elif [ "$st" = "charging" ] && [ "$2" -gt "$HIGH_LEVEL" ]; then
@@ -75,12 +85,13 @@ decide() {
 if [ "${SELFTEST:-0}" = 1 ]; then
     rc=0
     check() { got="$(decide "$1" "$2")"; [ "${got:-}" = "$3" ] || { echo "FAIL decide($1,$2)=$got expected ${3:-(empty)}"; rc=1; }; }
-    # low side: tier = tightest threshold crossed; at the exact number, not crossed
+    # low side: tier = tightest threshold crossed; at the exact number, not
+    # crossed. Exception: 10% is the guard's inclusive handover point.
     check Discharging 30 ""       # 30 is not below 30
     check Discharging 29 "low 30"
     check Discharging 20 "low 30" # 20 is below 30, not below 20
     check Discharging 19 "low 20"
-    check Discharging 10 "low 20"
+    check Discharging 10 "low 10" # guard acts at <=10
     check Discharging 9 "low 10"
     check Discharging 3 "low 10"
     check Discharging 55 ""
@@ -107,7 +118,6 @@ if [ -z "$percent" ]; then
     BAT_GLOB=${BATTERY_NOTIFY_BAT_GLOB:-/sys/class/power_supply/BAT*}
     dis_cap="" dis_name=""
     chg_cap="" chg_name=""
-    has_status=""
     for bat in $BAT_GLOB; do
         [ -d "$bat" ] || continue
         st="$(cat "$bat/status" 2>/dev/null || echo "")"
@@ -134,11 +144,13 @@ if [ -z "$percent" ]; then
         # pack as "discharging" when AC reports offline, so a broken status
         # file can never silence the warnings the guard pair relies on.
         ac=""
-        for acf in ${BATTERY_NOTIFY_AC_GLOB:-/sys/class/power_supply/A*/online}; do
+        for acf in ${BATTERY_NOTIFY_AC_GLOB:-/sys/class/power_supply/A*/online /sys/class/power_supply/ucsi-source-psy-*/online}; do
             [ -f "$acf" ] || continue
-            ac="$(cat "$acf" 2>/dev/null || echo 0)"
-            break
+            ac_val="$(cat "$acf" 2>/dev/null || echo "")"
+            [ -z "$ac" ] && ac="$ac_val"
+            [ "$ac_val" = 1 ] && { ac=1; break; }
         done
+        [ -z "$ac" ] && ac=1
         if [ "${ac:-1}" = 1 ]; then
             echo "on AC, nothing charging; no notification claimed"; exit 0
         fi
@@ -163,10 +175,17 @@ notify() {
         echo "would notify [$_urgency] $_summary — ${_extra:-$name at ${percent}%.}"
         return 0
     fi
-    command -v notify-send >/dev/null 2>&1 || { echo "notify-send missing" >&2; return 1; }
+    if command -v notify-send >/dev/null 2>&1; then
+        _notify=notify-send
+    elif command -v dunstify >/dev/null 2>&1; then
+        _notify=dunstify
+    else
+        echo "notify-send/dunstify missing" >&2
+        return 1
+    fi
     : "${DBUS_SESSION_BUS_ADDRESS:=unix:path=${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/bus}"
     export DBUS_SESSION_BUS_ADDRESS
-    notify-send -r "$_id" -u "$_urgency" -i "$_icon" -h int:value:"$percent" \
+    "$_notify" -r "$_id" -u "$_urgency" -i "$_icon" -h int:value:"$percent" \
         "$_summary" "${_extra:-$name at ${percent}%.}"
 }
 
@@ -174,7 +193,7 @@ verdict="$(decide "${charge_state:-}" "$percent")"
 case "$verdict" in
     "low 10")
         notify 7004 critical battery-caution-symbolic \
-            "Battery critical: $name ${percent}%" "Plug in now — about to cut off." ;;
+            "Battery critical: $name ${percent}%" "Handover point — switching packs if the peer is healthy, otherwise hibernating. Plug in now if you can." ;;
     "low 20")
         notify 7003 normal battery-level-20-symbolic \
             "Battery low: $name ${percent}%" "Under 20% — plug in soon." ;;

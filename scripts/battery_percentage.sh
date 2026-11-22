@@ -3,11 +3,12 @@
 #
 #   battery_percentage.sh        ->  BAT0:53%|BAT1:4%
 #
-# This laptop has two packs (BAT0 internal + BAT1 removable). The EC drains
-# BAT0 first and, once BAT0 is truly empty, cuts power instead of handing over
-# to BAT1 — so an aggregate (average or min) hides where the machine really
-# is. Print every pack explicitly; unreadable packs are skipped, and with no
-# readable pack at all we print N/A.
+# This laptop has two packs (BAT0 internal + BAT1 removable). The EC normally
+# drains BAT1 first and hands over to BAT0 only when BAT1 is nearly flat — so
+# an aggregate (average or min) hides where the machine really is. Print every
+# pack explicitly; unreadable packs are skipped, and with no readable pack at
+# all we print N/A. `battery_guard.sh` is what moves the load at 10% instead
+# of waiting for the EC's cutoff.
 #
 # (No trailing sleep: slstatus reads the output only after the script exits,
 # so it would freeze the whole bar for 5 s every update instead of throttling.)

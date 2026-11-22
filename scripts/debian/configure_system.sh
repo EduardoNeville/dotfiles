@@ -5,6 +5,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_DIR="${DOTFILES_DIR:-$(cd "${SCRIPT_DIR}/../.." && pwd)}"
 source "${SCRIPT_DIR}/../lib/os.sh"
 source "${SCRIPT_DIR}/../lib/link.sh"
 
@@ -34,11 +35,21 @@ setup_fonts() {
 }
 
 setup_systemd_user_services() {
-    # Base units (review timer) + desktop units (pipewire etc.).
-    local services_dir
+    # Base units (review timer) + active profile units. The desktop profile
+    # owns the laptop-only units (battery notify, pipewire, ...). Build the
+    # list from $PROFILES so a base-only host never keeps a dangling link to a
+    # unit that is no longer installed here.
+    local services_dir unit name
+    local service_dirs=("${DOTFILES_DIR}/profiles/base/services")
+    local p
+    for p in $PROFILES; do
+        [ "$p" = "base" ] && continue   # already in service_dirs
+        service_dirs+=("${DOTFILES_DIR}/profiles/$p/services")
+    done
+
     _process "Setting up systemd user services"
     mkdir -p "${HOME}/.config/systemd/user"
-    for services_dir in "${DOTFILES_DIR}/profiles/base/services" "${DOTFILES_DIR}/profiles/desktop/configs/services"; do
+    for services_dir in "${service_dirs[@]}"; do
         [ -d "$services_dir" ] || continue
         for unit in "$services_dir"/*; do
             [ -f "$unit" ] || continue
@@ -46,7 +57,22 @@ setup_systemd_user_services() {
             echo "  ✓ Linked $(basename "$unit")"
         done
     done
+
+    # A unit that moved between profiles (battery-notify: base -> desktop)
+    # leaves a symlink pointing at a path that no longer exists. Remove it and
+    # disable the corresponding timer, or systemd keeps failing every 30s.
+    for unit in "${HOME}/.config/systemd/user"/*; do
+        [ -L "$unit" ] && [ ! -e "$unit" ] || continue
+        name="$(basename "$unit")"
+        systemctl --user disable --now "$name" >/dev/null 2>&1 || true
+        rm -f "$unit"
+        echo "  ✓ Removed stale $name"
+    done
     systemctl --user daemon-reload
+    if [ ! -e "${HOME}/.config/systemd/user/battery-notify.timer" ]; then
+        systemctl --user disable --now battery-notify.timer >/dev/null 2>&1 || true
+    fi
+
     # Weekly review timer (idempotent, no sudo)
     if [ -f "${HOME}/.config/systemd/user/review-packages.timer" ]; then
         systemctl --user enable review-packages.timer 2>/dev/null && echo "  ✓ enabled review-packages.timer"
@@ -59,28 +85,127 @@ setup_systemd_user_services() {
 }
 
 setup_system_services() {
-    # System units from the repo (battery guard: hibernate before BAT0's voltage
-    # cutoff). Linked rather than copied, so repo edits apply — same style as the
-    # user units above.
-    local systemd_dir="${DOTFILES_DIR}/profiles/base/systemd/system"
-    [ -d "$systemd_dir" ] || return 0
-    _process "Setting up systemd system services"
-    local unit name linked=0
-    for unit in "$systemd_dir"/*; do
-        [ -f "$unit" ] || continue
-        name="$(basename "$unit")"
-        if [ ! -e "/etc/systemd/system/${name}" ] ||
-            ! cmp -s "$unit" "/etc/systemd/system/${name}" 2>/dev/null; then
-            sudo ln -sf "$unit" "/etc/systemd/system/${name}" && echo "  ✓ Linked ${name}"
-            linked=1
-        fi
+    # System units must be *copies* on the root filesystem. /home is a separate
+    # mount, so a unit symlinked into /home cannot be resolved when systemd
+    # builds its unit table at boot. That is how battery-guard.timer used to be
+    # skipped silently, leaving the machine to hit the EC cutoff and crash.
+    #
+    # Units come from every active profile: base has no battery units, the
+    # desktop profile owns the laptop guard. A base-only host must not keep a
+    # stale battery unit from an earlier install.
+    local systemd_dirs=() p d unit name
+    for p in $PROFILES; do
+        d="${DOTFILES_DIR}/profiles/$p/systemd/system"
+        [ -d "$d" ] && systemd_dirs+=("$d")
     done
-    [ "$linked" = 1 ] && sudo systemctl daemon-reload
-    # Hibernate before the internal pack's low-voltage cutoff (see
-    # scripts/battery_guard.sh for why upower cannot do this).
-    if [ -f /etc/systemd/system/battery-guard.timer ]; then
-        sudo systemctl enable --now battery-guard.timer >/dev/null 2>&1 &&
-            echo "  ✓ enabled battery-guard.timer"
+
+    _process "Installing systemd system services"
+
+    # Root-owned helper scripts. battery_guard.sh is referenced only by the
+    # desktop unit; install/refresh it when that profile is active.
+    local guard_src="${DOTFILES_DIR}/scripts/battery_guard.sh"
+    local guard_dir="/usr/local/lib/battery-guard"
+    local guard_dst="${guard_dir}/battery_guard.sh"
+    local guard_wanted=0
+    has_profile desktop && guard_wanted=1
+    if [ "$guard_wanted" = 1 ] && [ -f "$guard_src" ]; then
+        # Root-owned script, not a symlink into the user's home (which would
+        # also be a privilege-escalation path: the user could edit it and the
+        # root timer would execute it).
+        sudo install -d -m 0755 -o root -g root "$guard_dir"
+        if [ -L "$guard_dst" ] || ! cmp -s "$guard_src" "$guard_dst" 2>/dev/null; then
+            sudo rm -f "$guard_dst"
+            sudo install -m 0755 -o root -g root "$guard_src" "$guard_dst"
+            echo "  ✓ Installed battery_guard.sh"
+        else
+            echo "  ✓ battery_guard.sh up to date"
+        fi
+    fi
+
+    # Install every unit from the active profiles. Keep a space-separated list
+    # so we can both enable known timers and remove stale copies below.
+    local installed=" "
+    for d in "${systemd_dirs[@]}"; do
+        for unit in "$d"/*; do
+            [ -f "$unit" ] || continue
+            name="$(basename "$unit")"
+            case "$installed" in *" $name "*) continue ;; esac
+            if [ -L "/etc/systemd/system/${name}" ] ||
+                ! cmp -s "$unit" "/etc/systemd/system/${name}" 2>/dev/null; then
+                # Remove legacy symlinks first: install(1) would follow them and
+                # overwrite the repo file instead of creating the system copy.
+                sudo rm -f "/etc/systemd/system/${name}"
+                sudo install -m 0644 -o root -g root "$unit" "/etc/systemd/system/${name}"
+                echo "  ✓ Installed ${name}"
+            else
+                echo "  ✓ ${name} up to date"
+            fi
+            installed="${installed}${name} "
+        done
+    done
+
+    # A base-only host may still carry the old /home symlinks for battery
+    # units that lived in profiles/base. Remove them (and the root script) so
+    # servers do not run a laptop guard.
+    if ! printf '%s' "$installed" | grep -q ' battery-guard.timer '; then
+        if [ -e /etc/systemd/system/battery-guard.timer ] ||
+            [ -L /etc/systemd/system/battery-guard.timer ] ||
+            [ -e /etc/systemd/system/battery-guard.service ] ||
+            [ -L /etc/systemd/system/battery-guard.service ]; then
+            sudo systemctl disable --now battery-guard.timer >/dev/null 2>&1 || true
+            sudo rm -f /etc/systemd/system/battery-guard.timer \
+                /etc/systemd/system/battery-guard.service \
+                /etc/systemd/system/timers.target.wants/battery-guard.timer
+            echo "  ✓ Removed stale battery-guard units"
+        fi
+        if [ -e "$guard_dst" ]; then
+            sudo rm -f "$guard_dst"
+            sudo rmdir "$guard_dir" >/dev/null 2>&1 || true
+            echo "  ✓ Removed stale battery_guard.sh"
+        fi
+    fi
+
+    # Always reload: an existing install may have the old /home symlink cached
+    # as "not-found"; identical copies alone will not clear that.
+    sudo systemctl daemon-reload
+
+    if printf '%s' "$installed" | grep -q ' battery-guard.timer '; then
+        # Drop the legacy wants link (it pointed into /home), then let
+        # systemctl write the canonical relative link to /etc/systemd/system.
+        sudo systemctl disable battery-guard.timer >/dev/null 2>&1 || true
+        sudo systemctl enable battery-guard.timer >/dev/null 2>&1 || true
+
+        # Starting the timer on a low battery would hibernate in the middle of
+        # an install. Start now only on AC, or when the pack the guard would
+        # actually act on (the lowest Discharging pack) is safely above the
+        # handover point. A nearly-flat pack that is *not* supplying the
+        # machine must not block the start (post-handover: BAT1 5%, BAT0 98%,
+        # still hours of runtime).
+        local ac="" low="" low_dis="" bat c st ac_val
+        for bat in /sys/class/power_supply/A*/online /sys/class/power_supply/ucsi-source-psy-*/online; do
+            [ -f "$bat" ] || continue
+            ac_val="$(cat "$bat" 2>/dev/null || echo "")"
+            [ "$ac_val" = "1" ] && { ac=1; break; }
+        done
+        for bat in /sys/class/power_supply/BAT*; do
+            [ -d "$bat" ] || continue
+            c="$(cat "$bat/capacity" 2>/dev/null || echo "")"
+            case "$c" in ''|*[!0-9]*) continue ;; esac
+            st="$(cat "$bat/status" 2>/dev/null || echo "")"
+            if [ -z "$low" ] || [ "$c" -lt "$low" ]; then low="$c"; fi
+            if [ "$st" = "Discharging" ] &&
+                { [ -z "$low_dis" ] || [ "$c" -lt "$low_dis" ]; }; then
+                low_dis="$c"
+            fi
+        done
+        [ -n "$low_dis" ] && low="$low_dis"
+        if [ "$ac" = "1" ] || [ -z "$low" ] || [ "$low" -gt 15 ]; then
+            sudo systemctl start battery-guard.timer >/dev/null 2>&1 &&
+                echo "  ✓ enabled and started battery-guard.timer"
+        else
+            echo "  ! battery-guard.timer enabled for next boot (not started: battery at ${low}%)"
+            echo "    plug in AC, then: sudo systemctl start battery-guard.timer"
+        fi
     fi
     _success "Systemd system services configured"
 }
@@ -233,5 +358,19 @@ main() {
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    main "$@"
+    case "${1:-}" in
+    --system-services-only)
+        # Repair path used by scripts/install_battery_guard.sh: install the
+        # root-owned system units/script and arm the timer, without touching
+        # dotfile links, packages, or user services. Profile resolution runs
+        # here too: setup_system_services() installs only the active profile's
+        # units, so PROFILE must be set before that call.
+        detect_os
+        detect_profile || { _error "invalid profile — nothing was installed"; exit 1; }
+        setup_system_services
+        ;;
+    *)
+        main "$@"
+        ;;
+    esac
 fi

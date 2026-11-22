@@ -5,8 +5,8 @@ Description=Check the battery level every 30 seconds
 OnBootSec=30s
 OnUnitActiveSec=30s
 # systemd batches timer fires by the accuracy window; without this the check
-# can land a full minute past the interval, which is late for a battery about
-# to be cut off by the EC (battery-notify mirrors battery-guard thresholds).
+# can land a full minute past the interval, which is late for a battery at the
+# 10% handover point (battery-notify mirrors battery-guard's threshold).
 AccuracySec=1s
 
 [Install]

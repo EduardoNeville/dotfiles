@@ -88,6 +88,33 @@ case " $PROFILES " in
     else
         bad "Firefox user.js legibility block stale — bash profiles/desktop/scripts/setup_legibility.sh"
     fi
+
+    # Battery handover: a root-owned copy on / (not a /home symlink) plus the
+    # system timer and the user notify timer. A drift here means the laptop is
+    # back to relying on the EC's cutoff, which is what the guard exists to
+    # prevent.
+    echo "== battery handover (desktop) =="
+    if [ -x /usr/local/lib/battery-guard/battery_guard.sh ] &&
+        cmp -s "$DOTFILES/scripts/battery_guard.sh" /usr/local/lib/battery-guard/battery_guard.sh; then
+        ok "battery_guard.sh (root-owned, current)"
+    else
+        bad "battery_guard.sh missing/stale — bash scripts/install_battery_guard.sh"
+    fi
+    if sh "$DOTFILES/scripts/battery_guard.sh" --selftest >/dev/null 2>&1; then
+        ok "battery guard decision table"
+    else
+        bad "battery guard selftest failed — sh scripts/battery_guard.sh --selftest"
+    fi
+    if systemctl is-enabled battery-guard.timer >/dev/null 2>&1; then
+        ok "battery-guard.timer enabled"
+    else
+        bad "battery-guard.timer not enabled — bash scripts/install_battery_guard.sh"
+    fi
+    if [ -e "$HOME/.config/systemd/user/battery-notify.timer" ]; then
+        ok "battery-notify.timer linked"
+    else
+        bad "battery-notify.timer missing — run install.sh --links-only"
+    fi
     ;;
 esac
 

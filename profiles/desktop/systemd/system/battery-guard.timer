@@ -1,0 +1,12 @@
+[Unit]
+Description=Check the discharging battery pack every 30 seconds
+# The matching service lives in /etc/systemd/system as a root-filesystem copy;
+# a symlink to /home is invisible to systemd before /home is mounted.
+
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=30s
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target

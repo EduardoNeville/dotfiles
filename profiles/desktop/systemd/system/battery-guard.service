@@ -1,0 +1,27 @@
+[Unit]
+Description=Battery handover at 10% / low-charge safety (ThinkPad dual battery)
+# Do not run on a desktop profile that happens to have no battery.
+ConditionPathExistsGlob=/sys/class/power_supply/BAT*
+# The script is installed root-owned on the root filesystem by
+# scripts/install_battery_guard.sh / configure_system.sh. Do not point this at
+# /home: /home is a separate mount, so systemd cannot resolve a unit symlinked
+# into it when the unit table is built at boot.
+#
+# Two packs, one EC-selected source. At 10% on the pack that is actually
+# supplying the machine, battery_guard.sh asks thinkpad_acpi to move the load
+# to the healthy pack (force-discharge) and verifies the handover. If the
+# firmware refuses, it hibernates at 10% instead of letting the EC's cutoff
+# kill the session; the next power-on makes the EC re-evaluate both packs.
+
+[Service]
+Type=oneshot
+# Handover point: request the switch at 10%, but only to a peer at 15%+.
+Environment=BATTERY_GUARD_SWITCH_AT=10
+Environment=BATTERY_GUARD_PEER_MIN=15
+# Safety net: no accepted handover by 10% -> hibernate. REARM=1 avoids a
+# hibernate/resume loop on the same pack until it drops one more point.
+Environment=BATTERY_GUARD_FLOOR=10
+Environment=BATTERY_GUARD_REARM=1
+# force = try the EC handover; set to "off" for a hibernate-only guard.
+Environment=BATTERY_GUARD_HANDOVER=force
+ExecStart=/usr/local/lib/battery-guard/battery_guard.sh
