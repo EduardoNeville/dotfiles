@@ -20,7 +20,7 @@ USB tarball (with submodules) for offline hosts: see `hosts/README.md`.
 
 ```
 profiles/base/      packages.common|apt|brew — what EVERY machine gets
-profiles/desktop/   packages.apt + configs — hydra only (dwm, audio, bluetooth)
+profiles/desktop/   packages.apt + configs — T480 laptops (dwm, audio, bluetooth, battery handover)
 hosts/<hostname>/   per-host packages + apt-sources + PROFILE declaration
 apt-sources/        debian.sources (trixie + updates + security + backports)
 configs/            universal dotfiles, symlinked to ~/.config (ssh → ~/.ssh)
@@ -40,20 +40,36 @@ That repo owns `~/.pi/agent/*` and the pi extensions; this one only bootstraps i
 
 ### Desktop layer (profile: `desktop`)
 
-On top of dwm/audio/bluetooth, the desktop profile ships display defaults tuned
-for the T480's ~250-nit panel (`install.sh` applies all of it; details and
-measurements in `notes/backlight-legibility-plan.md`):
+On top of dwm/audio/bluetooth, the desktop profile ships display and power
+defaults tuned for the T480 (`install.sh` applies all of it; display details
+and measurements in `notes/backlight-legibility-plan.md`, battery details in
+`notes/battery-handover.md`):
 
 - `profiles/desktop/scripts/light.sh` + `lut.py` — one 0–130% brightness scale.
   ≤100% is the real backlight; >100% adds a midtone LUT curve, because the
   panel's 100% duty *is* the hardware ceiling. Bound to the brightness keys.
-- `profiles/desktop/configs/Xresources` — `Xft.dpi: 110` for a 157dpi panel
-  (merged by `dwm-session.sh` before dwm starts; `dwm-session.sh` also re-applies
-  the saved brightness after picom, which would otherwise reset the LUT).
+- `profiles/desktop/configs/Xresources` — `Xft.dpi: 96` (the standard Xft
+  baseline; merged by `dwm-session.sh` before dwm starts; `dwm-session.sh` also
+  re-applies the saved brightness after picom, which would otherwise reset the
+  LUT).
 - `configs/fontconfig/fonts.conf` — subpixel/hinting, for GTK3 which ignores
   the X resources above.
 - `setup_legibility.sh` — install-time dependency check plus the per-profile
-  Firefox page scale (1.15), since Firefox profiles cannot be symlinked.
+  Firefox page scale (1.0 native; raise `FIREFOX_LEGIBILITY_SCALE` for a HiDPI
+  panel), since Firefox profiles cannot be symlinked.
+- `scripts/battery_guard.sh` + `profiles/desktop/systemd/system/battery-guard.*`
+  — T480 dual-battery handover. The EC, not Linux, chooses the discharging
+  pack, and it normally drains the external pack to its own cutoff before
+  reaching for the internal one. At 10% on the pack actually supplying the
+  machine, the guard asks the EC to move the load to the other pack
+  (`charge_behaviour=force-discharge`), waits, and verifies the source stopped
+  discharging. If the firmware accepts it, the peer stays forced until AC is
+  attached (then it is restored to `auto`). If the firmware ignores it, the
+  guard hibernates at 10% instead of letting the cutoff kill the session; the
+  next power-on makes the EC re-evaluate both packs. Tune it in the unit;
+  `BATTERY_GUARD_HANDOVER=off` gives a hibernate-only guard. Repair an
+  existing machine with `scripts/install_battery_guard.sh`; the firmware
+  constraints are in `notes/battery-handover.md`.
 
 A fresh desktop install starts at **120%** (`LIGHT_DEFAULT`), i.e. hardware
 100% + curve. Change it with the brightness keys, `light.sh set N`, or by

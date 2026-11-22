@@ -19,8 +19,8 @@ This is a profile-driven dotfiles system for Debian 13 and macOS. One entry poin
 │   ├── dunst/  picom/  theme/  opencode/  fontconfig/
 │   └── .gitconfig               # → ~/.gitconfig
 ├── profiles/                    # What a class of machine gets
-│   ├── base/                    #   packages.common|apt|brew + scripts/ + services/ + systemd/
-│   └── desktop/                 #   dwm/X11 layer: packages.apt + configs/ + scripts/
+│   ├── base/                    #   packages.common|apt|brew + scripts/ + services/ (review timer)
+│   └── desktop/                 #   dwm/X11: packages.apt + configs/ + scripts/ + services/ + systemd/ (battery guard)
 ├── hosts/                       # Per-host package lists + PROFILE (deep-blue, hiarcs, hydra, phalanx)
 ├── scripts/                     # Install engine (no entry points of its own)
 │   ├── lib/                     #   os.sh, link.sh, packages.sh, apt_sources.sh
