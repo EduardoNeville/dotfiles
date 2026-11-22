@@ -55,14 +55,14 @@ fi
 if command -v xsettingsd >/dev/null 2>&1; then
     cat > "$HOME/.xsettingsd" <<EOF
 Net/ThemeName "$gtk"
-# Xft/DPI is in 1024ths of a point, which is the unit XSETTINGS uses:
-# 110dpi * 1024 = 112640. It lives here because this heredoc is the single
-# writer of ~/.xsettingsd — a separate script adding the key would be silently
-# dropped on the next theme toggle. This is what actually scales GTK3/Firefox
-# chrome: they read the XSETTINGS Xft/DPI key, whereas
-# org.gnome.desktop.interface text-scaling-factor is only mapped by
-# gnome-settings-daemon, which this session does not run.
-Xft/DPI 112640
+# Xft/DPI is in the XSETTINGS wire unit: dpi * 1024. 96dpi * 1024 = 98304,
+# matching Xft.dpi in profiles/desktop/configs/Xresources. It lives here
+# because this heredoc is the single writer of ~/.xsettingsd — a separate
+# script adding the key would be silently dropped on the next theme toggle.
+# This is what actually scales GTK3/Firefox chrome: they read the XSETTINGS
+# Xft/DPI key, whereas org.gnome.desktop.interface text-scaling-factor is only
+# mapped by gnome-settings-daemon, which this session does not run.
+Xft/DPI 98304
 EOF
     UNIT="$HOME/.config/systemd/user/xsettingsd.service"
     if [ ! -f "$UNIT" ]; then

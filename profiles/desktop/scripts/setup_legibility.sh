@@ -89,13 +89,13 @@ apply_live() {
 summary() {
     local level scale dpi
     level="$("$SCRIPTS/light.sh" default 2>/dev/null || echo 120)"
-    scale="${FIREFOX_LEGIBILITY_SCALE:-1.15}"
+    scale="${FIREFOX_LEGIBILITY_SCALE:-1.0}"
     dpi=$(awk '/^Xft\.dpi/ { print $2 }' "$XRES" 2>/dev/null)
     echo ""
     _success "Desktop legibility defaults in place"
     echo "  brightness  0-130% via light.sh (keys: XF86MonBrightnessUp/Down)"
     echo "              fresh session starts at ${level}% = hardware 100% + midtone curve"
-    echo "  Xft.dpi     ${dpi:-110} (Xresources, merged by dwm-session.sh; XSETTINGS carries it to GTK)"
+    echo "  Xft.dpi     ${dpi:-96} (Xresources, merged by dwm-session.sh; XSETTINGS carries it to GTK)"
     echo "  Firefox     devPixelsPerPx ${scale} for page content (per profile user.js)"
     echo "  Tunable:    LIGHT_DEFAULT / LIGHT_CEILING / LIGHT_STEP in the environment,"
     echo "              LIGHT_STRENGTH in lut.py, FIREFOX_LEGIBILITY_SCALE for Firefox."

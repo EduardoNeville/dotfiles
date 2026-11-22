@@ -32,7 +32,15 @@ end
 local dark_scheme = "Night Owl (Gogh)"
 local light_scheme = "catppuccin-latte"
 
+-- The tab bar and window title use their own font size, independent of the
+-- terminal's font_size. WezTerm's default is 12pt; at this session's 96dpi
+-- that is 16px, larger than the 9pt (12px) terminal text. Keep it equal to the
+-- terminal so tabs do not dominate. It must live in every window_frame table
+-- because apply_theme() replaces the whole table on each theme toggle.
+local window_frame_font_size = 9
+
 local dark_window_frame = {
+    font_size = window_frame_font_size,
     active_titlebar_bg = '#011627',
     inactive_titlebar_bg = '#011627',
 }
@@ -69,6 +77,7 @@ local dark_colors = {
 -- ── Light Mode Frame ──────────────────────────────────────
 
 local light_window_frame = {
+    font_size = window_frame_font_size,
     active_titlebar_bg = '#EFF1F5',
     inactive_titlebar_bg = '#EFF1F5',
 }
@@ -159,15 +168,11 @@ local config = {
     bold_brightens_ansi_colors = true,
 
     --- Font ----------
-    -- The config set no font at all, so wezterm used its built-in 12pt (16px at
-    -- 96dpi) — noticeably larger than everything else here (dwm's bar is 14pt
-    -- for comparison, and the bar probe/font metrics both agree).
-    --
-    -- DPI scaling stays on wezterm's automatic detection on purpose: eDP-1 is
-    -- 309mm wide at 1920px (~157dpi) while HDMI-2 is 597mm (~82dpi), so a fixed
-    -- point size correctly renders bigger in pixels on the HiDPI panel to stay
-    -- the same physical size. If you would rather have identical *pixel* size on
-    -- both monitors, add `dpi = 96,` here.
+    -- 9pt at this session's 96dpi = 12px. On X11 WezTerm does not read the
+    -- individual panel's mm size; it uses the global Xft/DPI from XSETTINGS
+    -- (configs/theme/scripts/gtk_theme.sh), falling back to Xft.dpi. The old
+    -- built-in 12pt default was the outlier — it is also why the tab bar needs
+    -- its own window_frame font_size (default 12pt) below.
     font_size = 9,
 
     --- UI --------------------------------
@@ -252,6 +257,7 @@ if is_light then
 else
     config.color_scheme = dark_scheme
     config.window_frame = {
+        font_size = window_frame_font_size,
         active_titlebar_bg = '#011627',
         inactive_titlebar_bg = '#011627',
     }

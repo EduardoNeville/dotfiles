@@ -1,5 +1,11 @@
 # Backlight & Legibility — Implementation (2026-10)
 
+> **2026-11-01 revision — size, not brightness.** The text/UI scale below was
+> originally 110dpi + Firefox 1.15 for the 157dpi eDP panel. On the 82dpi
+> 1920x1080 HDMI output (597mm wide) that made GTK chrome and WezTerm's 12pt
+> tab-bar font look oversized. Current defaults: **96dpi** (`Xft.dpi` +
+> `Xft/DPI 98304`) and **Firefox 1.0**. The backlight/LUT work is unchanged.
+
 ## Why this exists
 
 The complaint was "screen brightness is very low". Measurement said something
@@ -31,12 +37,12 @@ Two more things were measured along the way:
 | `profiles/desktop/scripts/lut.py` | RandR gamma-LUT + CTM engine (ctypes, no deps). Lifts midtones with `out = in**e`; white stays white. Also saturation via the 3x3 colour matrix. |
 | `profiles/desktop/scripts/light.sh` | The single owner of brightness. One 0–130% scale: ≤100% hardware via `brightnessctl`, >100% hardware 100% + curve. Persists state, draws the dunst OSD. |
 | `profiles/desktop/scripts/backlight-probe.sh` | Read-only firmware/kernel report (DPST/CABC, ACIP backlight selection, systemd-backlight saved value) plus opt-in `--fix-saved` / `--grub-test` / `--grub-revert`. |
-| `profiles/desktop/configs/Xresources` | `Xft.dpi: 110` + subpixel/hinting for Xft clients (dwm, dmenu, rofi). |
+| `profiles/desktop/configs/Xresources` | `Xft.dpi: 96` + subpixel/hinting for Xft clients (dwm, dmenu, rofi). |
 | `configs/fontconfig/fonts.conf` | Same rendering choices where GTK3 actually looks (it ignores `Xft.rgba`). |
 | `profiles/desktop/configs/dwm-session.sh` | Merges `Xresources` before dwm starts; re-applies saved brightness 1s after picom. |
 | `suckless/dwm/config.h` | Brightness keys now call `light.sh up/down` (5% steps) instead of `brightnessctl 10%±`. |
-| `configs/theme/scripts/gtk_theme.sh` | Writes `Xft/DPI 112640` (110dpi × 1024) into `~/.xsettingsd` — the only writer of that file, so the key survives every theme toggle. |
-| `~/.config/mozilla/firefox/vrwhvdpg.default-esr/user.js` | `layout.css.devPixelsPerPx = 1.15` (machine-local, not in this repo). |
+| `configs/theme/scripts/gtk_theme.sh` | Writes `Xft/DPI 98304` (96dpi × 1024) into `~/.xsettingsd` — the only writer of that file, so the key survives every theme toggle. |
+| `~/.config/mozilla/firefox/vrwhvdpg.default-esr/user.js` | `layout.css.devPixelsPerPx = 1.0` (machine-local, not in this repo). |
 
 ## Fresh install (what `install.sh --profile desktop` now does)
 
@@ -50,7 +56,7 @@ a no-op:
 | build | `profiles/desktop/scripts/build_suckless.sh` | dwm compiled with the `light.sh` key bindings |
 | configure | `profiles/desktop/scripts/setup_legibility.sh` (new, called from `scripts/debian/configure_system.sh`) | validates deps + `lut.py` imports, writes the Firefox block, `fc-cache -f`, and applies Xft.dpi + brightness if run inside a session |
 | session start | `profiles/desktop/configs/dwm-session.sh` | `xrdb -merge Xresources` before dwm; `light.sh restore` 1s after picom; refreshes the Firefox block for profiles created later |
-| login | `configs/theme/scripts/gtk_theme.sh` | writes `Xft/DPI 112640` into `~/.xsettingsd` on every theme toggle |
+| login | `configs/theme/scripts/gtk_theme.sh` | writes `Xft/DPI 98304` into `~/.xsettingsd` on every theme toggle |
 | drift | `scripts/check_parity.sh` | desktop section now checks `Xresources`, `light.sh`, and that every existing Firefox profile carries the block |
 
 A fresh desktop install starts at **120%** (`LIGHT_DEFAULT` in `light.sh`):
@@ -71,8 +77,8 @@ immediately, run `sudo backlight-probe.sh --fix-saved` (see below).
 | upper end of the scale | 130 | `LIGHT_CEILING` env |
 | key step | 5 | `LIGHT_STEP` env |
 | curve strength | 0.30 | `LIGHT_STRENGTH` env / `curve()` in `lut.py` |
-| text/UI size | 110dpi | `Xft.dpi` in `configs/Xresources` **and** `Xft/DPI 112640` in `gtk_theme.sh` (both, or X clients and GTK disagree) |
-| Firefox page size | 1.15 | `FIREFOX_LEGIBILITY_SCALE`, or `SCALE` in `firefox_legibility.sh` |
+| text/UI size | 96dpi | `Xft.dpi` in `configs/Xresources` **and** `Xft/DPI 98304` in `gtk_theme.sh` (both, or X clients and GTK disagree) |
+| Firefox page size | 1.0 | `FIREFOX_LEGIBILITY_SCALE`, or `SCALE` in `firefox_legibility.sh` |
 
 ## Decisions
 
@@ -90,9 +96,10 @@ immediately, run `sudo backlight-probe.sh --fix-saved` (see below).
   session does not run; setting it would be cargo cult and risks double
   scaling if one is ever added. `Xft/DPI` over XSETTINGS is the mechanism
   GTK3/Firefox actually honour — verified live with `dump_xsettings`.
-- **DPI 110, not 120.** The panel is 157dpi; clients assumed 96. +15% closes
-  most of the gap without breaking dwm's 14pt bar or rofi geometry. 120 is the
-  next step if 110 still feels small (`Xft.dpi` + the `Xft/DPI` line).
+- **DPI 96, not 110.** 110 was the original +15% compensation for the 157dpi
+  eDP panel, but on the 82dpi HDMI-2 output it rendered GTK chrome and
+  WezTerm's 12pt tab-bar font oversized. 96 is the standard Xft/GTK baseline;
+  raise `Xft.dpi` and `Xft/DPI` together if the laptop panel alone feels small.
 
 ## Technical gotchas encoded in lut.py (both cost an hour to find)
 
@@ -126,8 +133,8 @@ light.sh diag           # saved, hardware duty, LUT midpoint, CTM
 - CTM: `vib 30` read back exactly
   `[1.236, -0.215, -0.022, -0.064, 1.085, -0.022, -0.064, -0.215, 1.278]`,
   `vib 0` back to identity; disconnected outputs normalised.
-- XSETTINGS: `dump_xsettings` shows `Xft/DPI 112640` live; `xrdb -query`
-  shows `Xft.dpi: 110`.
+- XSETTINGS: `dump_xsettings` shows `Xft/DPI 98304` live; `xrdb -query`
+  shows `Xft.dpi: 96`.
 - dwm rebuilt from the repo (`make`), so the session's preferred binary has
   the new key bindings.
 

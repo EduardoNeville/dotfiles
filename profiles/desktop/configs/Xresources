@@ -1,13 +1,13 @@
 ! X resources — loaded by dwm-session.sh with `xrdb -merge` before any client
 ! starts (dwm opens its fonts once, at startup, so order matters).
 !
-! The panel reports 309mm x 173mm at 1920x1080 — 157dpi — but X clients assume
-! 96dpi unless told otherwise. That is why the bar, dmenu, rofi and GTK chrome
-! all rendered physically smaller than wezterm, which auto-detects the panel.
-! 110 (+15%) is a deliberate first step: enough to close the gap, small enough
-! that dwm's 14pt bar and rofi's geometry still fit. Raise to 120 only after
-! eyeballing the bar height and rofi width.
-Xft.dpi: 110
+! 96dpi is the standard Xft/GTK baseline. 110 was tried to compensate for the
+! eDP-1 panel (309mm x 173mm at 1920x1080 = 157dpi), but this session also
+! drives a 27-inch 1920x1080 HDMI panel at ~82dpi: at 110 everything there —
+! GTK chrome, Firefox tabs, the wezterm tab bar — rendered visibly oversized.
+! 96 keeps the UI at the familiar 1:1 size. Raise in small steps (100, 104)
+! if the laptop panel alone feels too small; keep gtk_theme.sh in sync.
+Xft.dpi: 96
 
 ! Rendering: subpixel RGB + light hinting is the sharpest text this panel
 ! produces; sharper glyph edges read as brighter at the same nits. GTK3 does

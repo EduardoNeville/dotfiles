@@ -9,11 +9,12 @@
 # A display manager runs the .desktop Exec= verbatim, so without this split a
 # DM session would be a bare dwm: no bar, no notifications, no wallpaper.
 
-# X resources — the panel is 157dpi (31cm at 1920px) but X clients default to
-# 96dpi, so dwm's bar, dmenu, rofi and GTK chrome all rendered physically
-# smaller than wezterm (which auto-detects the panel). Xft.dpi=110 brings them
-# back in line. dwm opens its fonts once, at startup, so this must run before
-# the exec at the bottom.
+# X resources — 96dpi is the standard baseline for Xft clients. The eDP panel
+# is 157dpi, but this session also drives an 82dpi 27" HDMI panel; the previous
+# 110dpi setting made GTK chrome (Firefox tabs), wezterm's tab bar and rofi
+# oversized there. dwm opens its fonts once, at startup, so this must run
+# before the exec at the bottom. Raise Xresources + gtk_theme.sh together if
+# you want larger text.
 XRES="${DOTFILES_DIR:-$HOME/dotfiles}/profiles/desktop/configs/Xresources"
 [ -f "$XRES" ] && command -v xrdb >/dev/null 2>&1 && xrdb -merge "$XRES"
 

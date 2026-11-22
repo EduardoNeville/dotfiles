@@ -2,10 +2,10 @@
 # firefox_legibility.sh — keep Firefox's *web content* sized for this panel.
 #
 # Firefox lays pages out in CSS pixels and maps them 1:1 to device pixels
-# unless told otherwise, so on the T480's 157dpi panel (14", 1920x1080) page
-# text renders physically ~15% smaller than the rest of the desktop. Chrome
-# (tabs, menus) is GTK and already follows Xft/DPI from xsettingsd; only the
-# page content needs its own scale.
+# unless told otherwise. The default scale is now 1.0 (the 96dpi CSS baseline);
+# the old 1.15 compensated for the 157dpi eDP panel but made pages oversized
+# on the 82dpi HDMI output. Chrome (tabs, menus) is GTK and follows Xft/DPI
+# from xsettingsd; only the page content needs its own scale.
 #
 # Why a generated block instead of a shipped file: Firefox creates and names
 # profiles itself, so there is nothing stable to symlink. user.js is the right
@@ -16,11 +16,11 @@
 #   firefox_legibility.sh --check    silent; exit 1 if a profile drifts
 #
 # The block is marked, so the rest of user.js is never touched and repeated
-# runs are no-ops. Scale comes from $FIREFOX_LEGIBILITY_SCALE (default 1.15).
+# runs are no-ops. Scale comes from $FIREFOX_LEGIBILITY_SCALE (default 1.0).
 
 set -u
 
-SCALE="${FIREFOX_LEGIBILITY_SCALE:-1.15}"
+SCALE="${FIREFOX_LEGIBILITY_SCALE:-1.0}"
 CHECK=0
 [ "${1:-}" = "--check" ] && CHECK=1
 
@@ -43,9 +43,10 @@ profile_dirs() {
 block() {
     cat <<EOF
 $BEGIN_MARK
-// Page scale for the 157dpi panel: CSS px map 1:1 to device px by default,
-// which renders web text ~15% small here. GTK chrome is scaled separately via
-// Xft/DPI (configs/theme/scripts/gtk_theme.sh).
+// Keep web content at the 96dpi CSS baseline (1.0). 1.15 was used for the
+// 157dpi eDP panel, but it made pages oversized on the 82dpi HDMI output.
+// GTK chrome is scaled separately via Xft/DPI
+// (configs/theme/scripts/gtk_theme.sh).
 // Managed by profiles/desktop/scripts/firefox_legibility.sh — edit \$SCALE there.
 user_pref("layout.css.devPixelsPerPx", "$SCALE");
 $END_MARK
