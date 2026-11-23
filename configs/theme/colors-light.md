@@ -1,7 +1,7 @@
 # Light Theme Palette (Catppuccin Latte-inspired)
 
 This document is the single source of truth for the light mode color palette
-shared across all tools (wezterm, tmux, opencode, neovim).
+shared across all tools (wezterm, tmux, neovim).
 
 Background: off-white `#FAFAFA` for reduced eye strain compared to pure white.
 Foreground: near-black `#1A1A2E` for maximum contrast.
@@ -65,8 +65,3 @@ Foreground: near-black `#1A1A2E` for maximum contrast.
 - Light mode: `catppuccin-latte` (catppuccin/nvim with flavour = "latte")
 - Lualine: dark → `custom_ayu`, light → `catppuccin` (auto-detects latte)
 - Barbecue winbar: adapts via ColorScheme autocmd
-
-### Opencode
-- Theme colors defined in `opencode.jsonc` `"theme"."light"` section
-- Background: `#FAFAFA`, foreground: `#1A1A2E`
-- Sync mechanism: `"sync_with_shell": true` reads `~/.local/state/theme`

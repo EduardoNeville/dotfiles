@@ -16,7 +16,7 @@ This is a profile-driven dotfiles system for Debian 13 and macOS. One entry poin
 ├── llm.txt                      # This file — AI assistant context
 ├── configs/                     # Universal dotfiles → ~/.config/<name> (ssh → ~/.ssh)
 │   ├── nvim/  zsh-conf/  nnn/  wezterm/  starship/  television/  tmux/
-│   ├── dunst/  picom/  theme/  opencode/  fontconfig/
+│   ├── dunst/  picom/  theme/  fontconfig/
 │   └── .gitconfig               # → ~/.gitconfig
 ├── profiles/                    # What a class of machine gets
 │   ├── base/                    #   packages.common|apt|brew + scripts/ + services/ (review timer)

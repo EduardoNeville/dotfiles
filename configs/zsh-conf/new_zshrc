@@ -241,5 +241,3 @@ export NVM_DIR="$HOME/.nvm"
 alias sectest-sudo='sudo /home/eduardoneville/.local/bin/uv run --directory
   /home/eduardoneville/projects/sec-test sectest'
 
-# opencode
-export PATH=/home/eduardoneville/.opencode/bin:$PATH

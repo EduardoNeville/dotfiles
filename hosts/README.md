@@ -23,7 +23,7 @@ unknown ones instead of silently installing nothing.
      `sudo chown -R $(id -u):$(id -g) ~/dotfiles` — otherwise every source build
      fails with `ld: cannot open output file ...: Permission denied`.
 4. Secrets (manual by decision 2026-09): copy keys/API tokens in — `envs/api_keys`,
-   `~/.ssh/id_ed25519`, pi/opencode tokens — NOT in git. `install.sh` warns when missing.
+   `~/.ssh/id_ed25519`, pi tokens — NOT in git. `install.sh` warns when missing.
 5. `cd ~/dotfiles && ./install.sh` — profile comes from `hosts/<hostname>/PROFILE`
    when it exists (create it, e.g. `base desktop` for laptops), otherwise `base`.
    One-off override: `./install.sh --profile base,desktop`.
