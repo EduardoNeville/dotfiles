@@ -17,4 +17,4 @@
 	addIgnoredFile = false
 
 [init]
-	defaultBranch = main
+	defaultBranch = master
